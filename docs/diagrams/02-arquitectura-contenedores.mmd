@@ -1,0 +1,39 @@
+---
+title: 02. Arquitectura de contenedores
+---
+%%{init: {"htmlLabels": false, "flowchart": {"curve": "basis", "useMaxWidth": false, "nodeSpacing": 35, "rankSpacing": 55}, "theme": "base", "themeVariables": {"fontFamily": "Arial, sans-serif", "fontSize": "16px", "lineColor": "#455A64"}}}%%
+flowchart TB
+    WEB["SPA web<br/>Vite + React + TypeScript"]:::frontend
+    MOB["App móvil futura<br/>fuera de la beta"]:::external
+
+    subgraph PLATFORM["PLATAFORMA DOCKER COMPOSE"]
+        GW["Gateway<br/>REST /api/v1<br/>CORS · rate limit · routing"]:::gateway
+        SEC["security-service<br/>FastAPI<br/>registro, login, JWT y roles"]:::service
+        CAT["catalog-service<br/>Node.js + TypeScript<br/>marcas, productos y stock"]:::service
+        ORD["order-service<br/>Node.js + TypeScript<br/>carrito, checkout y pedidos"]:::service
+        DB1[("security_db")]:::db
+        DB2[("catalog_db")]:::db
+        DB3[("orders_db")]:::db
+    end
+
+    NOTE["Regla de arquitectura:<br/>el gateway es el único servicio público.<br/>Cada servicio es dueño de su base de datos.<br/>El gateway y los servicios validan el JWT."]:::note
+
+    WEB -->|"HTTPS / JSON"| GW
+    MOB -.->|"mismos contratos"| GW
+    GW -->|"autenticación"| SEC
+    GW -->|"catálogo"| CAT
+    GW -->|"pedidos"| ORD
+    SEC -->|"lee y escribe"| DB1
+    CAT -->|"lee y escribe"| DB2
+    ORD -->|"lee y escribe"| DB3
+    ORD -->|"revalida precio y stock"| CAT
+    SEC -.->|"publica clave de validación"| CAT
+    SEC -.->|"publica clave de validación"| ORD
+
+    classDef frontend fill:#E3F2FD,stroke:#1565C0,stroke-width:2px,color:#1a1a1a;
+    classDef external fill:#ECEFF1,stroke:#546E7A,stroke-width:2px,color:#1a1a1a;
+    classDef gateway fill:#E0F7FA,stroke:#00838F,stroke-width:2px,color:#1a1a1a;
+    classDef service fill:#E8F5E9,stroke:#2E7D32,stroke-width:2px,color:#1a1a1a;
+    classDef db fill:#F3E5F5,stroke:#6A1B9A,stroke-width:2px,color:#1a1a1a;
+    classDef note fill:#FAFAFA,stroke:#9E9E9E,stroke-width:1.5px,stroke-dasharray: 5 3,color:#37474F;
+    style PLATFORM fill:#F8FCF8,stroke:#2E7D32,stroke-width:1.5px

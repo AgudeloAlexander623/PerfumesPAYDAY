@@ -144,7 +144,8 @@ PerfumesPAYDAY/
 ├── docs/                            # Documentación global del proyecto
 │   ├── adr/                         # Decisiones de arquitectura
 │   ├── api/                         # Contratos OpenAPI
-│   └── diagrams/                    # Diagramas de arquitectura y flujos
+│   ├── diagrams/                    # Diagramas de arquitectura y flujos
+│   └── use-cases/                   # Catálogo y detalle de casos de uso
 ├── infra/
 │   ├── docker/                      # Configuración de Docker y Docker Compose
 │   └── kubernetes/                  # Manifiestos para una fase posterior
@@ -433,6 +434,7 @@ docs(readme): explicar la estructura del monorepo
 | `docs/adr/` | Registro de decisiones de arquitectura | Carpeta creada |
 | `docs/api/` | Contratos OpenAPI por servicio | Carpeta creada |
 | `docs/diagrams/` | Diagramas de arquitectura y flujos | Carpeta creada |
+| `docs/use-cases/` | Catálogo y detalle de casos de uso | En progreso |
 | `docs/scrum.md` | Tablero, sprints y métricas | Pendiente |
 | `docs/security.md` | Amenazas, controles y hacking ético | Pendiente |
 | `docs/beta-criteria.md` | Criterios de aceptación de la beta | Pendiente |

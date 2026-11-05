@@ -1,0 +1,33 @@
+---
+title: 05. Flujo del carrito por usuario
+---
+%%{init: {"htmlLabels": false, "flowchart": {"curve": "basis", "useMaxWidth": false, "nodeSpacing": 30, "rankSpacing": 40}, "theme": "base", "themeVariables": {"fontFamily": "Arial, sans-serif", "fontSize": "16px", "lineColor": "#455A64"}}}%%
+flowchart TD
+    INI(["Inicio"]):::terminal
+    ADD["El usuario agrega un producto"]:::process
+    AUTH{"¿Tiene sesión iniciada?"}:::decision
+    TEMP["Guardar carrito temporal<br/>y solicitar inicio de sesión"]:::frontend
+    MERGE["Recuperar carrito y asociarlo al user_id<br/>nunca al carrito de otro usuario"]:::service
+    QTY["Cambiar cantidad o eliminar producto"]:::process
+    VALID["Validar stock y precio actual<br/>contra catalog-service"]:::service
+    OK{"¿Los datos son válidos?"}:::decision
+    ERR["Ajustar cantidad<br/>o mostrar aviso"]:::error
+    SAVE["Guardar el carrito actualizado"]:::service
+    VIEW["Mostrar resumen y total"]:::frontend
+    CHECK["Continuar al checkout"]:::success
+    FIN(["Fin"]):::terminal
+
+    INI --> ADD --> AUTH
+    AUTH -- No --> TEMP --> MERGE
+    AUTH -- Sí --> MERGE
+    MERGE --> QTY --> VALID --> OK
+    OK -- No --> ERR --> QTY
+    OK -- Sí --> SAVE --> VIEW --> CHECK --> FIN
+
+    classDef terminal fill:#ECEFF1,stroke:#546E7A,stroke-width:2px,color:#1a1a1a;
+    classDef decision fill:#FFFDE7,stroke:#F9A825,stroke-width:2px,color:#1a1a1a;
+    classDef process fill:#E3F2FD,stroke:#1565C0,stroke-width:2px,color:#1a1a1a;
+    classDef frontend fill:#E3F2FD,stroke:#1565C0,stroke-width:2px,color:#1a1a1a;
+    classDef service fill:#E8F5E9,stroke:#2E7D32,stroke-width:2px,color:#1a1a1a;
+    classDef success fill:#E8F5E9,stroke:#2E7D32,stroke-width:2px,color:#1a1a1a;
+    classDef error fill:#FFEBEE,stroke:#C62828,stroke-width:2px,color:#1a1a1a;
