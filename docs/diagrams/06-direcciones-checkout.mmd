@@ -1,0 +1,32 @@
+---
+title: 06. Flujo de direcciones y checkout
+---
+%%{init: {"htmlLabels": false, "flowchart": {"curve": "basis", "useMaxWidth": false, "nodeSpacing": 30, "rankSpacing": 40}, "theme": "base", "themeVariables": {"fontFamily": "Arial, sans-serif", "fontSize": "16px", "lineColor": "#455A64"}}}%%
+flowchart TD
+    INI(["Inicio"]):::terminal
+    START["El usuario inicia el checkout"]:::process
+    HASADDR{"¿Tiene una dirección guardada?"}:::decision
+    NEW["Registrar y guardar dirección:<br/>nombre, teléfono, departamento,<br/>ciudad, dirección y referencias"]:::service
+    SELECT["Seleccionar la dirección de envío"]:::process
+    SEND["Enviar productos y dirección<br/>a order-service"]:::frontend
+    CHECK["Verificar idempotencia y revalidar<br/>precio y stock contra catalog-service"]:::service
+    OK{"¿Precio y stock vigentes?"}:::decision
+    ERR["Mostrar error<br/>y volver al carrito"]:::error
+    CREATE["Crear pedido con snapshot:<br/>productos, precios y dirección"]:::success
+    PAY["Registrar pago simulado<br/>y mostrar confirmación"]:::success
+    FIN(["Fin"]):::terminal
+
+    INI --> START --> HASADDR
+    HASADDR -- No --> NEW --> SELECT
+    HASADDR -- Sí --> SELECT
+    SELECT --> SEND --> CHECK --> OK
+    OK -- No --> ERR --> FIN
+    OK -- Sí --> CREATE --> PAY --> FIN
+
+    classDef terminal fill:#ECEFF1,stroke:#546E7A,stroke-width:2px,color:#1a1a1a;
+    classDef decision fill:#FFFDE7,stroke:#F9A825,stroke-width:2px,color:#1a1a1a;
+    classDef process fill:#E3F2FD,stroke:#1565C0,stroke-width:2px,color:#1a1a1a;
+    classDef frontend fill:#E3F2FD,stroke:#1565C0,stroke-width:2px,color:#1a1a1a;
+    classDef service fill:#E8F5E9,stroke:#2E7D32,stroke-width:2px,color:#1a1a1a;
+    classDef success fill:#E8F5E9,stroke:#2E7D32,stroke-width:2px,color:#1a1a1a;
+    classDef error fill:#FFEBEE,stroke:#C62828,stroke-width:2px,color:#1a1a1a;

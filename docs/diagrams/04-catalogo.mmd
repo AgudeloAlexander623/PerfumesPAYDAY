@@ -1,0 +1,36 @@
+---
+title: 04. Flujo de catálogo
+---
+%%{init: {"htmlLabels": false, "flowchart": {"curve": "basis", "useMaxWidth": false, "nodeSpacing": 30, "rankSpacing": 45}, "theme": "base", "themeVariables": {"fontFamily": "Arial, sans-serif", "fontSize": "16px", "lineColor": "#455A64"}}}%%
+flowchart TD
+    INI(["Inicio"]):::terminal
+    OPEN["El usuario abre el catálogo"]:::process
+    LOAD["El frontend solicita productos<br/>con búsqueda y filtros"]:::frontend
+    GW["El gateway envía la petición<br/>a catalog-service"]:::gateway
+    QUERY["catalog-service consulta<br/>catalog_db"]:::service
+    HAS{"¿Hay resultados?"}:::decision
+    EMPTY["Mostrar estado vacío<br/>y sugerir limpiar filtros"]:::error
+    LIST["Mostrar listado:<br/>marca, presentación, precio y stock"]:::process
+    FILTER["El usuario busca, filtra<br/>o cambia de página"]:::process
+    DETAIL["Selecciona un producto"]:::process
+    VAR["Elige la presentación<br/>30, 50 o 100 ml"]:::process
+    STOCK{"¿Hay stock disponible?"}:::decision
+    OUT["Mostrar producto agotado<br/>y evitar agregarlo"]:::error
+    CART["Agregar al carrito"]:::success
+    NEXT(["Continúa en el flujo del carrito"]):::terminal
+
+    INI --> OPEN --> LOAD --> GW --> QUERY --> HAS
+    HAS -- No --> EMPTY --> FILTER
+    HAS -- Sí --> LIST --> FILTER
+    FILTER --> DETAIL --> VAR --> STOCK
+    STOCK -- No --> OUT --> DETAIL
+    STOCK -- Sí --> CART --> NEXT
+
+    classDef terminal fill:#ECEFF1,stroke:#546E7A,stroke-width:2px,color:#1a1a1a;
+    classDef decision fill:#FFFDE7,stroke:#F9A825,stroke-width:2px,color:#1a1a1a;
+    classDef process fill:#E3F2FD,stroke:#1565C0,stroke-width:2px,color:#1a1a1a;
+    classDef frontend fill:#E3F2FD,stroke:#1565C0,stroke-width:2px,color:#1a1a1a;
+    classDef gateway fill:#E0F7FA,stroke:#00838F,stroke-width:2px,color:#1a1a1a;
+    classDef service fill:#E8F5E9,stroke:#2E7D32,stroke-width:2px,color:#1a1a1a;
+    classDef success fill:#E8F5E9,stroke:#2E7D32,stroke-width:2px,color:#1a1a1a;
+    classDef error fill:#FFEBEE,stroke:#C62828,stroke-width:2px,color:#1a1a1a;

@@ -1,0 +1,35 @@
+---
+title: 08. Flujo de administración
+---
+%%{init: {"htmlLabels": false, "flowchart": {"curve": "basis", "useMaxWidth": false, "nodeSpacing": 30, "rankSpacing": 40}, "theme": "base", "themeVariables": {"fontFamily": "Arial, sans-serif", "fontSize": "16px", "lineColor": "#455A64"}}}%%
+flowchart TD
+    INI(["Inicio"]):::terminal
+    LOGIN["El administrador inicia sesión"]:::process
+    ROLE{"¿El servidor confirma rol admin?"}:::decision
+    DENY["Responder 403<br/>y volver al inicio"]:::error
+    PANEL["Mostrar panel administrativo"]:::frontend
+    ACTION{"¿Qué acción desea realizar?"}:::decision
+    PROD["Gestionar productos"]:::process
+    PRODVALID["Validar datos del producto"]:::service
+    PRODSAVE["Crear, editar o desactivar producto"]:::service
+    ORDERS["Consultar pedidos"]:::process
+    ORDERLIST["Filtrar y listar pedidos"]:::service
+    ORDERDETAIL["Ver detalle del pedido"]:::process
+    STATUS["Revisar estado del pedido"]:::process
+    AUDIT["Registrar la acción en auditoría"]:::success
+    FIN(["Fin"]):::terminal
+
+    INI --> LOGIN --> ROLE
+    ROLE -- No --> DENY --> FIN
+    ROLE -- Sí --> PANEL --> ACTION
+    ACTION -- Productos --> PROD --> PRODVALID --> PRODSAVE --> AUDIT
+    ACTION -- Pedidos --> ORDERS --> ORDERLIST --> ORDERDETAIL --> STATUS --> AUDIT
+    AUDIT --> FIN
+
+    classDef terminal fill:#ECEFF1,stroke:#546E7A,stroke-width:2px,color:#1a1a1a;
+    classDef decision fill:#FFFDE7,stroke:#F9A825,stroke-width:2px,color:#1a1a1a;
+    classDef process fill:#E3F2FD,stroke:#1565C0,stroke-width:2px,color:#1a1a1a;
+    classDef frontend fill:#E3F2FD,stroke:#1565C0,stroke-width:2px,color:#1a1a1a;
+    classDef service fill:#E8F5E9,stroke:#2E7D32,stroke-width:2px,color:#1a1a1a;
+    classDef success fill:#E8F5E9,stroke:#2E7D32,stroke-width:2px,color:#1a1a1a;
+    classDef error fill:#FFEBEE,stroke:#C62828,stroke-width:2px,color:#1a1a1a;
