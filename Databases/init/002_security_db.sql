@@ -15,9 +15,14 @@ CREATE TABLE usuarios (
 );
 
 CREATE TABLE roles (
-    usuario_ id UUID NOT NULL REFERENCES usuarios(id) ON DELETE CASCADE,
-    rol_id UUID NOT NULLL REFERENCES roles(id) ON DELETE CASCADE,
-    PRIMARU KEY (usuario_id, rol_id)
+    id      UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    nombre  VARCHAR(50) NOT NULL UNIQUE
+);
+
+CREATE TABLE usuario_roles (
+    usuario_id  UUID NOT NULL REFERENCES usuarios(id) ON DELETE CASCADE,
+    rol_id      UUID NOT NULL REFERENCES roles(id)    ON DELETE CASCADE,
+    PRIMARY KEY (usuario_id, rol_id)
 );
 
 CREATE TABLE tokens_refresco (
