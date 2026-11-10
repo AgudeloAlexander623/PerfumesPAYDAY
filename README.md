@@ -72,11 +72,11 @@ Es parecido a un centro comercial: el usuario entra por una puerta principal (ga
 | Nombre completo | Carrera | Rol | Código de estudiante |
 |---|---|---|---|
 | Jessid Agudelo | T.D.S. | Backend Developer | 2478460 |
-| Pendiente | Pendiente | Pendiente | Pendiente |
-| Pendiente | Pendiente | Pendiente | Pendiente |
-| Pendiente | Pendiente | Pendiente | Pendiente |
+| Angel Torres Panesso | T.D.S. | BBDD y Design | Pendiente |
+| Alejandro Rojas Serna | T.D.S. | FrontEnd y Pruebas | Pendiente |
+| Daniel Rey Cardona | T.D.S. | FrontEnd y Pruebas | Pendiente |
 
-> Reemplazar los datos pendientes cuando el resto del equipo los confirme.
+> Pendiente los codigos
 
 ---
 
