@@ -225,7 +225,6 @@ Reglas:
 | Entrega de la clave pública JWT | Bloquea autenticación real | [ADR-0003](adr/0003-jwt-rs256.md). |
 | Comunicación interna `orders` → `catalog` | Afecta latencia, red y seguridad | [ADR-0005](adr/0005-comunicacion-interna.md). |
 | Formato de errores y paginación | Afecta todos los contratos | [ADR-0006](adr/0006-errores-paginacion-idempotencia.md). |
-| Estrategia de módulos TypeScript | Bloquea el arranque de los servicios | [ADR-0008](adr/0008-modulos-typescript.md). |
 | Tiempo de la beta | Recorta alcance | Priorizar los 18 casos `Must`. |
 | Dependencias de base de datos | Pueden quedar sin uso | Confirmar ADR-0004 antes de programar. |
 

@@ -12,15 +12,15 @@ El Backend agrupa los tres servicios Node.js + TypeScript que atienden la API:
 
 `security-service` **no** vive en esta carpeta. Está en [`security/`](../../security/docs/README.md), se escribe en Python + FastAPI y es el único que emite tokens. El backend solo consume y valida esos tokens.
 
-**Estado:** fase de planeación. No hay código de aplicación, endpoints implementados ni base de datos creada. Solo existen la estructura, la documentación, el workspace npm y las dependencias base.
+**Estado:** esqueleto técnico implementado. Los tres servicios compilan, arrancan y responden `GET /health`; todavía no hay endpoints de negocio, base de datos creada ni contratos implementados.
 
 ## 2. Servicios
 
-| Servicio | Responsabilidad | Base de datos | Casos de uso | Documentación |
+| Servicio | Responsabilidad | Base de datos | Casos de uso | Código |
 |---|---|---|---|---|
-| Gateway | Enrutar `/api/v1`, validar JWT, CORS, rate limit y trazabilidad | Ninguna | Transversal | [`gateway`](../services/gateway/docs/README.md) |
-| Catalog | Catálogo, marcas, categorías, presentaciones, precios y stock | `catalog_db` | CU-07 a CU-10, CU-20, CU-25 | [`catalog`](../services/catalog/docs/README.md) |
-| Orders | Carrito, direcciones, checkout, pedidos y auditoría | `orders_db` | CU-11 a CU-19, CU-21 a CU-23 | [`orders`](../services/orders/docs/README.md) |
+| Gateway | Enrutar `/api/v1`, validar JWT, CORS, rate limit y trazabilidad | Ninguna | Transversal | [`services/gateway`](../services/gateway/) |
+| Catalog | Catálogo, marcas, categorías, presentaciones, precios y stock | `catalog_db` | CU-07 a CU-10, CU-20, CU-25 | [`services/catalog`](../services/catalog/) |
+| Orders | Carrito, direcciones, checkout, pedidos y auditoría | `orders_db` | CU-11 a CU-19, CU-21 a CU-23 | [`services/orders`](../services/orders/) |
 
 Reglas que no cambian:
 
@@ -35,18 +35,21 @@ Reglas que no cambian:
 |---|---|---|
 | Runtime | Node.js 22 | Confirmado |
 | Lenguaje | TypeScript 7 | Instalado |
+| Módulos | ESM con `"type": "module"` | Aceptado en [ADR-0008](../../docs/adr/0008-modulos-typescript.md) |
+| Compilación | `tsc -b` con project references | Implementado |
 | Workspace | npm workspaces | Confirmado |
 | Framework HTTP | Fastify 5 | Confirmado e instalado |
+| Paquete compartido | `@perfumespayday/shared` | Implementado |
 | ORM | Prisma 7 | Confirmado |
 | Driver PostgreSQL | `@prisma/adapter-pg` + `pg` | Instalado |
-| Validación | Zod 4 | Instalado; adopción pendiente de confirmación |
-| JWT | `jose` para validar RS256 | Instalado |
-| Pruebas | Vitest 5 | Instalado |
+| Validación | Zod 4 | Instalado y en uso para el entorno |
+| JWT | `jose` para validar RS256 | Instalado; se usará en el gateway |
+| Pruebas | Vitest 5 | Instalado; 7 pruebas en verde |
 | Base de datos | PostgreSQL | Confirmado |
-| Contenedores | Docker + Docker Compose | Pendiente de implementación |
+| Contenedores | Docker + Docker Compose | Implementado para el backend |
 | Contratos | OpenAPI por servicio | Pendiente |
 
-Fastify se instaló en cada servicio. El gateway además usa CORS, Helmet, rate limit y proxy; catálogo y pedidos solo llevan Helmet porque no son públicos. No se instalan dependencias del frontend ni del servicio de seguridad en esta carpeta.
+Fastify y Helmet viven en `@perfumespayday/shared` para no repetirlos en cada servicio. El gateway conserva CORS, rate limit, proxy y `jose` porque los usará en la etapa de integración. Catálogo y pedidos solo dependen del paquete compartido.
 
 ## 4. Estructura
 
@@ -55,26 +58,46 @@ Backend/
 ├── package.json              # Workspace y dependencias base
 ├── package-lock.json         # Versiones bloqueadas
 ├── tsconfig.base.json        # Configuración TypeScript compartida
+├── tsconfig.json             # Solución de project references
+├── vitest.config.ts          # Pruebas y alias del paquete compartido
+├── Dockerfile                # Imagen parametrizada por SERVICE
+├── docker-compose.yml        # Gateway público; servicios internos
+├── .env.example
+├── .dockerignore
 ├── docs/
 │   ├── README.md             # Este documento
-│   └── PLAN.md               # Planeación, decisiones y pendientes
-└── services/
-    ├── gateway/
-    │   ├── package.json
-    │   ├── docs/README.md
-    │   ├── src/              # Vacío
-    │   └── tests/            # Vacío
-    ├── catalog/
-    │   ├── package.json
-    │   ├── docs/README.md
-    │   ├── src/              # Vacío
-    │   └── tests/            # Vacío
-    └── orders/
-        ├── package.json
-        ├── docs/README.md
-        ├── src/              # Vacío
-        └── tests/            # Vacío
+│   ├── PLAN.md               # Planeación, decisiones y pendientes
+│   └── ROADMAP.md            # Ruta de desarrollo por etapas
+├── packages/
+│   └── shared/
+│       ├── package.json
+│       ├── tsconfig.json
+│       ├── src/              # app, env, errors y lifecycle
+│       └── tests/
+├── services/
+│   ├── gateway/
+│   │   ├── package.json
+│   │   ├── tsconfig.json
+│   │   └── src/
+│   │       ├── config/env.ts
+│   │       └── server.ts
+│   ├── catalog/
+│   │   ├── package.json
+│   │   ├── tsconfig.json
+│   │   └── src/
+│   │       ├── config/env.ts
+│   │       └── server.ts
+│   └── orders/
+│       ├── package.json
+│       ├── tsconfig.json
+│       └── src/
+│           ├── config/env.ts
+│           └── server.ts
+└── tests/
+    └── services.test.ts      # Humo de los tres servicios
 ```
+
+Cada servicio solo declara su configuración y su punto de entrada. La lógica transversal está una sola vez en `packages/shared`.
 
 ## 5. Dependencias
 
@@ -82,11 +105,12 @@ Backend/
 
 | Grupo | Paquetes | Para qué |
 |---|---|---|
-| Runtime compartido | `@prisma/client`, `@prisma/adapter-pg`, `pg`, `zod`, `jose` | Persistencia, validación y validación de JWT |
-| Gateway | `fastify`, `@fastify/cors`, `@fastify/helmet`, `@fastify/rate-limit`, `@fastify/http-proxy` | Entrada, seguridad, límite de peticiones y enrutamiento |
-| Catálogo y pedidos | `fastify`, `@fastify/helmet` | API interna y cabeceras de seguridad |
+| Compartido | `@perfumespayday/shared` | Configuración, errores, salud y ciclo de vida |
+| Runtime del compartido | `fastify`, `@fastify/helmet`, `zod` | Servidor, cabeceras de seguridad y validación |
+| Gateway | `@fastify/cors`, `@fastify/rate-limit`, `@fastify/http-proxy`, `jose` | Entrada, límite de peticiones, proxy y JWT |
+| Persistencia base | `@prisma/client`, `@prisma/adapter-pg`, `pg` | Acceso a datos de catálogo y pedidos |
 | Desarrollo | `typescript`, `tsx`, `vitest`, `@vitest/coverage-v8`, `prisma`, `@types/node`, `@types/pg` | Compilación, ejecución, pruebas y migraciones |
-| Workspaces | `gateway`, `catalog`, `orders` | Separar los tres servicios sin duplicar herramientas |
+| Workspaces | `packages/*`, `gateway`, `catalog`, `orders` | Compartir herramientas sin duplicar configuración |
 
 El cliente de Prisma se genera cuando exista el esquema de cada servicio. Mientras no haya `schema.prisma` ni `prisma generate`, `@prisma/client` no es importable.
 
@@ -99,11 +123,27 @@ Comandos disponibles desde `Backend/`:
 
 ```bash
 npm install          # Instala el workspace
-npm test             # Ejecuta Vitest (hoy no hay pruebas)
+npm run build        # Compila shared y los tres servicios
+npm test             # Ejecuta Vitest
 npm run test:watch   # Vitest en modo interactivo
+npm run dev:gateway  # Gateway en el puerto 3000
+npm run dev:catalog  # Catálogo en el puerto 3001
+npm run dev:orders   # Pedidos en el puerto 3002
+npm run clean        # Limpia los artefactos de compilación
 ```
 
-Todavía no existe un comando para iniciar la aplicación porque no hay código de aplicación.
+Cada servicio lee `PORT`, `HOST`, `LOG_LEVEL` y `NODE_ENV`; los valores de ejemplo están en [`.env.example`](../.env.example). En producción:
+
+```bash
+npm run build
+npm run start -w @perfumespayday/gateway
+```
+
+Docker levanta los tres servicios y solo publica el gateway:
+
+```bash
+docker compose up --build
+```
 
 ## 6. Estado y próximos pasos
 
@@ -111,19 +151,21 @@ Hecho:
 
 - Estructura de los tres servicios.
 - Workspace npm con dependencias base.
-- Fastify y sus plugins instalados por servicio.
-- Configuración TypeScript compartida.
-- Documentación del backend y de cada servicio.
+- ESM y project references según [ADR-0008](../../docs/adr/0008-modulos-typescript.md).
+- Paquete `@perfumespayday/shared` con configuración, errores, `/health`, `requestId`, Helmet y ciclo de vida.
+- Esqueleto de `gateway`, `catalog` y `orders` que compila y arranca.
+- Dockerfile parametrizado, Docker Compose y `.env.example`.
+- Pruebas de humo y verificación del contenedor.
 
 Pendiente:
 
-1. Registrar las decisiones en ADR.
+1. Aceptar ADR-0003, ADR-0004, ADR-0005 y ADR-0006.
 2. Definir los contratos OpenAPI de los casos `Must`.
 3. Diseñar los esquemas Prisma de `catalog_db` y `orders_db`.
-4. Configurar Docker, variables de entorno y CI.
-5. **Solo con autorización explícita**, escribir el esqueleto de los servicios.
+4. Implementar catálogo (etapa 4 del [ROADMAP](ROADMAP.md)).
+5. Integrar el gateway y la seguridad (etapa 6) y configurar CI.
 
-El detalle, las alternativas y los riesgos están en [`PLAN.md`](PLAN.md).
+El detalle, las alternativas y los riesgos están en [`PLAN.md`](PLAN.md). La secuencia de trabajo, las puertas de salida y el registro de avance están en [`ROADMAP.md`](ROADMAP.md).
 
 ## 7. Documentación relacionada
 
@@ -134,5 +176,6 @@ El detalle, las alternativas y los riesgos están en [`PLAN.md`](PLAN.md).
 | [Diagramas](../../docs/diagrams/README.md) | Arquitectura y flujos |
 | [Seguridad](../../security/docs/README.md) | Servicio de autenticación y controles |
 | [`PLAN.md`](PLAN.md) | Planeación específica del backend |
-| `docs/api/` | Contratos OpenAPI (pendientes) |
-| `docs/adr/` | Decisiones de arquitectura (pendientes) |
+| [`ROADMAP.md`](ROADMAP.md) | Ruta de desarrollo por etapas y puertas de salida |
+| [`docs/api/`](../../docs/api/README.md) | Contratos OpenAPI (pendientes) |
+| [`docs/adr/`](../../docs/adr/README.md) | Decisiones de arquitectura |

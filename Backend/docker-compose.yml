@@ -1,0 +1,65 @@
+name: perfumespayday-backend
+
+x-environment: &environment
+  NODE_ENV: production
+  HOST: 0.0.0.0
+  LOG_LEVEL: info
+
+x-service: &service
+  restart: unless-stopped
+  networks:
+    - backend
+  environment:
+    <<: *environment
+  healthcheck:
+    test:
+      - CMD-SHELL
+      - >-
+        node -e "fetch('http://127.0.0.1:' + process.env.PORT + '/health')
+        .then((r) => process.exit(r.ok ? 0 : 1))
+        .catch(() => process.exit(1))"
+    interval: 10s
+    timeout: 3s
+    retries: 3
+    start_period: 5s
+
+services:
+  gateway:
+    <<: *service
+    build:
+      context: .
+      args:
+        SERVICE: gateway
+    environment:
+      <<: *environment
+      PORT: "3000"
+    ports:
+      - "3000:3000"
+
+  catalog:
+    <<: *service
+    build:
+      context: .
+      args:
+        SERVICE: catalog
+    environment:
+      <<: *environment
+      PORT: "3001"
+    expose:
+      - "3001"
+
+  orders:
+    <<: *service
+    build:
+      context: .
+      args:
+        SERVICE: orders
+    environment:
+      <<: *environment
+      PORT: "3002"
+    expose:
+      - "3002"
+
+networks:
+  backend:
+    driver: bridge

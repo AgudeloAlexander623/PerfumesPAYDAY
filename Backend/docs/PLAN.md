@@ -69,6 +69,10 @@ Decidir cómo se construirá el backend antes de escribir código: framework, co
 
 La autorización para código aplica desde F2. F0 y F1 son documentación y decisiones.
 
+Estado actual: F0 y F2 están completas. De F1 solo está aceptado ADR-0008; faltan ADR-0003, ADR-0004, ADR-0005 y ADR-0006.
+
+La secuencia detallada, el orden de dependencias y las puertas de salida de cada fase están en [`ROADMAP.md`](ROADMAP.md).
+
 ## 6. Dependencias
 
 Criterio: instalar solo lo que se use y evitar paquetes que dupliquen funciones.
@@ -97,8 +101,8 @@ Cuando se elija el framework se instalarán sus plugins en cada servicio, no en 
 - **JWT:** falta decidir si la clave pública se pasa por variable de entorno o por archivo montado.
 - **Comunicación interna:** falta confirmar si `order-service` llama a `catalog-service` por red interna directa o a través del gateway. La arquitectura sugiere red interna directa, sin exponer el servicio.
 - **Auditoría e idempotencia:** falta definir retención, limpieza y responsables.
-- **Entornos:** no hay `.env`, Docker ni CI; solo se versionará `.env.example` cuando exista.
-- **Código:** no se crea hasta que el equipo lo autorice.
+- **Entornos:** Docker y `.env.example` ya existen; falta CI.
+- **Código:** el esqueleto fue autorizado; cada etapa de negocio requiere autorización explícita.
 
 ## 8. Próximos pasos
 
@@ -116,4 +120,6 @@ Cuando se elija el framework se instalarán sus plugins en cada servicio, no en 
 | 2026-11-10 | Organizar el backend con npm workspaces | Confirmado |
 | 2026-11-10 | Instalar base TypeScript, Vitest, Zod, `jose` y Prisma | Hecho |
 | 2026-11-10 | Usar Fastify 5 con plugins por servicio | Confirmado e instalado |
-| 2026-11-10 | Contratos OpenAPI y ADR | Pendiente |
+| 2026-11-10 | ADR-0008: ESM, project references y paquete `@perfumespayday/shared` | Aceptado |
+| 2026-11-10 | Esqueleto del backend con `/health`, Docker y pruebas | Hecho |
+| 2026-11-10 | Contratos OpenAPI y ADR restantes | Pendiente |

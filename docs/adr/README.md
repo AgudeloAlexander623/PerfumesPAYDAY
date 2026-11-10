@@ -81,7 +81,7 @@ Enlaces a documentos, casos de uso o diagramas.
 | [ADR-0005](0005-comunicacion-interna.md) | Comunicación interna `orders` → `catalog` | Propuesto | 2026-11-10 |
 | [ADR-0006](0006-errores-paginacion-idempotencia.md) | Errores, paginación e idempotencia | Propuesto | 2026-11-10 |
 | [ADR-0007](0007-carrito-hibrido.md) | Carrito híbrido | Aceptado | 2026-11-10 |
-| [ADR-0008](0008-modulos-typescript.md) | Estrategia de módulos TypeScript | Propuesto | 2026-11-10 |
+| [ADR-0008](0008-modulos-typescript.md) | Estrategia de módulos TypeScript | Aceptado | 2026-11-10 |
 
 ---
 
@@ -92,7 +92,6 @@ Enlaces a documentos, casos de uso o diagramas.
 | ADR-0004 | Catálogo, pedidos, dependencias de Prisma y `data-contracts.md`. |
 | ADR-0003 | Autenticación real, gateway y despliegue. |
 | ADR-0006 | Contratos OpenAPI, manejo de errores y checkout idempotente. |
-| ADR-0008 | Arranque y compilación de los tres servicios Node.js. |
 | ADR-0005 | Llamadas internas de `orders` a `catalog`. |
 
 ---

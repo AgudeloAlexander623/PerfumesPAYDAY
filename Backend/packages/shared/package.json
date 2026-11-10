@@ -1,0 +1,27 @@
+{
+  "name": "@perfumespayday/shared",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Utilidades compartidas de los servicios Node.js: configuración, errores, salud y ciclo de vida.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -b",
+    "clean": "tsc -b --clean"
+  },
+  "dependencies": {
+    "@fastify/helmet": "13.2.0",
+    "fastify": "5.12.8",
+    "zod": "4.6.7"
+  }
+}

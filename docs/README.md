@@ -2,7 +2,7 @@
 
 Punto de entrada a la documentación global de **PerfumesPAYDAY**. El [README raíz](../README.md) explica el producto, el equipo, la estructura y el alcance; este índice organiza los documentos que desarrollan esos temas.
 
-> **Estado del proyecto:** fase de planeación. No existe código de aplicación, base de datos creada ni contratos implementados. La documentación es la fuente de verdad mientras se autoriza la programación.
+> **Estado del proyecto:** el backend ya tiene su esqueleto técnico (servicios que compilan, arrancan y responden `/health`). No hay endpoints de negocio, base de datos creada ni contratos implementados. La documentación sigue siendo la fuente de verdad para el resto del desarrollo.
 
 ---
 
@@ -116,7 +116,6 @@ Estas decisiones están documentadas como propuestas y bloquean total o parcialm
 | [ADR-0004](adr/0004-propiedad-datos.md) | Contrato backend–base de datos y uso de Prisma | `data-contracts.md`, catálogo, pedidos y dependencias |
 | [ADR-0005](adr/0005-comunicacion-interna.md) | Cómo se comunican `orders` y `catalog` | Arquitectura y contratos internos |
 | [ADR-0006](adr/0006-errores-paginacion-idempotencia.md) | Formato de errores, paginación e idempotencia | Todos los contratos OpenAPI |
-| [ADR-0008](adr/0008-modulos-typescript.md) | Estrategia de módulos TypeScript | Configuración de los tres servicios |
 
 ---
 
