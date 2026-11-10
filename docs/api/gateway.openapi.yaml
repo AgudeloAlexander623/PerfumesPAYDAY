@@ -1,0 +1,1295 @@
+openapi: 3.1.0
+
+info:
+  title: PerfumesPAYDAY Gateway API
+  version: 0.1.0
+  summary: Superficie pública del gateway de PerfumesPAYDAY.
+  description: |
+    Borrador del contrato público del gateway. El gateway enruta `/api/v1/*`
+    hacia `security-service`, `catalog-service` u `order-service`, valida el
+    access token JWT y aplica CORS, Helmet y rate limit.
+
+    Este archivo documenta la **superficie** y el **enrutamiento**. Los cuerpos
+    detallados de cada operación viven en el contrato OpenAPI del servicio
+    correspondiente (`security.openapi.yaml`, `catalog.openapi.yaml` u
+    `orders.openapi.yaml`), que está pendiente.
+
+    Convenciones transversales: ver `docs/api/README.md` y el ADR-0006.
+  contact:
+    name: Equipo PerfumesPAYDAY
+  license:
+    name: Proyecto académico
+
+servers:
+  - url: http://localhost:3000
+    description: Entorno local (puerto propuesto, pendiente de confirmar)
+  - url: https://api.example.com
+    description: Producción (pendiente de definir)
+
+tags:
+  - name: Gateway
+    description: Salud y comportamiento propio del gateway.
+  - name: Auth
+    description: Registro, login, refresh y logout.
+  - name: Cuenta
+    description: Perfil y contraseña del usuario autenticado.
+  - name: Catálogo
+    description: Catálogo público de productos.
+  - name: Carrito
+    description: Carrito autenticado y fusión del carrito de invitado.
+  - name: Direcciones
+    description: Direcciones de envío del usuario.
+  - name: Pedidos
+    description: Checkout, historial y detalle de pedidos.
+  - name: Administración
+    description: Rutas protegidas para el rol admin.
+
+paths:
+  /health:
+    get:
+      tags: [Gateway]
+      summary: Estado del gateway
+      operationId: getGatewayHealth
+      security: []
+      x-service: gateway
+      x-status: draft
+      responses:
+        '200':
+          description: Gateway operativo.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Health'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+
+  /api/v1/auth/register:
+    post:
+      tags: [Auth]
+      summary: Registrar un usuario (CU-01)
+      operationId: registerUser
+      security: []
+      x-service: security
+      x-contract: security.openapi.yaml
+      x-cu: CU-01
+      x-status: draft
+      requestBody:
+        $ref: '#/components/requestBodies/ProxiedJson'
+      responses:
+        '201':
+          $ref: '#/components/responses/ProxiedCreated'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+
+  /api/v1/auth/login:
+    post:
+      tags: [Auth]
+      summary: Iniciar sesión (CU-02)
+      operationId: loginUser
+      security: []
+      x-service: security
+      x-contract: security.openapi.yaml
+      x-cu: CU-02
+      x-status: draft
+      requestBody:
+        $ref: '#/components/requestBodies/ProxiedJson'
+      responses:
+        '200':
+          $ref: '#/components/responses/ProxiedSuccess'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+
+  /api/v1/auth/refresh:
+    post:
+      tags: [Auth]
+      summary: Renovar el access token (CU-03)
+      operationId: refreshSession
+      security: []
+      x-service: security
+      x-contract: security.openapi.yaml
+      x-auth: refresh-cookie
+      x-cu: CU-03
+      x-status: draft
+      responses:
+        '200':
+          $ref: '#/components/responses/ProxiedSuccess'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+
+  /api/v1/auth/logout:
+    post:
+      tags: [Auth]
+      summary: Cerrar sesión (CU-04)
+      operationId: logoutSession
+      security: []
+      x-service: security
+      x-contract: security.openapi.yaml
+      x-auth: refresh-cookie
+      x-cu: CU-04
+      x-status: draft
+      parameters:
+        - $ref: '#/components/parameters/LogoutAll'
+      responses:
+        '204':
+          $ref: '#/components/responses/NoContent'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+
+  /api/v1/users/me:
+    get:
+      tags: [Cuenta]
+      summary: Consultar el perfil propio (CU-05)
+      operationId: getMyProfile
+      security:
+        - bearerAuth: []
+      x-service: security
+      x-contract: security.openapi.yaml
+      x-cu: CU-05
+      x-status: draft
+      responses:
+        '200':
+          $ref: '#/components/responses/ProxiedSuccess'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+    patch:
+      tags: [Cuenta]
+      summary: Editar el nombre del perfil propio (CU-06)
+      operationId: updateMyProfile
+      security:
+        - bearerAuth: []
+      x-service: security
+      x-contract: security.openapi.yaml
+      x-cu: CU-06
+      x-status: draft
+      requestBody:
+        $ref: '#/components/requestBodies/ProxiedJson'
+      responses:
+        '200':
+          $ref: '#/components/responses/ProxiedSuccess'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+
+  /api/v1/products:
+    get:
+      tags: [Catálogo]
+      summary: Listar y filtrar productos (CU-07, CU-08)
+      operationId: listProducts
+      security: []
+      x-service: catalog
+      x-contract: catalog.openapi.yaml
+      x-cu: CU-07, CU-08
+      x-status: draft
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PageSize'
+        - $ref: '#/components/parameters/Search'
+        - $ref: '#/components/parameters/BrandFilter'
+        - $ref: '#/components/parameters/CategoryFilter'
+        - $ref: '#/components/parameters/GenderFilter'
+        - $ref: '#/components/parameters/FamilyFilter'
+        - $ref: '#/components/parameters/MinPrice'
+        - $ref: '#/components/parameters/MaxPrice'
+        - $ref: '#/components/parameters/Sort'
+      responses:
+        '200':
+          $ref: '#/components/responses/ProxiedSuccess'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+
+  /api/v1/products/{productId}:
+    get:
+      tags: [Catálogo]
+      summary: Ver el detalle de un producto (CU-09)
+      operationId: getProduct
+      security: []
+      x-service: catalog
+      x-contract: catalog.openapi.yaml
+      x-cu: CU-09
+      x-status: draft
+      parameters:
+        - $ref: '#/components/parameters/ProductId'
+      responses:
+        '200':
+          $ref: '#/components/responses/ProxiedSuccess'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+
+  /api/v1/brands:
+    get:
+      tags: [Catálogo]
+      summary: Listar marcas para filtros (CU-07, CU-08)
+      operationId: listBrands
+      security: []
+      x-service: catalog
+      x-contract: catalog.openapi.yaml
+      x-cu: CU-07, CU-08
+      x-status: draft
+      responses:
+        '200':
+          $ref: '#/components/responses/ProxiedSuccess'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+
+  /api/v1/categories:
+    get:
+      tags: [Catálogo]
+      summary: Listar categorías para filtros (CU-07, CU-08)
+      operationId: listCategories
+      security: []
+      x-service: catalog
+      x-contract: catalog.openapi.yaml
+      x-cu: CU-07, CU-08
+      x-status: draft
+      responses:
+        '200':
+          $ref: '#/components/responses/ProxiedSuccess'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+
+  /api/v1/cart:
+    get:
+      tags: [Carrito]
+      summary: Ver el carrito autenticado (CU-12)
+      operationId: getCart
+      security:
+        - bearerAuth: []
+      x-service: orders
+      x-contract: orders.openapi.yaml
+      x-cu: CU-12
+      x-status: draft
+      responses:
+        '200':
+          $ref: '#/components/responses/ProxiedSuccess'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+
+  /api/v1/cart/items:
+    post:
+      tags: [Carrito]
+      summary: Agregar una presentación al carrito (CU-11)
+      operationId: addCartItem
+      security:
+        - bearerAuth: []
+      x-service: orders
+      x-contract: orders.openapi.yaml
+      x-cu: CU-11
+      x-status: draft
+      requestBody:
+        $ref: '#/components/requestBodies/ProxiedJson'
+      responses:
+        '200':
+          $ref: '#/components/responses/ProxiedSuccess'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+
+  /api/v1/cart/items/{itemId}:
+    patch:
+      tags: [Carrito]
+      summary: Actualizar la cantidad de un ítem (CU-13)
+      operationId: updateCartItem
+      security:
+        - bearerAuth: []
+      x-service: orders
+      x-contract: orders.openapi.yaml
+      x-cu: CU-13
+      x-status: draft
+      parameters:
+        - $ref: '#/components/parameters/ItemId'
+      requestBody:
+        $ref: '#/components/requestBodies/ProxiedJson'
+      responses:
+        '200':
+          $ref: '#/components/responses/ProxiedSuccess'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+    delete:
+      tags: [Carrito]
+      summary: Eliminar un ítem del carrito (CU-14)
+      operationId: deleteCartItem
+      security:
+        - bearerAuth: []
+      x-service: orders
+      x-contract: orders.openapi.yaml
+      x-cu: CU-14
+      x-status: draft
+      parameters:
+        - $ref: '#/components/parameters/ItemId'
+      responses:
+        '204':
+          $ref: '#/components/responses/NoContent'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+
+  /api/v1/cart/merge:
+    post:
+      tags: [Carrito]
+      summary: Fusionar el carrito de invitado (CU-15)
+      operationId: mergeGuestCart
+      security:
+        - bearerAuth: []
+      x-service: orders
+      x-contract: orders.openapi.yaml
+      x-cu: CU-15
+      x-status: draft
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        $ref: '#/components/requestBodies/ProxiedJson'
+      responses:
+        '200':
+          $ref: '#/components/responses/ProxiedSuccess'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+
+  /api/v1/addresses:
+    get:
+      tags: [Direcciones]
+      summary: Listar las direcciones propias (CU-16)
+      operationId: listAddresses
+      security:
+        - bearerAuth: []
+      x-service: orders
+      x-contract: orders.openapi.yaml
+      x-cu: CU-16
+      x-status: draft
+      responses:
+        '200':
+          $ref: '#/components/responses/ProxiedSuccess'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+    post:
+      tags: [Direcciones]
+      summary: Crear una dirección propia (CU-16)
+      operationId: createAddress
+      security:
+        - bearerAuth: []
+      x-service: orders
+      x-contract: orders.openapi.yaml
+      x-cu: CU-16
+      x-status: draft
+      requestBody:
+        $ref: '#/components/requestBodies/ProxiedJson'
+      responses:
+        '201':
+          $ref: '#/components/responses/ProxiedCreated'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+
+  /api/v1/addresses/{addressId}:
+    patch:
+      tags: [Direcciones]
+      summary: Editar una dirección propia (CU-16)
+      operationId: updateAddress
+      security:
+        - bearerAuth: []
+      x-service: orders
+      x-contract: orders.openapi.yaml
+      x-cu: CU-16
+      x-status: draft
+      parameters:
+        - $ref: '#/components/parameters/AddressId'
+      requestBody:
+        $ref: '#/components/requestBodies/ProxiedJson'
+      responses:
+        '200':
+          $ref: '#/components/responses/ProxiedSuccess'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+    delete:
+      tags: [Direcciones]
+      summary: Eliminar una dirección propia (CU-16)
+      operationId: deleteAddress
+      security:
+        - bearerAuth: []
+      x-service: orders
+      x-contract: orders.openapi.yaml
+      x-cu: CU-16
+      x-status: draft
+      parameters:
+        - $ref: '#/components/parameters/AddressId'
+      responses:
+        '204':
+          $ref: '#/components/responses/NoContent'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+
+  /api/v1/orders:
+    get:
+      tags: [Pedidos]
+      summary: Consultar el historial propio (CU-18)
+      operationId: listMyOrders
+      security:
+        - bearerAuth: []
+      x-service: orders
+      x-contract: orders.openapi.yaml
+      x-cu: CU-18
+      x-status: draft
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PageSize'
+      responses:
+        '200':
+          $ref: '#/components/responses/ProxiedSuccess'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+    post:
+      tags: [Pedidos]
+      summary: Crear un pedido con checkout simulado (CU-17)
+      operationId: createOrder
+      security:
+        - bearerAuth: []
+      x-service: orders
+      x-contract: orders.openapi.yaml
+      x-cu: CU-17
+      x-status: draft
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        $ref: '#/components/requestBodies/ProxiedJson'
+      responses:
+        '201':
+          $ref: '#/components/responses/ProxiedCreated'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+
+  /api/v1/orders/{orderId}:
+    get:
+      tags: [Pedidos]
+      summary: Ver el detalle de un pedido propio (CU-19)
+      operationId: getMyOrder
+      security:
+        - bearerAuth: []
+      x-service: orders
+      x-contract: orders.openapi.yaml
+      x-cu: CU-19
+      x-status: draft
+      parameters:
+        - $ref: '#/components/parameters/OrderId'
+      responses:
+        '200':
+          $ref: '#/components/responses/ProxiedSuccess'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+
+  /api/v1/admin/products:
+    get:
+      tags: [Administración]
+      summary: Listar productos, incluidos los inactivos (CU-20)
+      operationId: adminListProducts
+      security:
+        - bearerAuth: []
+      x-service: catalog
+      x-contract: catalog.openapi.yaml
+      x-required-role: admin
+      x-cu: CU-20
+      x-status: draft
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PageSize'
+      responses:
+        '200':
+          $ref: '#/components/responses/ProxiedSuccess'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+    post:
+      tags: [Administración]
+      summary: Crear un producto (CU-20)
+      operationId: adminCreateProduct
+      security:
+        - bearerAuth: []
+      x-service: catalog
+      x-contract: catalog.openapi.yaml
+      x-required-role: admin
+      x-cu: CU-20
+      x-status: draft
+      requestBody:
+        $ref: '#/components/requestBodies/ProxiedJson'
+      responses:
+        '201':
+          $ref: '#/components/responses/ProxiedCreated'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+
+  /api/v1/admin/products/{productId}:
+    patch:
+      tags: [Administración]
+      summary: Editar un producto o su stock (CU-20)
+      operationId: adminUpdateProduct
+      security:
+        - bearerAuth: []
+      x-service: catalog
+      x-contract: catalog.openapi.yaml
+      x-required-role: admin
+      x-cu: CU-20
+      x-status: draft
+      parameters:
+        - $ref: '#/components/parameters/ProductId'
+      requestBody:
+        $ref: '#/components/requestBodies/ProxiedJson'
+      responses:
+        '200':
+          $ref: '#/components/responses/ProxiedSuccess'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+    delete:
+      tags: [Administración]
+      summary: Desactivar un producto sin eliminarlo físicamente (CU-20)
+      operationId: adminDeactivateProduct
+      security:
+        - bearerAuth: []
+      x-service: catalog
+      x-contract: catalog.openapi.yaml
+      x-required-role: admin
+      x-cu: CU-20
+      x-status: draft
+      parameters:
+        - $ref: '#/components/parameters/ProductId'
+      responses:
+        '204':
+          $ref: '#/components/responses/NoContent'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+
+  /api/v1/admin/brands:
+    get:
+      tags: [Administración]
+      summary: Listar marcas, incluidas las inactivas (CU-25)
+      operationId: adminListBrands
+      security:
+        - bearerAuth: []
+      x-service: catalog
+      x-contract: catalog.openapi.yaml
+      x-required-role: admin
+      x-cu: CU-25
+      x-status: draft
+      responses:
+        '200':
+          $ref: '#/components/responses/ProxiedSuccess'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+    post:
+      tags: [Administración]
+      summary: Crear una marca (CU-25)
+      operationId: adminCreateBrand
+      security:
+        - bearerAuth: []
+      x-service: catalog
+      x-contract: catalog.openapi.yaml
+      x-required-role: admin
+      x-cu: CU-25
+      x-status: draft
+      requestBody:
+        $ref: '#/components/requestBodies/ProxiedJson'
+      responses:
+        '201':
+          $ref: '#/components/responses/ProxiedCreated'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+
+  /api/v1/admin/brands/{brandId}:
+    patch:
+      tags: [Administración]
+      summary: Editar o desactivar una marca (CU-25)
+      operationId: adminUpdateBrand
+      security:
+        - bearerAuth: []
+      x-service: catalog
+      x-contract: catalog.openapi.yaml
+      x-required-role: admin
+      x-cu: CU-25
+      x-status: draft
+      parameters:
+        - $ref: '#/components/parameters/BrandId'
+      requestBody:
+        $ref: '#/components/requestBodies/ProxiedJson'
+      responses:
+        '200':
+          $ref: '#/components/responses/ProxiedSuccess'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+
+  /api/v1/admin/categories:
+    get:
+      tags: [Administración]
+      summary: Listar categorías, incluidas las inactivas (CU-25)
+      operationId: adminListCategories
+      security:
+        - bearerAuth: []
+      x-service: catalog
+      x-contract: catalog.openapi.yaml
+      x-required-role: admin
+      x-cu: CU-25
+      x-status: draft
+      responses:
+        '200':
+          $ref: '#/components/responses/ProxiedSuccess'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+    post:
+      tags: [Administración]
+      summary: Crear una categoría (CU-25)
+      operationId: adminCreateCategory
+      security:
+        - bearerAuth: []
+      x-service: catalog
+      x-contract: catalog.openapi.yaml
+      x-required-role: admin
+      x-cu: CU-25
+      x-status: draft
+      requestBody:
+        $ref: '#/components/requestBodies/ProxiedJson'
+      responses:
+        '201':
+          $ref: '#/components/responses/ProxiedCreated'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+
+  /api/v1/admin/categories/{categoryId}:
+    patch:
+      tags: [Administración]
+      summary: Editar o desactivar una categoría (CU-25)
+      operationId: adminUpdateCategory
+      security:
+        - bearerAuth: []
+      x-service: catalog
+      x-contract: catalog.openapi.yaml
+      x-required-role: admin
+      x-cu: CU-25
+      x-status: draft
+      parameters:
+        - $ref: '#/components/parameters/CategoryId'
+      requestBody:
+        $ref: '#/components/requestBodies/ProxiedJson'
+      responses:
+        '200':
+          $ref: '#/components/responses/ProxiedSuccess'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+
+  /api/v1/admin/orders:
+    get:
+      tags: [Administración]
+      summary: Consultar todos los pedidos (CU-21)
+      operationId: adminListOrders
+      security:
+        - bearerAuth: []
+      x-service: orders
+      x-contract: orders.openapi.yaml
+      x-required-role: admin
+      x-cu: CU-21
+      x-status: draft
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PageSize'
+        - $ref: '#/components/parameters/StatusFilter'
+        - $ref: '#/components/parameters/FromDate'
+        - $ref: '#/components/parameters/ToDate'
+        - $ref: '#/components/parameters/OrderNumber'
+        - $ref: '#/components/parameters/CustomerEmail'
+      responses:
+        '200':
+          $ref: '#/components/responses/ProxiedSuccess'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+
+  /api/v1/admin/orders/{orderId}:
+    get:
+      tags: [Administración]
+      summary: Ver el detalle administrativo de un pedido (CU-22)
+      operationId: adminGetOrder
+      security:
+        - bearerAuth: []
+      x-service: orders
+      x-contract: orders.openapi.yaml
+      x-required-role: admin
+      x-cu: CU-22
+      x-status: draft
+      parameters:
+        - $ref: '#/components/parameters/OrderId'
+      responses:
+        '200':
+          $ref: '#/components/responses/ProxiedSuccess'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+
+  /api/v1/admin/orders/{orderId}/status:
+    patch:
+      tags: [Administración]
+      summary: Cambiar el estado de un pedido (CU-22)
+      operationId: adminUpdateOrderStatus
+      security:
+        - bearerAuth: []
+      x-service: orders
+      x-contract: orders.openapi.yaml
+      x-required-role: admin
+      x-cu: CU-22
+      x-status: draft
+      parameters:
+        - $ref: '#/components/parameters/OrderId'
+      requestBody:
+        $ref: '#/components/requestBodies/ProxiedJson'
+      responses:
+        '200':
+          $ref: '#/components/responses/ProxiedSuccess'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+
+  /api/v1/admin/audit:
+    get:
+      tags: [Administración]
+      summary: Consultar la auditoría de catálogo y pedidos (CU-23)
+      operationId: adminListAudit
+      security:
+        - bearerAuth: []
+      x-service: catalog+orders
+      x-contract: catalog.openapi.yaml, orders.openapi.yaml
+      x-required-role: admin
+      x-cu: CU-23
+      x-status: draft
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PageSize'
+        - $ref: '#/components/parameters/FromDate'
+        - $ref: '#/components/parameters/ToDate'
+        - $ref: '#/components/parameters/AuditActor'
+        - $ref: '#/components/parameters/AuditEntity'
+        - $ref: '#/components/parameters/AuditAction'
+      responses:
+        '200':
+          $ref: '#/components/responses/ProxiedSuccess'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Access token JWT RS256 emitido por security-service.
+
+  parameters:
+    Page:
+      name: page
+      in: query
+      required: false
+      description: Número de página, base 1.
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+    PageSize:
+      name: pageSize
+      in: query
+      required: false
+      description: Cantidad de elementos por página.
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 20
+    Search:
+      name: q
+      in: query
+      required: false
+      description: Texto de búsqueda parcial.
+      schema:
+        type: string
+        maxLength: 100
+    BrandFilter:
+      name: brandId
+      in: query
+      required: false
+      schema:
+        type: string
+        format: uuid
+    CategoryFilter:
+      name: categoryId
+      in: query
+      required: false
+      schema:
+        type: string
+        format: uuid
+    GenderFilter:
+      name: gender
+      in: query
+      required: false
+      schema:
+        type: string
+        enum: [female, male, unisex]
+    FamilyFilter:
+      name: fragranceFamily
+      in: query
+      required: false
+      schema:
+        type: string
+    MinPrice:
+      name: minPrice
+      in: query
+      required: false
+      schema:
+        type: integer
+        minimum: 0
+    MaxPrice:
+      name: maxPrice
+      in: query
+      required: false
+      schema:
+        type: integer
+        minimum: 0
+    Sort:
+      name: sort
+      in: query
+      required: false
+      schema:
+        type: string
+        enum: [relevance, price_asc, price_desc, newest]
+        default: relevance
+    StatusFilter:
+      name: status
+      in: query
+      required: false
+      schema:
+        type: string
+    FromDate:
+      name: from
+      in: query
+      required: false
+      schema:
+        type: string
+        format: date-time
+    ToDate:
+      name: to
+      in: query
+      required: false
+      schema:
+        type: string
+        format: date-time
+    OrderNumber:
+      name: orderNumber
+      in: query
+      required: false
+      schema:
+        type: string
+    CustomerEmail:
+      name: customerEmail
+      in: query
+      required: false
+      schema:
+        type: string
+        format: email
+    AuditActor:
+      name: actor
+      in: query
+      required: false
+      schema:
+        type: string
+    AuditEntity:
+      name: entity
+      in: query
+      required: false
+      schema:
+        type: string
+    AuditAction:
+      name: action
+      in: query
+      required: false
+      schema:
+        type: string
+    LogoutAll:
+      name: all
+      in: query
+      required: false
+      description: Si es true, revoca todas las sesiones del usuario.
+      schema:
+        type: boolean
+        default: false
+    ProductId:
+      name: productId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    ItemId:
+      name: itemId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    AddressId:
+      name: addressId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    OrderId:
+      name: orderId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    BrandId:
+      name: brandId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    CategoryId:
+      name: categoryId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    IdempotencyKey:
+      name: Idempotency-Key
+      in: header
+      required: true
+      description: UUID v4 generado por el frontend para evitar duplicados.
+      schema:
+        type: string
+        format: uuid
+
+  requestBodies:
+    ProxiedJson:
+      required: true
+      description: Cuerpo definido en el contrato OpenAPI del servicio.
+      content:
+        application/json:
+          schema: {}
+
+  responses:
+    ProxiedSuccess:
+      description: Respuesta del servicio correspondiente.
+      content:
+        application/json:
+          schema: {}
+    ProxiedCreated:
+      description: Recurso creado por el servicio correspondiente.
+      content:
+        application/json:
+          schema: {}
+    NoContent:
+      description: Operación completada sin cuerpo.
+    BadRequest:
+      description: Petición mal formada o parámetros inválidos.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Unauthorized:
+      description: Token ausente, inválido o expirado.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Forbidden:
+      description: Autenticado sin permiso para la operación.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    NotFound:
+      description: Recurso inexistente o ajeno.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Conflict:
+      description: Conflicto de negocio o de idempotencia.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    UnprocessableEntity:
+      description: Datos bien formados que incumplen una regla de negocio.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    TooManyRequests:
+      description: Límite de peticiones superado.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    InternalError:
+      description: Error interno no previsto.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    ServiceUnavailable:
+      description: Dependencia no disponible.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+  schemas:
+    Health:
+      type: object
+      required: [status, service]
+      properties:
+        status:
+          type: string
+          enum: [ok]
+          example: ok
+        service:
+          type: string
+          example: gateway
+        timestamp:
+          type: string
+          format: date-time
+        uptime:
+          type: number
+          example: 123.45
+    Error:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: object
+          required: [code, message]
+          properties:
+            code:
+              type: string
+              example: VALIDATION_ERROR
+            message:
+              type: string
+              example: Los datos enviados no son válidos.
+            details:
+              type: array
+              items:
+                type: object
+                properties:
+                  field:
+                    type: string
+                    example: email
+                  code:
+                    type: string
+                    example: INVALID_FORMAT
+                  message:
+                    type: string
+                    example: El correo no tiene un formato válido.
+            requestId:
+              type: string
+              format: uuid
+              example: 6f1c2a9e-3b7d-4c1a-9e2f-8a4b5c6d7e8f

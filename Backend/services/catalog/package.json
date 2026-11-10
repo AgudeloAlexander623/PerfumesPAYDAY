@@ -1,0 +1,17 @@
+{
+  "name": "@perfumespayday/catalog",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Servicio de catálogo, marcas, productos, presentaciones, precios y stock.",
+  "type": "module",
+  "scripts": {
+    "predev": "tsc -b ../../packages/shared",
+    "dev": "tsx watch src/server.ts",
+    "build": "tsc -b",
+    "start": "node dist/server.js",
+    "clean": "tsc -b --clean"
+  },
+  "dependencies": {
+    "@perfumespayday/shared": "*"
+  }
+}
