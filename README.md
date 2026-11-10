@@ -4,7 +4,7 @@ Tienda online de perfumes creada como proyecto académico. La experiencia está 
 
 > **Importante:** es un simulador académico. No cobra dinero real, no emite facturas electrónicas y no envía productos reales.
 
-**Estado actual:** fase de planeación y estructura base. Todavía no existe código funcional de la aplicación.
+**Estado actual:** fase de planeación y estructura base. La documentación general P0 ya está redactada; todavía no existe código funcional de la aplicación.
 
 ---
 
@@ -84,20 +84,23 @@ La estructura está organizada por áreas y por servicio. Cada carpeta tiene una
 ```text
 PerfumesPAYDAY/
 ├── Backend/
+│   ├── package.json                 # Workspace npm del backend
+│   ├── package-lock.json
+│   ├── tsconfig.base.json           # Configuración TypeScript compartida
 │   ├── services/
 │   │   ├── gateway/                 # Punto único de entrada a la API
 │   │   │   ├── src/                 # Código del servicio
 │   │   │   ├── tests/               # Pruebas automáticas
-│   │   │   └── docs/                # Documentación del servicio
+│   │   │   └── package.json
 │   │   ├── catalog/                 # Marcas, productos, precios y stock
 │   │   │   ├── src/
 │   │   │   ├── tests/
-│   │   │   └── docs/
+│   │   │   └── package.json
 │   │   └── orders/                  # Carrito, checkout, pedidos y direcciones
 │   │       ├── src/
 │   │       ├── tests/
-│   │       └── docs/
-│   └── docs/                        # Documentación general del backend
+│   │       └── package.json
+│   └── docs/                        # Plan y notas de trabajo del backend
 ├── Frontend/
 │   ├── public/                      # Archivos públicos (imágenes, iconos)
 │   ├── src/
@@ -142,8 +145,11 @@ PerfumesPAYDAY/
 │   ├── tests/
 │   └── docs/
 ├── docs/                            # Documentación global del proyecto
+│   ├── README.md                    # Índice general de la documentación
+│   ├── architecture.md              # Arquitectura y requisitos no funcionales
+│   ├── security.md                  # Amenazas, controles y pruebas
 │   ├── adr/                         # Decisiones de arquitectura
-│   ├── api/                         # Contratos OpenAPI
+│   ├── api/                         # Convenciones y contratos OpenAPI
 │   ├── diagrams/                    # Diagramas de arquitectura y flujos
 │   └── use-cases/                   # Catálogo y detalle de casos de uso
 ├── infra/
@@ -162,7 +168,7 @@ Ese archivo **no es código**: solo indica "esta carpeta debe conservarse". Cuan
 
 ### Reglas de la estructura
 
-- Cada microservicio es dueño de su código, sus pruebas y su documentación.
+- Cada microservicio es dueño de su código y sus pruebas; su documentación se centraliza en `docs/`.
 - Cada servicio tiene su propia base de datos; no se comparten tablas.
 - El gateway es el único servicio público.
 - La documentación global vive en `docs/`.
@@ -190,14 +196,14 @@ Ese archivo **no es código**: solo indica "esta carpeta debe conservarse". Cuan
 | JWT | Seguridad | Identificar al usuario mediante tokens firmados | Confirmado |
 | Argon2 o bcrypt | Seguridad | Guardar contraseñas de forma segura | Confirmado |
 | PostgreSQL | Bases de datos | Guardar información relacional | Confirmado |
-| Prisma | Bases de datos | Gestionar modelos y migraciones | Confirmado |
+| Prisma | Bases de datos | Posible interfaz de acceso a datos | Por confirmar con el responsable de BD ([ADR-0004](docs/adr/0004-propiedad-datos.md)) |
 | Docker | Infraestructura | Ejecutar el proyecto en contenedores | Confirmado |
 | Docker Compose | Infraestructura | Levantar todos los servicios juntos en local | Confirmado |
 | GitHub Actions | Infraestructura | Ejecutar pruebas automáticas en cada cambio | Propuesto |
-| Vitest | Frontend | Pruebas unitarias | Propuesto |
+| Vitest | Frontend y backend | Pruebas unitarias | Instalado en backend / propuesto en frontend |
 | Playwright | Frontend | Pruebas de flujo en el navegador | Propuesto |
-| pytest | Seguridad y backend | Pruebas automáticas en Python | Propuesto |
-| OpenAPI | Documentación | Describir los contratos de la API | Confirmado |
+| pytest | Seguridad | Pruebas automáticas en Python | Propuesto |
+| OpenAPI | Documentación | Describir los contratos de la API | En progreso (gateway documentado) |
 | Mermaid | Documentación | Crear diagramas dentro de Markdown | Confirmado |
 | Markdown + ADR | Documentación | Documentar el proyecto y sus decisiones | Confirmado |
 
@@ -270,7 +276,7 @@ En palabras sencillas:
 
 1. El carrito se asocia a la sesión del usuario autenticado.
 2. El usuario agrega, actualiza o elimina productos.
-3. La forma exacta de persistencia se definirá en un ADR: navegador, backend o ambos.
+3. La persistencia es híbrida: carrito local para invitados y carrito en el backend para usuarios autenticados ([ADR-0007](docs/adr/0007-carrito-hibrido.md)).
 4. Al iniciar sesión, el usuario debe encontrar su carrito y no el de otra persona.
 
 ### 6.4 Dirección de envío y checkout simulado
@@ -322,7 +328,7 @@ El profesor realizará pruebas básicas sobre la versión desplegada. El equipo 
 - Pruebas de inyección SQL y XSS.
 - Revisión de CORS, rate limit y secretos expuestos.
 - Escaneo básico con OWASP ZAP.
-- Resultados y correcciones en `docs/security.md`.
+- Resultados y correcciones en [`docs/security.md`](docs/security.md).
 
 ---
 
@@ -416,6 +422,8 @@ docs(readme): explicar la estructura del monorepo
 
 ## 10. Documentación
 
+El punto de entrada a la documentación global es [`docs/README.md`](docs/README.md).
+
 ### Documentación por componente
 
 | Componente | Ruta |
@@ -430,14 +438,19 @@ docs(readme): explicar la estructura del monorepo
 
 | Documento | Contenido | Estado |
 |---|---|---|
-| `docs/architecture.md` | Arquitectura, diagramas y decisiones | Pendiente |
-| `docs/adr/` | Registro de decisiones de arquitectura | Carpeta creada |
-| `docs/api/` | Contratos OpenAPI por servicio | Carpeta creada |
-| `docs/diagrams/` | Diagramas de arquitectura y flujos | Carpeta creada |
-| `docs/use-cases/` | Catálogo y detalle de casos de uso | En progreso |
+| [`docs/README.md`](docs/README.md) | Índice general y estado de la documentación | Redactado |
+| [`docs/architecture.md`](docs/architecture.md) | Arquitectura, componentes, datos y NFR | Redactado |
+| [`docs/security.md`](docs/security.md) | Amenazas, controles y hacking ético | Redactado |
+| [`docs/adr/`](docs/adr/README.md) | Decisiones de arquitectura (8 ADR) | En progreso |
+| [`docs/api/`](docs/api/README.md) | Convenciones y contrato del gateway | En progreso |
+| [`docs/diagrams/`](docs/diagrams/README.md) | Diagramas de arquitectura y flujos | Redactado |
+| [`docs/use-cases/`](docs/use-cases/README.md) | Catálogo y detalle de 25 casos de uso | Redactado |
 | `docs/scrum.md` | Tablero, sprints y métricas | Pendiente |
-| `docs/security.md` | Amenazas, controles y hacking ético | Pendiente |
 | `docs/beta-criteria.md` | Criterios de aceptación de la beta | Pendiente |
+| `docs/getting-started.md` | Instalación, comandos y entorno local | Pendiente |
+| `docs/testing.md` | Estrategia de pruebas y gates de CI | Pendiente |
+| `docs/deployment.md` | Docker, entornos y despliegue | Pendiente |
+| `docs/data-contracts.md` | Acuerdo backend–BD | Pendiente (bloqueado por ADR-0004) |
 
 ### Reglas de documentación
 
@@ -457,6 +470,8 @@ docs(readme): explicar la estructura del monorepo
 | Semana 3 | Seguridad y cierre | Endurecimiento, pruebas, página de mayoristas, documentación, despliegue final y demo |
 
 ### Criterios para considerar la beta lista
+
+El detalle verificable, la evidencia y el guion de demo se llevarán a `docs/beta-criteria.md` (pendiente). Aquí queda el resumen.
 
 - [ ] Desplegada en una URL pública con HTTPS.
 - [ ] Catálogo con datos simulados, búsqueda y filtros.
@@ -525,12 +540,15 @@ Si eres una IA que colabora en este repositorio:
 
 | Recurso | Enlace |
 |---|---|
+| Documentación global | [`docs/README.md`](docs/README.md) |
+| Casos de uso | [`docs/use-cases/README.md`](docs/use-cases/README.md) |
+| Decisiones de arquitectura | [`docs/adr/README.md`](docs/adr/README.md) |
+| Contratos de API | [`docs/api/README.md`](docs/api/README.md) |
 | Tablero Kanban | Pendiente |
 | Repositorio | Pendiente de URL definitiva |
-| Documentación global | Pendiente |
 | Entorno desplegado | Pendiente |
 
 ---
 
 **Última actualización:** 2026-11-10  
-**Versión del documento:** 0.3 — backend en planeación con Fastify y Prisma
+**Versión del documento:** 0.4 — documentación P0 y backend en planeación con Fastify (Prisma por confirmar)
