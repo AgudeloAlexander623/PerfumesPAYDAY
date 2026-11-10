@@ -1,0 +1,13 @@
+{
+  "name": "@perfumespayday/gateway",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Punto único de entrada de la API de PerfumesPAYDAY.",
+  "dependencies": {
+    "@fastify/cors": "11.4.1",
+    "@fastify/helmet": "13.2.0",
+    "@fastify/http-proxy": "11.6.6",
+    "@fastify/rate-limit": "11.2.2",
+    "fastify": "5.12.8"
+  }
+}

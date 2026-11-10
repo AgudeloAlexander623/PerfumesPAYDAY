@@ -1,0 +1,19 @@
+# Dependencias
+node_modules/
+
+# Compilación y cobertura
+dist/
+coverage/
+
+# Variables de entorno
+.env
+.env.*
+!.env.example
+
+# Prisma
+**/generated/prisma/
+
+# Registros y temporales
+*.log
+.DS_Store
+Thumbs.db

@@ -183,14 +183,14 @@ Ese archivo **no es código**: solo indica "esta carpeta debe conservarse". Cuan
 | TanStack Query | Frontend | Manejar datos que vienen de la API | Propuesto |
 | Zustand | Frontend | Manejar estado global, por ejemplo el carrito | Propuesto |
 | Node.js | Backend | Ejecutar JavaScript en el servidor | Confirmado |
-| Fastify o NestJS | Backend | Framework para construir la API | Pendiente de decisión |
+| Fastify | Backend | Framework para construir la API | Confirmado |
 | Python | Seguridad | Lenguaje del servicio de autenticación | Confirmado |
 | FastAPI | Seguridad | Framework para construir la API de seguridad | Confirmado |
 | Pydantic | Seguridad | Validar los datos que entran y salen | Confirmado |
 | JWT | Seguridad | Identificar al usuario mediante tokens firmados | Confirmado |
 | Argon2 o bcrypt | Seguridad | Guardar contraseñas de forma segura | Confirmado |
 | PostgreSQL | Bases de datos | Guardar información relacional | Confirmado |
-| Prisma o Drizzle | Bases de datos | Gestionar modelos y migraciones | Pendiente de decisión |
+| Prisma | Bases de datos | Gestionar modelos y migraciones | Confirmado |
 | Docker | Infraestructura | Ejecutar el proyecto en contenedores | Confirmado |
 | Docker Compose | Infraestructura | Levantar todos los servicios juntos en local | Confirmado |
 | GitHub Actions | Infraestructura | Ejecutar pruebas automáticas en cada cambio | Propuesto |
@@ -532,5 +532,5 @@ Si eres una IA que colabora en este repositorio:
 
 ---
 
-**Última actualización:** 2026-11-04  
-**Versión del documento:** 0.2 — estructura base del monorepo
+**Última actualización:** 2026-11-10  
+**Versión del documento:** 0.3 — backend en planeación con Fastify y Prisma
