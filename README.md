@@ -4,7 +4,7 @@ Tienda online de perfumes creada como proyecto académico. La experiencia está 
 
 > **Importante:** es un simulador académico. No cobra dinero real, no emite facturas electrónicas y no envía productos reales.
 
-**Estado actual:** el proyecto ya dejó la fase de solo planeación. Hoy existen la **landing page funcional** (Frontend), los **esquemas SQL completos de las tres bases de datos** con sus diagramas ER, **25 casos de uso** redactados y **8 diagramas** de arquitectura y flujos. El backend se está estructurando en la rama `Alex_Backend_development` (aún sin código de aplicación). Véase [Estado actual del proyecto](#3-estado-actual-del-proyecto).
+**Estado actual:** el proyecto ya dejó la fase de solo planeación. Hoy existen la **landing page funcional** (Frontend), los **esquemas SQL completos de las tres bases de datos** con sus diagramas ER, **25 casos de uso** redactados, **8 diagramas** de arquitectura y flujos y el **esqueleto del backend** (`gateway`, `catalog` y `orders` compilan, arrancan y responden `/health`). Véase [Estado actual del proyecto](#3-estado-actual-del-proyecto).
 
 ---
 
@@ -72,11 +72,11 @@ Es parecido a un centro comercial: el usuario entra por una puerta principal (ga
 | Nombre completo | Carrera | Rol | Código de estudiante |
 |---|---|---|---|
 | Jessid Agudelo | T.D.S. | Backend Developer | 2478460 |
-| Pendiente | Pendiente | Pendiente | Pendiente |
-| Pendiente | Pendiente | Pendiente | Pendiente |
-| Pendiente | Pendiente | Pendiente | Pendiente |
+| Angel Torres Panesso | T.D.S. | BBDD y Design | Pendiente |
+| Alejandro Rojas Serna | T.D.S. | FrontEnd y Pruebas | Pendiente |
+| Daniel Rey Cardona | T.D.S. | FrontEnd y Pruebas | Pendiente |
 
-> Reemplazar los datos pendientes cuando el resto del equipo los confirme.
+> Pendiente los codigos
 
 ---
 
@@ -90,10 +90,10 @@ Resumen de qué existe **hoy** en la rama `main`:
 | Bases de datos | ✅ Esquemas completos | Scripts SQL de creación de `security_db`, `catalog_db` y `orders_db`, seed de roles y diagramas ER en Draw.io ([`Databases/`](Databases/)) |
 | Casos de uso | ✅ Redactados | 25 casos (CU-01 a CU-25) priorizados con MoSCoW: 18 Must, 6 Should, 1 Could ([`docs/use-cases/`](docs/use-cases/)) |
 | Diagramas | ✅ Publicados | 8 diagramas Mermaid con su SVG: contexto, contenedores, autenticación, catálogo, carrito, checkout, pedidos y administración ([`docs/diagrams/`](docs/diagrams/)) |
-| Backend | 🔨 En estructuración | Rama `Alex_Backend_development`: workspace npm con `gateway`, `catalog` y `orders`; Fastify + Prisma ya elegidos. Aún sin código de aplicación |
+| Backend | ✅ Esqueleto funcional | Rama `Alex_Backend_development`: workspace npm con `gateway`, `catalog` y `orders`; Fastify 5 + TypeScript 7 + Zod; paquete compartido, Docker Compose y pruebas. Los servicios compilan, arrancan y responden `/health`; aún sin endpoints de negocio |
 | Servicio de seguridad | 📋 Diseñado | Stack definido (Python + FastAPI + JWT); esqueleto de carpetas creado, sin código |
 | App móvil | 📋 Planeada | Consumirá la misma API a través del gateway; fuera de la beta |
-| Infraestructura | 📋 Planeada | Docker Compose previsto; `infra/` aún sin archivos |
+| Infraestructura | 🔨 Parcial | Docker Compose del backend implementado en `Backend/`; `infra/` aún sin archivos |
 | CI/CD | ⏳ Pendiente | `.github/workflows/` creado pero vacío |
 
 > El pago siempre es **simulado** (`pagos.metodo = 'simulado'`, `estado = 'aprobado_simulado'`): no se integra ninguna pasarela real.
@@ -107,12 +107,24 @@ La estructura está organizada por áreas y por servicio. Cada carpeta tiene una
 ```text
 PerfumesPAYDAY/
 ├── Backend/
+│   ├── package.json                 # Workspace npm del backend
+│   ├── package-lock.json
+│   ├── tsconfig.base.json           # Configuración TypeScript compartida
 │   ├── services/
 │   │   ├── gateway/                 # Punto único de entrada a la API
+│   │   │   ├── src/                 # Código del servicio
+│   │   │   ├── tests/               # Pruebas automáticas
+│   │   │   └── package.json
 │   │   ├── catalog/                 # Marcas, productos, presentaciones, precios y stock
+│   │   │   ├── src/
+│   │   │   ├── tests/
+│   │   │   └── package.json
 │   │   └── orders/                  # Carrito, checkout, pedidos y direcciones
-│   │       (cada servicio con src/, tests/ y docs/)
-│   └── docs/                        # Documentación general del backend
+│   │       ├── src/
+│   │       ├── tests/
+│   │       └── package.json
+│   ├── packages/shared/             # Utilidades compartidas (@perfumespayday/shared)
+│   └── docs/                        # Plan y notas de trabajo del backend
 ├── Frontend/                         # Landing page funcional (React + Vite + Tailwind)
 │   ├── public/                       # Favicon e iconos públicos
 │   ├── src/
@@ -132,7 +144,14 @@ PerfumesPAYDAY/
 │   ├── seeds/                        # 001_roles.sql: roles 'cliente' y 'admin'
 │   ├── migrations/                   # Cambios versionados (vacío por ahora)
 │   └── docs/                         # README + diagramas ER Draw.io de las 3 BDs
-├── docs/                             # Documentación global
+├── movil/                            # Futura aplicación móvil
+│   ├── src/
+│   ├── tests/
+│   └── docs/
+├── docs/                             # Documentación global del proyecto
+│   ├── README.md                     # Índice general de la documentación
+│   ├── architecture.md               # Arquitectura y requisitos no funcionales
+│   ├── security.md                   # Amenazas, controles y pruebas
 │   ├── diagrams/                     # 8 diagramas Mermaid + SVG renderizados
 │   ├── use-cases/                    # 25 casos de uso + README + RESUMEN
 │   ├── adr/                          # Decisiones de arquitectura
@@ -153,7 +172,7 @@ Ese archivo **no es código**: solo indica "esta carpeta debe conservarse". Cuan
 
 ### Reglas de la estructura
 
-- Cada microservicio es dueño de su código, sus pruebas y su documentación.
+- Cada microservicio es dueño de su código y sus pruebas; su documentación se centraliza en `docs/`.
 - Cada servicio tiene su propia base de datos; no se comparten tablas.
 - El gateway es el único servicio público.
 - La documentación global vive en `docs/`.
@@ -175,19 +194,19 @@ Ese archivo **no es código**: solo indica "esta carpeta debe conservarse". Cuan
 | TanStack Query | — | Frontend | Manejar datos que vienen de la API | 📋 Propuesto |
 | Zustand | — | Frontend | Manejar estado global, por ejemplo el carrito | 📋 Propuesto |
 | Node.js | ≥ 22 | Backend | Ejecutar JavaScript en el servidor | ✅ Confirmado |
-| Fastify | 5 | Backend | Framework para construir la API (elegido sobre NestJS) | 🔨 Elegido (rama backend) |
-| TypeScript (backend) | 7 | Backend | Tipos estrictos compartidos entre servicios | 🔨 Elegido (rama backend) |
-| Prisma | 7 | Bases de datos | Gestionar modelos y migraciones (elegido sobre Drizzle) | 🔨 Elegido (rama backend) |
-| Zod | 4 | Backend | Validar los datos que entran y salen | 🔨 Elegido (rama backend) |
-| jose (JWT) | 6 | Backend | Validar tokens firmados RS256 en el gateway | 🔨 Elegido (rama backend) |
-| Vitest | 5 | Backend y frontend | Pruebas unitarias | 📋 Propuesto |
+| Fastify | 5 | Backend | Framework para construir la API (elegido sobre NestJS) | ✅ En uso (esqueleto backend) |
+| TypeScript (backend) | 7 | Backend | Tipos estrictos compartidos entre servicios | ✅ En uso (esqueleto backend) |
+| Prisma | 7 | Bases de datos | Gestionar modelos y migraciones (elegido sobre Drizzle) | 🔨 Instalado (rama backend) |
+| Zod | 4 | Backend | Validar los datos que entran y salen | ✅ En uso (validación de entorno) |
+| jose (JWT) | 6 | Backend | Validar tokens firmados RS256 en el gateway | 🔨 Instalado (rama backend) |
+| Vitest | 5 | Backend y frontend | Pruebas unitarias | ✅ En uso en backend |
 | Python | 3 | Seguridad | Lenguaje del servicio de autenticación | ✅ Confirmado |
 | FastAPI | — | Seguridad | Framework para construir la API de seguridad | ✅ Confirmado |
 | Pydantic | — | Seguridad | Validar los datos que entran y salen | ✅ Confirmado |
 | JWT RS256 | — | Seguridad | Identificar al usuario mediante tokens firmados | ✅ Confirmado |
 | Argon2 o bcrypt | — | Seguridad | Guardar contraseñas de forma segura | ✅ Confirmado |
 | PostgreSQL | 15+ | Bases de datos | Guardar información relacional | ✅ En uso (esquemas listos) |
-| Docker / Compose | — | Infraestructura | Ejecutar el proyecto en contenedores | 📋 Propuesto |
+| Docker / Compose | — | Infraestructura | Ejecutar el proyecto en contenedores | ✅ Implementado en backend |
 | GitHub Actions | — | Infraestructura | Ejecutar pruebas automáticas en cada cambio | 📋 Propuesto |
 | Playwright | — | Frontend | Pruebas de flujo en el navegador | 📋 Propuesto |
 | pytest | — | Seguridad y backend | Pruebas automáticas en Python | 📋 Propuesto |
@@ -379,7 +398,7 @@ Cuando los servicios estén implementados, este README se actualizará con los p
 
 1. El carrito se asocia a la sesión del usuario autenticado.
 2. El usuario agrega, actualiza o elimina productos.
-3. La forma exacta de persistencia se definirá en un ADR: navegador, backend o ambos.
+3. La persistencia es híbrida: carrito local para invitados y carrito en el backend para usuarios autenticados ([ADR-0007](docs/adr/0007-carrito-hibrido.md)).
 4. Al iniciar sesión, el usuario debe encontrar su carrito y no el de otra persona.
 
 ### 9.4 Dirección de envío y checkout simulado
@@ -431,7 +450,7 @@ El profesor realizará pruebas básicas sobre la versión desplegada. El equipo 
 - Pruebas de inyección SQL y XSS.
 - Revisión de CORS, rate limit y secretos expuestos.
 - Escaneo básico con OWASP ZAP.
-- Resultados y correcciones en `docs/security.md`.
+- Resultados y correcciones en [`docs/security.md`](docs/security.md).
 
 ---
 
@@ -525,6 +544,8 @@ docs(readme): explicar la estructura del monorepo
 
 ## 13. Documentación
 
+El punto de entrada a la documentación global es [`docs/README.md`](docs/README.md).
+
 ### Documentación por componente
 
 | Componente | Ruta |
@@ -539,14 +560,19 @@ docs(readme): explicar la estructura del monorepo
 
 | Documento | Contenido | Estado |
 |---|---|---|
-| `docs/use-cases/` | 25 casos de uso redactados con prioridades MoSCoW | ✅ Completo |
+| `docs/README.md` | Índice general y estado de la documentación | Redactado |
+| `docs/architecture.md` | Arquitectura, componentes, datos y NFR | Redactado |
+| `docs/security.md` | Amenazas, controles y hacking ético | Redactado |
+| `docs/adr/` | Registro de decisiones de arquitectura (8 ADR) | En progreso |
+| `docs/api/` | Convenciones y contratos OpenAPI por servicio | En progreso |
 | `docs/diagrams/` | 8 diagramas Mermaid + SVG (contexto, contenedores, flujos) | ✅ Completo |
-| `docs/adr/` | Registro de decisiones de arquitectura | En progreso (rama backend) |
-| `docs/api/` | Contratos OpenAPI por servicio | En progreso (rama backend) |
-| `docs/architecture.md` | Arquitectura y decisiones | En preparación (rama backend) |
-| `docs/security.md` | Amenazas, controles y hacking ético | En preparación (rama backend) |
+| `docs/use-cases/` | 25 casos de uso redactados con prioridades MoSCoW | ✅ Completo |
 | `docs/scrum.md` | Tablero, sprints y métricas | Pendiente |
 | `docs/beta-criteria.md` | Criterios de aceptación de la beta | Pendiente |
+| `docs/getting-started.md` | Instalación, comandos y entorno local | Pendiente |
+| `docs/testing.md` | Estrategia de pruebas y gates de CI | Pendiente |
+| `docs/deployment.md` | Docker, entornos y despliegue | Pendiente |
+| `docs/data-contracts.md` | Acuerdo backend–BD | Pendiente (bloqueado por ADR-0004) |
 
 ### Reglas de documentación
 
@@ -579,6 +605,8 @@ docs(readme): explicar la estructura del monorepo
 - [ ] Despliegue.
 
 ### Criterios para considerar la beta lista
+
+El detalle verificable, la evidencia y el guion de demo se llevarán a `docs/beta-criteria.md` (pendiente). Aquí queda el resumen.
 
 - [ ] Desplegada en una URL pública con HTTPS.
 - [ ] Catálogo con datos simulados, búsqueda y filtros.
@@ -657,4 +685,4 @@ Si eres una IA que colabora en este repositorio:
 ---
 
 **Última actualización:** 2026-11-10  
-**Versión del documento:** 0.3 — landing page, bases de datos y casos de uso
+**Versión del documento:** 0.5 — landing page, bases de datos, casos de uso y esqueleto del backend

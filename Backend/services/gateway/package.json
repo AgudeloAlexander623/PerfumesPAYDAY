@@ -1,0 +1,21 @@
+{
+  "name": "@perfumespayday/gateway",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Punto único de entrada de la API de PerfumesPAYDAY.",
+  "type": "module",
+  "scripts": {
+    "predev": "tsc -b ../../packages/shared",
+    "dev": "tsx watch src/server.ts",
+    "build": "tsc -b",
+    "start": "node dist/server.js",
+    "clean": "tsc -b --clean"
+  },
+  "dependencies": {
+    "@fastify/cors": "11.4.1",
+    "@fastify/http-proxy": "11.6.6",
+    "@fastify/rate-limit": "11.2.2",
+    "@perfumespayday/shared": "*",
+    "jose": "6.2.17"
+  }
+}

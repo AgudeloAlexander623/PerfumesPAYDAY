@@ -1,0 +1,40 @@
+{
+  "name": "perfumespayday-backend",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Backend de PerfumesPAYDAY: gateway, catalog y orders.",
+  "engines": {
+    "node": ">=22"
+  },
+  "workspaces": [
+    "packages/*",
+    "services/gateway",
+    "services/catalog",
+    "services/orders"
+  ],
+  "scripts": {
+    "build": "tsc -b",
+    "typecheck": "tsc -b",
+    "clean": "tsc -b --clean",
+    "dev:gateway": "npm run dev -w @perfumespayday/gateway",
+    "dev:catalog": "npm run dev -w @perfumespayday/catalog",
+    "dev:orders": "npm run dev -w @perfumespayday/orders",
+    "test": "vitest run --passWithNoTests",
+    "test:watch": "vitest"
+  },
+  "devDependencies": {
+    "@types/node": "22.20.5",
+    "@types/pg": "8.23.1",
+    "@vitest/coverage-v8": "5.1.0",
+    "prisma": "7.10.1",
+    "tsx": "4.23.15",
+    "typescript": "7.0.2",
+    "vitest": "5.1.0"
+  },
+  "dependencies": {
+    "@prisma/adapter-pg": "7.10.1",
+    "@prisma/client": "7.10.1",
+    "pg": "8.23.1"
+  }
+}
