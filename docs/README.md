@@ -13,13 +13,15 @@ Punto de entrada a la documentación global de **PerfumesPAYDAY**. El [README ra
 | [`../README.md`](../README.md) | Qué es el proyecto, equipo, estructura, stack, flujos, reglas y cronograma | Redactado | 2026-11-10 |
 | [`architecture.md`](architecture.md) | Cómo se compone el sistema, qué posee cada servicio y cómo se comunica | Redactado | 2026-11-10 |
 | [`security.md`](security.md) | Qué amenazas existen, qué controles se aplican y cómo se prueba la seguridad | Redactado | 2026-11-10 |
-| `beta-criteria.md` | Cómo se demuestra que la beta está lista | Pendiente | — |
-| `scrum.md` | Sprints, tablero, ceremonias, DoR/DoD y métricas | Pendiente | — |
+| [`beta-criteria.md`](beta-criteria.md) | Cómo se demuestra que la beta está lista | Redactado | 2026-11-11 |
+| [`scrum/scrum.md`](scrum/scrum.md) | Sprints, tablero, ceremonias, DoR/DoD y métricas | Redactado | 2026-11-11 |
+| [`scrum/technical-stories.md`](scrum/technical-stories.md) | Historias técnicas (habilitadoras) que sostienen las funcionales | Redactado | 2026-11-11 |
 | `getting-started.md` | Cómo instalar, ejecutar y probar el proyecto en local | Pendiente | — |
 | `testing.md` | Estrategia, herramientas y cobertura de pruebas | Pendiente | — |
 | `deployment.md` | Docker, entornos, CI/CD, secretos y despliegue | Pendiente | — |
 | `data-contracts.md` | Acuerdo de integración entre el backend y la base de datos | Pendiente | — |
 | [`use-cases/`](use-cases/README.md) | Qué debe hacer el sistema: 25 casos de uso y sus prioridades | Redactado | 2026-11-10 |
+| [`user-stories/`](user-stories/user-stories.md) | Historias de usuario derivadas de los casos de uso, para el backlog | Redactado | 2026-11-11 |
 | [`diagrams/`](diagrams/README.md) | Diagramas de contexto, contenedores y flujos | Redactado | 2026-11-10 |
 | [`adr/`](adr/README.md) | Decisiones de arquitectura y su justificación | En progreso | 2026-11-10 |
 | [`api/`](api/README.md) | Convenciones y contratos OpenAPI por servicio | En progreso | 2026-11-10 |
@@ -69,10 +71,10 @@ Punto de entrada a la documentación global de **PerfumesPAYDAY**. El [README ra
 
 ### Si vas a evaluar o demostrar la beta
 
-1. `beta-criteria.md`: criterios verificables y evidencia (pendiente).
+1. [`beta-criteria.md`](beta-criteria.md): criterios verificables y evidencia.
 2. [`use-cases/`](use-cases/README.md): comportamiento esperado.
 3. [`diagrams/`](diagrams/README.md): recorrido visual.
-4. `scrum.md`: plan de sprints y estado del tablero (pendiente).
+4. [`scrum/scrum.md`](scrum/scrum.md): plan de sprints y estado del tablero.
 
 ---
 
@@ -96,12 +98,14 @@ Punto de entrada a la documentación global de **PerfumesPAYDAY**. El [README ra
 | Tema | Fuente de verdad |
 |---|---|
 | Comportamiento funcional | [`use-cases/`](use-cases/README.md) |
+| Historias de usuario (backlog) | [`user-stories/`](user-stories/user-stories.md) |
+| Historias técnicas (habilitadoras) | [`scrum/technical-stories.md`](scrum/technical-stories.md) |
 | Estructura y comunicación | [`architecture.md`](architecture.md) |
 | Decisiones de arquitectura | [`adr/`](adr/README.md) |
 | Contratos de API | [`api/`](api/README.md) |
 | Controles de seguridad | [`security.md`](security.md) |
-| Criterios de aceptación de la beta | `beta-criteria.md` (pendiente) |
-| Planificación y sprints | `scrum.md` (pendiente) |
+| Criterios de aceptación de la beta | [`beta-criteria.md`](beta-criteria.md) |
+| Planificación y sprints | [`scrum/scrum.md`](scrum/scrum.md) |
 | Stack y alcance general | [README raíz](../README.md) |
 
 ---
@@ -123,9 +127,8 @@ Estas decisiones están documentadas como propuestas y bloquean total o parcialm
 
 ### Prioridad alta
 
-- `beta-criteria.md`: convierte los 18 casos `Must` en criterios verificables y guion de demo.
-- `scrum.md`: organiza los tres sprints y el tablero.
 - `data-contracts.md`: acuerdo con la persona responsable de la base de datos.
+- Enlace y README del tablero de GitHub Projects.
 
 ### Prioridad media
 
@@ -149,5 +152,5 @@ Estas decisiones están documentadas como propuestas y bloquean total o parcialm
 
 ---
 
-**Última actualización:** 2026-11-10
+**Última actualización:** 2026-11-11
 **Responsable:** equipo PerfumesPAYDAY
