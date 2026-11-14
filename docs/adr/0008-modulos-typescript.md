@@ -83,5 +83,5 @@ services/gateway/
 - [`Backend/tsconfig.base.json`](../../Backend/tsconfig.base.json)
 - [`Backend/tsconfig.json`](../../Backend/tsconfig.json)
 - [`Backend/packages/shared`](../../Backend/packages/shared)
-- [`Backend/docs/ROADMAP.md`](../../Backend/docs/ROADMAP.md)
+- [`docs/ROADMAP.md`](../ROADMAP.md)
 - [`ADR-0002`](0002-fastify-workspaces.md)

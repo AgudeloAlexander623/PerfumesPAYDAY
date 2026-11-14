@@ -238,7 +238,7 @@ Reglas:
 - [Seguridad](security.md)
 - [ADR](adr/README.md)
 - [API](api/README.md)
-- [Plan del backend](../Backend/docs/PLAN.md)
+- [Plan del backend](PLAN.md)
 
 ---
 

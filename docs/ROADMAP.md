@@ -1,7 +1,7 @@
 # Backend — ruta de desarrollo (roadmap)
 
 > Documento de trabajo. **No autoriza código de aplicación por sí solo**: la autorización se registra cuando el líder del proyecto la dé.
-> Las decisiones, alternativas y riesgos están en [`PLAN.md`](PLAN.md); el alcance funcional, en los [casos de uso](../../docs/use-cases/README.md); la visión general, en el [README raíz](../../README.md).
+> Las decisiones, alternativas y riesgos están en [`PLAN.md`](PLAN.md); el alcance funcional, en los [casos de uso](use-cases/README.md); la visión general, en el [README raíz](../README.md).
 
 ## 1. Propósito
 
@@ -41,7 +41,7 @@ Pendiente:
 | 3 | Contratos | OpenAPI de los casos `Must` de catálogo y pedidos | 1 | Pendiente |
 | 4 | Catálogo | `catalog_db`, endpoints públicos y de administración | 2 y 3 | Pendiente |
 | 5 | Pedidos | `orders_db`, carrito, direcciones, checkout y pedidos | 4 | Pendiente |
-| 6 | Gateway y seguridad | Proxy, validación JWT, roles y controles de entrada | 2 y `security-service` | Pendiente |
+| 6 | Gateway y seguridad | Proxy, validación JWT, roles y controles de entrada | 2 y `security-service` | En progreso |
 | 7 | Cierre | Endurecimiento, pruebas de flujo, documentación y demo | 4, 5 y 6 | Pendiente |
 
 **Ruta crítica:** 1 → 2 → 4 → 5 → 6 → 7.
@@ -55,11 +55,11 @@ Cerrar lo que hoy impide escribir código:
 
 | ADR | Qué se decide | Bloquea | Estado |
 |---|---|---|---|
-| [ADR-0008](../../docs/adr/0008-modulos-typescript.md) | ESM nativo, project references y paquete compartido | Arranque y compilación de los tres servicios | Aceptado |
-| [ADR-0006](../../docs/adr/0006-errores-paginacion-idempotencia.md) | Envelope de errores, paginación e idempotencia | Contratos y manejo de errores | Pendiente |
-| [ADR-0004](../../docs/adr/0004-propiedad-datos.md) | Propiedad de datos y contrato backend–BD | Esquemas Prisma y `data-contracts.md` | Pendiente |
-| [ADR-0005](../../docs/adr/0005-comunicacion-interna.md) | `orders` → `catalog` por red interna | Revalidación de precio y stock | Pendiente |
-| [ADR-0003](../../docs/adr/0003-jwt-rs256.md) | Entrega de la clave pública JWT | Autenticación real y despliegue | Pendiente |
+| [ADR-0008](adr/0008-modulos-typescript.md) | ESM nativo, project references y paquete compartido | Arranque y compilación de los tres servicios | Aceptado |
+| [ADR-0006](adr/0006-errores-paginacion-idempotencia.md) | Envelope de errores, paginación e idempotencia | Contratos y manejo de errores | Pendiente |
+| [ADR-0004](adr/0004-propiedad-datos.md) | Propiedad de datos y contrato backend–BD | Esquemas Prisma y `data-contracts.md` | Pendiente |
+| [ADR-0005](adr/0005-comunicacion-interna.md) | `orders` → `catalog` por red interna | Revalidación de precio y stock | Pendiente |
+| [ADR-0003](adr/0003-jwt-rs256.md) | Entrega de la clave pública JWT | Autenticación real y despliegue | Pendiente |
 
 **Puerta de salida:** ADR aceptados y `docs/data-contracts.md` redactado.
 
@@ -130,7 +130,7 @@ Cerrar lo que hoy impide escribir código:
 - Documentación actualizada por componente y ADR de lo que cambió.
 - Guion de demo y criterios de beta verificados.
 
-**Puerta de salida:** checklist de beta del [README raíz](../../README.md) §11 completo.
+**Puerta de salida:** checklist de beta del [README raíz](../README.md) §11 completo.
 
 ## 5. Ruta crítica y paralelización
 
@@ -187,7 +187,8 @@ El siguiente paso es cerrar **ADR-0006** y **ADR-0004** y escribir los contratos
 | 2026-11-10 | 0. Base | Hecho | Workspace y documentación listos |
 | 2026-11-10 | 1. Decisiones | En progreso | ADR-0008 aceptado; faltan 0003, 0004, 0005 y 0006 |
 | 2026-11-10 | 2. Esqueleto | Hecho | Build, 7 pruebas y contenedor verificados |
+| 2026-11-13 | 6. Gateway y seguridad | En progreso | Validación JWT, guards, proxy `/api/v1`, CORS, rate limit, JWKS y orígenes explícitos; 47 pruebas en verde |
 
 ---
 
-**Última actualización:** 2026-11-10
+**Última actualización:** 2026-11-13

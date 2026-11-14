@@ -1,6 +1,7 @@
 import type { FastifyInstance } from 'fastify';
+import type { z } from 'zod';
 import { createApp } from './app.js';
-import { loadEnv, type ServiceEnvSchema } from './env.js';
+import { loadEnv, type ServiceEnv } from './env.js';
 
 async function shutdown(app: FastifyInstance, signal: NodeJS.Signals): Promise<void> {
   app.log.info({ signal }, 'Cerrando servicio');
@@ -32,14 +33,25 @@ export async function startServer(
   }
 }
 
-/** Punto de entrada común: valida el entorno, crea la app y la arranca. */
-export async function startService(options: {
+/** Opciones de arranque común a todos los servicios. */
+export interface StartServiceOptions<T extends ServiceEnv = ServiceEnv> {
   name: string;
-  envSchema: ServiceEnvSchema;
-}): Promise<void> {
+  envSchema: z.ZodType<T>;
+  /**
+   * Configura la app antes de escuchar: autenticación, plugins y rutas.
+   * Se ejecuta después de `createApp` y antes de `listen`.
+   */
+  setup?: (app: FastifyInstance, env: T) => Promise<void> | void;
+}
+
+/** Punto de entrada común: valida el entorno, crea la app y la arranca. */
+export async function startService<T extends ServiceEnv>(
+  options: StartServiceOptions<T>,
+): Promise<void> {
   try {
     const env = loadEnv(options.envSchema);
     const app = await createApp({ name: options.name, logLevel: env.LOG_LEVEL });
+    await options.setup?.(app, env);
     await startServer(app, { host: env.HOST, port: env.PORT });
   } catch (error) {
     console.error(error instanceof Error ? error.message : error);

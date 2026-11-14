@@ -304,7 +304,7 @@ El profesor realizará pruebas básicas sobre la versión desplegada. El equipo 
 - [API](api/README.md)
 - [ADR](adr/README.md)
 - [README raíz](../README.md)
-- [Plan del backend](../Backend/docs/PLAN.md)
+- [Plan del backend](PLAN.md)
 
 ---
 

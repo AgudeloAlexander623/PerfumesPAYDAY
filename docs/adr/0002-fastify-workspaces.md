@@ -5,7 +5,7 @@
 | Estado | Aceptado |
 | Fecha | 2026-11-10 |
 | Decisores | Equipo |
-| Relacionados | [`Backend/docs/PLAN.md`](../../Backend/docs/PLAN.md) §3 y §6, [`Backend/docs/README.md`](../../Backend/docs/README.md) §3 |
+| Relacionados | [`docs/PLAN.md`](../PLAN.md) §3 y §6, [bitácora del backend](../../Backend/docs/README.md) |
 
 ## Contexto
 
@@ -43,6 +43,6 @@ El backend necesita un framework HTTP para tres servicios Node.js pequeños, un 
 
 ## Referencias
 
-- [`Backend/docs/PLAN.md`](../../Backend/docs/PLAN.md)
-- [`Backend/docs/README.md`](../../Backend/docs/README.md)
+- [`docs/PLAN.md`](../PLAN.md)
+- [Bitácora del backend](../../Backend/docs/README.md)
 - [`Backend/package.json`](../../Backend/package.json)

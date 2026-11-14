@@ -11,6 +11,20 @@ export const baseEnvSchema = z.object({
 
 export type BaseEnv = z.infer<typeof baseEnvSchema>;
 
+/**
+ * Variables para validar access tokens RS256 emitidos por `security-service`.
+ * La clave es opcional para permitir desarrollo y pruebas sin `security-service`;
+ * `configureJwtAuth` la exige en producción.
+ */
+export const jwtEnvSchema = z.object({
+  JWT_PUBLIC_KEY: z.string().min(1).optional(),
+  JWT_JWKS_URL: z.string().min(1).optional(),
+  JWT_ISSUER: z.string().min(1).default('perfumespayday-security'),
+  JWT_AUDIENCE: z.string().min(1).default('perfumespayday-api'),
+});
+
+export type JwtEnv = z.infer<typeof jwtEnvSchema>;
+
 /** Configuración mínima que necesita `startService` para escuchar. */
 export interface ServiceEnv extends BaseEnv {
   PORT: number;
