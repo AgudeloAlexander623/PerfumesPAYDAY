@@ -1,7 +1,7 @@
 # Backend — plan de planeación
 
 > Documento de trabajo. No autoriza código de aplicación ni reemplaza los contratos OpenAPI.
-> El alcance general está en el [README raíz](../../README.md); el comportamiento funcional, en los [casos de uso](../../docs/use-cases/README.md).
+> El alcance general está en el [README raíz](../README.md); el comportamiento funcional, en los [casos de uso](use-cases/README.md).
 
 ## 1. Objetivo
 
@@ -69,7 +69,7 @@ Decidir cómo se construirá el backend antes de escribir código: framework, co
 
 La autorización para código aplica desde F2. F0 y F1 son documentación y decisiones.
 
-Estado actual: F0 y F2 están completas. De F1 solo está aceptado ADR-0008; faltan ADR-0003, ADR-0004, ADR-0005 y ADR-0006.
+Estado actual: F0 y F2 están completas. De F1 solo está aceptado ADR-0008; faltan ADR-0003, ADR-0004, ADR-0005 y ADR-0006. F5 está avanzada: la validación JWT RS256, los claims, los guards de rol y el proxy del gateway con CORS y rate limit ya funcionan; falta el emisor real en `security-service` y la agregación de auditoría.
 
 La secuencia detallada, el orden de dependencias y las puertas de salida de cada fase están en [`ROADMAP.md`](ROADMAP.md).
 

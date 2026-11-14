@@ -551,7 +551,7 @@ El punto de entrada a la documentación global es [`docs/README.md`](docs/README
 | Componente | Ruta |
 |---|---|
 | Frontend | [`Frontend/docs/README.md`](Frontend/docs/README.md) |
-| Backend | [`Backend/docs/README.md`](Backend/docs/README.md) |
+| Backend | [Bitácora del backend](Backend/docs/README.md) |
 | Bases de datos | [`Databases/docs/README.md`](Databases/docs/README.md) |
 | Seguridad | [`security/docs/README.md`](security/docs/README.md) |
 | Móvil | [`movil/docs/README.md`](movil/docs/README.md) |
@@ -562,6 +562,8 @@ El punto de entrada a la documentación global es [`docs/README.md`](docs/README
 |---|---|---|
 | `docs/README.md` | Índice general y estado de la documentación | Redactado |
 | `docs/architecture.md` | Arquitectura, componentes, datos y NFR | Redactado |
+| `docs/PLAN.md` | Planeación del backend: fases, decisiones y pendientes | Redactado |
+| `docs/ROADMAP.md` | Ruta de desarrollo del backend por etapas | Redactado |
 | `docs/security.md` | Amenazas, controles y hacking ético | Redactado |
 | `docs/adr/` | Registro de decisiones de arquitectura (8 ADR) | En progreso |
 | `docs/api/` | Convenciones y contratos OpenAPI por servicio | En progreso |

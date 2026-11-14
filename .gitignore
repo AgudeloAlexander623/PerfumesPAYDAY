@@ -13,6 +13,15 @@ coverage/
 # Prisma
 **/generated/prisma/
 
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+.pytest_cache/
+.coverage
+htmlcov/
+
 # Registros y temporales
 *.log
 .DS_Store

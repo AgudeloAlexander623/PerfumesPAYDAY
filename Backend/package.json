@@ -20,6 +20,7 @@
     "dev:gateway": "npm run dev -w @perfumespayday/gateway",
     "dev:catalog": "npm run dev -w @perfumespayday/catalog",
     "dev:orders": "npm run dev -w @perfumespayday/orders",
+    "jwt:keys": "node scripts/generate-jwt-keys.mjs",
     "test": "vitest run --passWithNoTests",
     "test:watch": "vitest"
   },

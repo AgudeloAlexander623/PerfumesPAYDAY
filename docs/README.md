@@ -2,7 +2,7 @@
 
 Punto de entrada a la documentación global de **PerfumesPAYDAY**. El [README raíz](../README.md) explica el producto, el equipo, la estructura y el alcance; este índice organiza los documentos que desarrollan esos temas.
 
-> **Estado del proyecto:** el backend ya tiene su esqueleto técnico (servicios que compilan, arrancan y responden `/health`). No hay endpoints de negocio, base de datos creada ni contratos implementados. La documentación sigue siendo la fuente de verdad para el resto del desarrollo.
+> **Estado del proyecto:** el backend ya tiene su esqueleto técnico y la validación JWT RS256 compartida (verificación de firma, claims y roles). Todavía no hay endpoints de negocio, base de datos creada ni contratos implementados. La documentación sigue siendo la fuente de verdad para el resto del desarrollo.
 
 ---
 
@@ -14,6 +14,8 @@ Punto de entrada a la documentación global de **PerfumesPAYDAY**. El [README ra
 | [`architecture.md`](architecture.md) | Cómo se compone el sistema, qué posee cada servicio y cómo se comunica | Redactado | 2026-11-10 |
 | [`security.md`](security.md) | Qué amenazas existen, qué controles se aplican y cómo se prueba la seguridad | Redactado | 2026-11-10 |
 | [`beta-criteria.md`](beta-criteria.md) | Cómo se demuestra que la beta está lista | Redactado | 2026-11-11 |
+| [`PLAN.md`](PLAN.md) | Planeación del backend: fases, decisiones y pendientes | Redactado | 2026-11-10 |
+| [`ROADMAP.md`](ROADMAP.md) | Ruta de desarrollo del backend por etapas y puertas de salida | Redactado | 2026-11-10 |
 | [`scrum/scrum.md`](scrum/scrum.md) | Sprints, tablero, ceremonias, DoR/DoD y métricas | Redactado | 2026-11-11 |
 | [`scrum/technical-stories.md`](scrum/technical-stories.md) | Historias técnicas (habilitadoras) que sostienen las funcionales | Redactado | 2026-11-11 |
 | `getting-started.md` | Cómo instalar, ejecutar y probar el proyecto en local | Pendiente | — |
@@ -50,10 +52,13 @@ Punto de entrada a la documentación global de **PerfumesPAYDAY**. El [README ra
 ### Si vas a programar el backend
 
 1. [`architecture.md`](architecture.md): límites y propiedad de datos.
-2. [`adr/README.md`](adr/README.md): decisiones tomadas y pendientes.
-3. [`api/README.md`](api/README.md): convenciones y contratos.
-4. [`security.md`](security.md): controles obligatorios.
-5. [`use-cases/`](use-cases/README.md): comportamiento esperado y criterios de aceptación.
+2. [`PLAN.md`](PLAN.md): fases, decisiones y pendientes.
+3. [`ROADMAP.md`](ROADMAP.md): orden de trabajo y puertas de salida.
+4. [`adr/README.md`](adr/README.md): decisiones tomadas y pendientes.
+5. [`api/README.md`](api/README.md): convenciones y contratos.
+6. [`security.md`](security.md): controles obligatorios.
+7. [`use-cases/`](use-cases/README.md): comportamiento esperado y criterios de aceptación.
+8. [Bitácora del backend](../Backend/docs/README.md): cambios realizados, fechas y motivos.
 
 ### Si vas a programar el frontend
 

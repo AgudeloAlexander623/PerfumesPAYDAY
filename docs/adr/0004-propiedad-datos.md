@@ -5,7 +5,7 @@
 | Estado | Propuesto / bloqueante |
 | Fecha | 2026-11-10 |
 | Decisores | Equipo, responsable de base de datos |
-| Relacionados | [`architecture.md`](../architecture.md) §4, CU-07 a CU-25, [`Backend/docs/PLAN.md`](../../Backend/docs/PLAN.md) §7 |
+| Relacionados | [`architecture.md`](../architecture.md) §4, CU-07 a CU-25, [`docs/PLAN.md`](../PLAN.md) §7 |
 
 ## Contexto
 
@@ -90,6 +90,6 @@ La persona de BD publica endpoints y el backend consume esa API.
 ## Referencias
 
 - [`architecture.md`](../architecture.md) §4
-- [`Backend/docs/PLAN.md`](../../Backend/docs/PLAN.md) §5, §7 y §9
-- [`Backend/docs/README.md`](../../Backend/docs/README.md) §5
+- [`docs/PLAN.md`](../PLAN.md) §5, §7 y §9
+- [Bitácora del backend](../../Backend/docs/README.md)
 - [CU-17 — Checkout simulado](../use-cases/cu-17-checkout-simulado.md)

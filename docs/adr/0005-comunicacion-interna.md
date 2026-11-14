@@ -73,4 +73,4 @@ El gateway es el único servicio público, pero no está definido si las llamada
 - [CU-11 — Agregar al carrito](../use-cases/cu-11-agregar-al-carrito.md)
 - [CU-12 — Ver carrito](../use-cases/cu-12-ver-carrito.md)
 - [CU-17 — Checkout simulado](../use-cases/cu-17-checkout-simulado.md)
-- [`Backend/docs/PLAN.md`](../../Backend/docs/PLAN.md) §7
+- [`docs/PLAN.md`](../PLAN.md) §7
