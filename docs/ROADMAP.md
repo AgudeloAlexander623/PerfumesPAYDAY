@@ -56,12 +56,15 @@ Cerrar lo que hoy impide escribir código:
 | ADR | Qué se decide | Bloquea | Estado |
 |---|---|---|---|
 | [ADR-0008](adr/0008-modulos-typescript.md) | ESM nativo, project references y paquete compartido | Arranque y compilación de los tres servicios | Aceptado |
-| [ADR-0006](adr/0006-errores-paginacion-idempotencia.md) | Envelope de errores, paginación e idempotencia | Contratos y manejo de errores | Pendiente |
+| [ADR-0006](adr/0006-errores-paginacion-idempotencia.md) | Envelope de errores, paginación e idempotencia | Contratos y manejo de errores | Aceptado |
+| [ADR-0003](adr/0003-jwt-rs256.md) | Entrega de la clave pública JWT | Autenticación real y despliegue | Aceptado |
+| [ADR-0009](adr/0009-sesiones-refresh-cookies.md) | Sesiones, refresh tokens y cookies | Ciclo de autenticación y `security_db` | Aceptado |
+| [ADR-0010](adr/0010-revocacion-access-tokens.md) | Revocación de access tokens y privilegios | Vigencia de tokens y autorización | Aceptado |
+| [ADR-0011](adr/0011-politica-contrasenas.md) | Hashing y política de contraseñas | Registro y cambio de contraseña | Aceptado |
 | [ADR-0004](adr/0004-propiedad-datos.md) | Propiedad de datos y contrato backend–BD | Esquemas Prisma y `data-contracts.md` | Pendiente |
 | [ADR-0005](adr/0005-comunicacion-interna.md) | `orders` → `catalog` por red interna | Revalidación de precio y stock | Pendiente |
-| [ADR-0003](adr/0003-jwt-rs256.md) | Entrega de la clave pública JWT | Autenticación real y despliegue | Pendiente |
 
-**Puerta de salida:** ADR aceptados y `docs/data-contracts.md` redactado.
+**Puerta de salida:** ADR aceptados y `docs/data-contracts.md` redactado. La autenticación ya tiene sus decisiones cerradas; catálogo y pedidos siguen bloqueados por ADR-0004 y ADR-0005.
 
 ### Etapa 2 — Esqueleto técnico
 
@@ -116,12 +119,17 @@ Cerrar lo que hoy impide escribir código:
 ### Etapa 6 — Gateway y seguridad
 
 - Proxy de `/api/v1/*` hacia los servicios internos.
-- Validación de JWT RS256 con `jose` y verificación de roles.
+- Validación de JWT RS256 con `jose`, `typ: "access"` y verificación de roles.
 - CORS con lista de orígenes permitidos, Helmet, rate limit y `requestId`.
+- Entrega de la clave pública por JWKS y rotación con ventana de solape.
+- Registro, login, refresh y logout en `security-service`, con `security_db`.
+- Refresh token opaco, cookie `httpOnly`, rotación y detección de reutilización.
+- Validación de `Origin`/`Referer` en refresh y logout.
+- Respuestas `401` con `WWW-Authenticate` y `Cache-Control: no-store`.
 - Agregación de auditoría de `catalog` y `orders` (CU-23).
 - Integración con los tokens emitidos por `security-service`.
 
-**Puerta de salida:** un usuario autenticado completa el flujo de punta a punta a través del gateway.
+**Puerta de salida:** un usuario se registra, inicia sesión, consume una ruta protegida, renueva el token y cierra sesión de punta a punta a través del gateway. Un cliente recibe `403` en rutas administrativas.
 
 ### Etapa 7 — Cierre
 
@@ -176,9 +184,9 @@ flowchart LR
 
 ## 8. Próximo paso
 
-La opción 1 quedó implementada: ADR-0008 aceptado y *walking skeleton* funcionando.
+La Fase 0 de autenticación quedó cerrada: ADR-0003, ADR-0006, ADR-0009, ADR-0010 y ADR-0011 aceptados. El *walking skeleton* y el emisor JWT ya funcionan.
 
-El siguiente paso es cerrar **ADR-0006** y **ADR-0004** y escribir los contratos OpenAPI de catálogo y pedidos (etapa 3). Después se implementa el catálogo (etapa 4).
+El siguiente paso es escribir `docs/api/security.openapi.yaml` (Fase 1), agregar `security_db` a Docker Compose (Fase 2) e implementar registro, login, refresh y logout (Fase 3). En paralelo, catálogo y pedidos siguen bloqueados por ADR-0004 y ADR-0005.
 
 ## 9. Registro de avance
 
@@ -188,7 +196,9 @@ El siguiente paso es cerrar **ADR-0006** y **ADR-0004** y escribir los contratos
 | 2026-11-10 | 1. Decisiones | En progreso | ADR-0008 aceptado; faltan 0003, 0004, 0005 y 0006 |
 | 2026-11-10 | 2. Esqueleto | Hecho | Build, 7 pruebas y contenedor verificados |
 | 2026-11-13 | 6. Gateway y seguridad | En progreso | Validación JWT, guards, proxy `/api/v1`, CORS, rate limit, JWKS y orígenes explícitos; 47 pruebas en verde |
+| 2026-11-14 | 1. Decisiones | En progreso | ADR-0003, 0006, 0009, 0010 y 0011 aceptados; faltan 0004 y 0005 |
+| 2026-11-14 | 6. Gateway y seguridad | En progreso | Decisiones de sesiones, refresh, cookies, revocación y contraseñas cerradas; falta implementar `security_db` y los endpoints |
 
 ---
 
-**Última actualización:** 2026-11-13
+**Última actualización:** 2026-11-14

@@ -156,13 +156,14 @@ Reglas:
 
 ## 6. Autenticación y autorización
 
-- `security-service` emite **JWT RS256**: access token de corta duración y refresh token de varios días.
+- `security-service` emite **JWT RS256** de 15 minutos y un refresh token opaco de 7 días por inactividad.
 - El access token se envía como `Authorization: Bearer <token>`.
-- El refresh token viaja en cookie `httpOnly`, `Secure` y `SameSite`.
-- El gateway valida la firma y la expiración; cada servicio vuelve a validar el token y el rol (defensa en profundidad).
+- El refresh token viaja en cookie `httpOnly`, `Secure` en producción y `SameSite=Lax`.
+- El gateway valida la firma, la expiración y `typ: "access"`; cada servicio vuelve a validar el token y el rol (defensa en profundidad).
 - El `user_id` y el rol salen del token; nunca del cuerpo ni de la URL.
 - El rol `admin` se asigna por fuera de la aplicación y se valida en el servidor.
-- La entrega de la clave pública a gateway y servicios está pendiente en [ADR-0003](adr/0003-jwt-rs256.md).
+- La clave pública se entrega por JWKS en Docker/producción y por `JWT_PUBLIC_KEY` en local/pruebas, según [ADR-0003](adr/0003-jwt-rs256.md).
+- El refresh token se rota en cada uso y se revoca al cerrar sesión; ver [ADR-0009](adr/0009-sesiones-refresh-cookies.md) y [ADR-0010](adr/0010-revocacion-access-tokens.md).
 
 **Detalle completo:** [`security.md`](security.md).
 
@@ -222,9 +223,9 @@ Reglas:
 | Riesgo | Impacto | Mitigación |
 |---|---|---|
 | Contrato backend–BD sin definir | Bloquea catálogo y pedidos | [ADR-0004](adr/0004-propiedad-datos.md) y `data-contracts.md`. |
-| Entrega de la clave pública JWT | Bloquea autenticación real | [ADR-0003](adr/0003-jwt-rs256.md). |
 | Comunicación interna `orders` → `catalog` | Afecta latencia, red y seguridad | [ADR-0005](adr/0005-comunicacion-interna.md). |
-| Formato de errores y paginación | Afecta todos los contratos | [ADR-0006](adr/0006-errores-paginacion-idempotencia.md). |
+| Autenticación sin ciclo de sesiones | Bloquea el flujo real de login | Implementar `security_db` y los endpoints de [ADR-0009](adr/0009-sesiones-refresh-cookies.md). |
+| Rotación de claves JWT | Puede invalidar sesiones activas | Ventana de solape de [ADR-0003](adr/0003-jwt-rs256.md). |
 | Tiempo de la beta | Recorta alcance | Priorizar los 18 casos `Must`. |
 | Dependencias de base de datos | Pueden quedar sin uso | Confirmar ADR-0004 antes de programar. |
 
@@ -242,5 +243,5 @@ Reglas:
 
 ---
 
-**Última actualización:** 2026-11-10
-**Estado:** redactado; sujeto a las decisiones abiertas de los ADR.
+**Última actualización:** 2026-11-14
+**Estado:** decisiones de autenticación cerradas; catálogo y pedidos siguen sujetos a ADR-0004 y ADR-0005.

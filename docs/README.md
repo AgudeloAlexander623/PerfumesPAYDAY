@@ -23,7 +23,7 @@ Punto de entrada a la documentación global de **PerfumesPAYDAY**. El [README ra
 | `deployment.md` | Docker, entornos, CI/CD, secretos y despliegue | Pendiente | — |
 | `data-contracts.md` | Acuerdo de integración entre el backend y la base de datos | Pendiente | — |
 | [`use-cases/`](use-cases/README.md) | Qué debe hacer el sistema: 25 casos de uso y sus prioridades | Redactado | 2026-11-10 |
-| [`user-stories/`](user-stories/user-stories.md) | Historias de usuario derivadas de los casos de uso, para el backlog | Redactado | 2026-11-11 |
+| [`scrum/user-stories.md`](scrum/user-stories.md) | Historias de usuario derivadas de los casos de uso, para el backlog | Redactado | 2026-11-11 |
 | [`diagrams/`](diagrams/README.md) | Diagramas de contexto, contenedores y flujos | Redactado | 2026-11-10 |
 | [`adr/`](adr/README.md) | Decisiones de arquitectura y su justificación | En progreso | 2026-11-10 |
 | [`api/`](api/README.md) | Convenciones y contratos OpenAPI por servicio | En progreso | 2026-11-10 |
@@ -103,7 +103,7 @@ Punto de entrada a la documentación global de **PerfumesPAYDAY**. El [README ra
 | Tema | Fuente de verdad |
 |---|---|
 | Comportamiento funcional | [`use-cases/`](use-cases/README.md) |
-| Historias de usuario (backlog) | [`user-stories/`](user-stories/user-stories.md) |
+| Historias de usuario (backlog) | [`scrum/user-stories.md`](scrum/user-stories.md) |
 | Historias técnicas (habilitadoras) | [`scrum/technical-stories.md`](scrum/technical-stories.md) |
 | Estructura y comunicación | [`architecture.md`](architecture.md) |
 | Decisiones de arquitectura | [`adr/`](adr/README.md) |
@@ -115,16 +115,19 @@ Punto de entrada a la documentación global de **PerfumesPAYDAY**. El [README ra
 
 ---
 
-## 5. Decisiones abiertas
+## 5. Decisiones
 
-Estas decisiones están documentadas como propuestas y bloquean total o parcialmente otros documentos:
+Estas decisiones están documentadas y afectan total o parcialmente otros documentos:
 
-| ADR | Decisión | Impacto |
-|---|---|---|
-| [ADR-0003](adr/0003-jwt-rs256.md) | Cómo entregar la clave pública JWT a gateway y servicios | Autenticación, despliegue y `security.md` |
-| [ADR-0004](adr/0004-propiedad-datos.md) | Contrato backend–base de datos y uso de Prisma | `data-contracts.md`, catálogo, pedidos y dependencias |
-| [ADR-0005](adr/0005-comunicacion-interna.md) | Cómo se comunican `orders` y `catalog` | Arquitectura y contratos internos |
-| [ADR-0006](adr/0006-errores-paginacion-idempotencia.md) | Formato de errores, paginación e idempotencia | Todos los contratos OpenAPI |
+| ADR | Decisión | Estado | Impacto |
+|---|---|---|---|
+| [ADR-0003](adr/0003-jwt-rs256.md) | Entrega de la clave pública JWT | Aceptado | Autenticación, despliegue y `security.md` |
+| [ADR-0004](adr/0004-propiedad-datos.md) | Contrato backend–base de datos y uso de Prisma | Pendiente | `data-contracts.md`, catálogo, pedidos y dependencias |
+| [ADR-0005](adr/0005-comunicacion-interna.md) | Cómo se comunican `orders` y `catalog` | Pendiente | Arquitectura y contratos internos |
+| [ADR-0006](adr/0006-errores-paginacion-idempotencia.md) | Formato de errores, paginación e idempotencia | Aceptado | Todos los contratos OpenAPI |
+| [ADR-0009](adr/0009-sesiones-refresh-cookies.md) | Sesiones, refresh tokens y cookies | Aceptado | Autenticación y `security_db` |
+| [ADR-0010](adr/0010-revocacion-access-tokens.md) | Revocación de access tokens | Aceptado | Autorización y vigencia de tokens |
+| [ADR-0011](adr/0011-politica-contrasenas.md) | Hashing y política de contraseñas | Aceptado | Registro y cambio de contraseña |
 
 ---
 
@@ -132,6 +135,7 @@ Estas decisiones están documentadas como propuestas y bloquean total o parcialm
 
 ### Prioridad alta
 
+- `api/security.openapi.yaml`: contrato de registro, login, refresh, logout, perfil y cambio de contraseña.
 - `data-contracts.md`: acuerdo con la persona responsable de la base de datos.
 - Enlace y README del tablero de GitHub Projects.
 
@@ -157,5 +161,5 @@ Estas decisiones están documentadas como propuestas y bloquean total o parcialm
 
 ---
 
-**Última actualización:** 2026-11-11
+**Última actualización:** 2026-11-14
 **Responsable:** equipo PerfumesPAYDAY

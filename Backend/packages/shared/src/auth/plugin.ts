@@ -14,7 +14,7 @@ export interface JwtAuthEnv extends JwtEnv {
   NODE_ENV: 'development' | 'test' | 'production';
 }
 
-export interface AuthOptions extends JwtVerifierOptions {}
+export type AuthOptions = JwtVerifierOptions;
 
 declare module 'fastify' {
   interface FastifyRequest {
@@ -65,6 +65,10 @@ export function registerAuthWithVerifier(
   };
 
   const requireRole = (...roles: Role[]): preHandlerHookHandler => {
+    if (roles.length === 0) {
+      throw new Error('requireRole necesita al menos un rol.');
+    }
+
     return async (request: FastifyRequest, _reply: FastifyReply) => {
       if (!request.auth) {
         throw new AppError('UNAUTHORIZED', 'Se requiere autenticación.', 401);

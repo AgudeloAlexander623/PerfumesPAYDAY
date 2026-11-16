@@ -69,7 +69,7 @@ Documento de amenazas, controles y pruebas de seguridad de **PerfumesPAYDAY**. A
 
 - Validar nombre, correo y contraseña en el servidor con Pydantic.
 - Correo único, guardado en minúsculas.
-- Contraseña con Argon2 o bcrypt; nunca cifrado reversible.
+- Contraseña con **Argon2id**; nunca cifrado reversible. Parámetros y política en [ADR-0011](adr/0011-politica-contrasenas.md).
 - Rol `customer` asignado por el servidor.
 - Respuesta sin `password_hash` ni datos internos.
 - Límite de intentos por IP y por correo.
@@ -78,26 +78,33 @@ Documento de amenazas, controles y pruebas de seguridad de **PerfumesPAYDAY**. A
 
 - Comparación de contraseña en tiempo constante.
 - Mensaje genérico `401` para correo inexistente o contraseña incorrecta.
-- Emitir access token de corta duración y refresh token de varios días.
-- Guardar solo el hash del refresh token en `security_db`.
-- Registrar `user_agent`, `ip`, `created_at` y `expires_at` de la sesión.
+- Access token JWT de **15 minutos** y refresh token opaco de **7 días** por inactividad.
+- Guardar solo el **hash SHA-256** del refresh token en `security_db`.
+- Registrar `user_agent`, `ip`, `created_at`, `expires_at` y `absolute_expires_at` de la sesión.
 - Reiniciar el contador de intentos fallidos tras un login exitoso.
+- Detalle completo en [ADR-0009](adr/0009-sesiones-refresh-cookies.md).
 
 ### Renovación
 
-- El refresh token viaja en cookie `httpOnly`, `Secure` y `SameSite`.
-- Rotación obligatoria en cada uso.
+- El refresh token viaja en cookie `httpOnly`, `Secure` en producción y `SameSite=Lax`.
+- Rotación obligatoria en cada uso; el token anterior queda revocado y enlazado con `replaced_by`.
 - Reutilizar un refresh ya rotado revoca todas las sesiones del usuario.
-- La sesión tiene una vida absoluta aunque se renueve.
-- El gateway valida el origen para prevenir CSRF.
+- La sesión tiene una vida absoluta de 30 días aunque se renueve.
+- El gateway valida `Origin`/`Referer` para prevenir CSRF.
 
 ### Cierre de sesión
 
 - Revocar la sesión actual por el refresh token.
-- Eliminar la cookie.
+- Eliminar la cookie con los mismos atributos con los que se creó.
 - Responder `204` aunque no haya sesión activa (idempotente).
 - Ofrecer cierre de todas las sesiones desde el perfil.
 - No eliminar carrito ni historial.
+
+### Revocación del access token
+
+- La beta no usa denylist: el access token sigue siendo válido hasta 15 minutos después del logout.
+- Cambiar la contraseña o deshabilitar la cuenta revoca todas las sesiones, pero no invalida de inmediato el access token ya emitido.
+- La decisión y su camino de evolución están en [ADR-0010](adr/0010-revocacion-access-tokens.md).
 
 ### Almacenamiento en el cliente
 
@@ -106,7 +113,7 @@ Documento de amenazas, controles y pruebas de seguridad de **PerfumesPAYDAY**. A
 - El carrito de invitado guarda solo `variant_id` y cantidad, nunca precios.
 - Si el equipo cambia esta estrategia, debe registrarlo en un ADR.
 
-**Decisión abierta:** la entrega de la clave pública JWT está en [ADR-0003](adr/0003-jwt-rs256.md).
+**Decisión de claves:** JWKS como mecanismo principal y clave pública por entorno como respaldo, según [ADR-0003](adr/0003-jwt-rs256.md).
 
 ---
 
@@ -132,7 +139,8 @@ Reglas:
 - Un cliente que intenta una ruta de administración recibe `403`.
 - Un recurso ajeno responde `404`, no `403`, para no confirmar su existencia.
 - El `user_id` se obtiene del token, nunca de un parámetro.
-- El rol se lee de la base de datos, no del token, cuando la operación es sensible.
+- Para la beta, el rol se toma del claim `roles`; un cambio de rol o una deshabilitación surte efecto al expirar el access token (máximo 15 minutos) o al revocar las sesiones. Ver [ADR-0010](adr/0010-revocacion-access-tokens.md).
+- Si una operación exige efecto inmediato, se evalúa `token_version` o denylist; no se implementa en la beta.
 
 ---
 
@@ -185,8 +193,10 @@ Casos críticos: CU-16 (direcciones), CU-19 (detalle de pedido), CU-21 y CU-22 (
 | Carrito y checkout | Por usuario | Evita abuso de stock. |
 | Administración | Por usuario | Protege cargas masivas. |
 
+- El gateway aplica un límite por IP; `security-service` añade el conteo por correo/cuenta en login, registro y cambio de contraseña.
+- Los intentos fallidos se cuentan por cuenta y por IP; un login exitoso reinicia el contador.
 - El almacén en memoria sirve para una instancia; si se escala, se requiere Redis u otro almacén externo.
-- Responder `429` con tiempo de espera.
+- Responder `429` con `Retry-After`.
 - El rate limit no reemplaza la autorización ni la validación.
 
 ---
@@ -200,6 +210,8 @@ Casos críticos: CU-16 (direcciones), CU-19 (detalle de pedido), CU-21 y CU-22 (
 - Rotar credenciales si se exponen.
 - Cada servicio usa credenciales propias de su base de datos.
 - La clave privada JWT solo la conoce `security-service`; el backend solo recibe la pública.
+- La clave pública se entrega por JWKS en Docker/producción y por `JWT_PUBLIC_KEY` en local/pruebas, según [ADR-0003](adr/0003-jwt-rs256.md).
+- La rotación publica la clave nueva y la anterior durante una ventana de solape; la privada anterior se destruye al cerrar la ventana.
 
 ---
 
@@ -286,14 +298,22 @@ El profesor realizará pruebas básicas sobre la versión desplegada. El equipo 
 
 ---
 
-## 15. Decisiones abiertas
+## 15. Decisiones de autenticación
+
+| Decisión | Estado | ADR |
+|---|---|---|
+| Entrega de la clave pública JWT | Aceptada: JWKS principal, PEM como respaldo | [ADR-0003](adr/0003-jwt-rs256.md) |
+| Sesiones, refresh tokens y cookies | Aceptada: refresh opaco, rotación y cookie `httpOnly` | [ADR-0009](adr/0009-sesiones-refresh-cookies.md) |
+| Revocación de access tokens | Aceptada: 15 minutos sin denylist en la beta | [ADR-0010](adr/0010-revocacion-access-tokens.md) |
+| Hashing y política de contraseñas | Aceptada: Argon2id y mínimo de 12 caracteres | [ADR-0011](adr/0011-politica-contrasenas.md) |
+| Formato de errores | Aceptado: envelope uniforme | [ADR-0006](adr/0006-errores-paginacion-idempotencia.md) |
+
+### Decisiones abiertas de otras áreas
 
 | Decisión | Impacto | ADR |
 |---|---|---|
-| Entrega de la clave pública JWT | Autenticación y despliegue | [ADR-0003](adr/0003-jwt-rs256.md) |
-| Contrato backend–BD | Acceso a datos y credenciales | [ADR-0004](adr/0004-propiedad-datos.md) |
+| Contrato backend–BD | Acceso a datos y credenciales de catálogo/pedidos | [ADR-0004](adr/0004-propiedad-datos.md) |
 | Comunicación interna | Autenticación entre servicios | [ADR-0005](adr/0005-comunicacion-interna.md) |
-| Formato de errores | Evitar filtrar información interna | [ADR-0006](adr/0006-errores-paginacion-idempotencia.md) |
 
 ---
 
@@ -308,5 +328,5 @@ El profesor realizará pruebas básicas sobre la versión desplegada. El equipo 
 
 ---
 
-**Última actualización:** 2026-11-10
-**Estado:** redactado; sujeto a las decisiones abiertas de los ADR.
+**Última actualización:** 2026-11-14
+**Estado:** decisiones de autenticación cerradas; implementación de sesiones pendiente.

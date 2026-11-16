@@ -76,12 +76,15 @@ Enlaces a documentos, casos de uso o diagramas.
 |---|---|---|---|
 | [ADR-0001](0001-microservicios-gateway.md) | Microservicios con gateway único | Aceptado | 2026-11-10 |
 | [ADR-0002](0002-fastify-workspaces.md) | Fastify 5 y npm workspaces | Aceptado | 2026-11-10 |
-| [ADR-0003](0003-jwt-rs256.md) | Entrega de la clave pública JWT | Propuesto | 2026-11-10 |
+| [ADR-0003](0003-jwt-rs256.md) | Entrega de la clave pública JWT | Aceptado | 2026-11-10 |
 | [ADR-0004](0004-propiedad-datos.md) | Propiedad de datos y contrato backend–BD | Propuesto / bloqueante | 2026-11-10 |
 | [ADR-0005](0005-comunicacion-interna.md) | Comunicación interna `orders` → `catalog` | Propuesto | 2026-11-10 |
-| [ADR-0006](0006-errores-paginacion-idempotencia.md) | Errores, paginación e idempotencia | Propuesto | 2026-11-10 |
+| [ADR-0006](0006-errores-paginacion-idempotencia.md) | Errores, paginación e idempotencia | Aceptado | 2026-11-10 |
 | [ADR-0007](0007-carrito-hibrido.md) | Carrito híbrido | Aceptado | 2026-11-10 |
 | [ADR-0008](0008-modulos-typescript.md) | Estrategia de módulos TypeScript | Aceptado | 2026-11-10 |
+| [ADR-0009](0009-sesiones-refresh-cookies.md) | Sesiones, refresh tokens y cookies | Aceptado | 2026-11-14 |
+| [ADR-0010](0010-revocacion-access-tokens.md) | Revocación de access tokens y privilegios | Aceptado | 2026-11-14 |
+| [ADR-0011](0011-politica-contrasenas.md) | Hashing y política de contraseñas | Aceptado | 2026-11-14 |
 
 ---
 
@@ -90,10 +93,10 @@ Enlaces a documentos, casos de uso o diagramas.
 | ADR | Qué bloquea |
 |---|---|
 | ADR-0004 | Catálogo, pedidos, dependencias de Prisma y `data-contracts.md`. |
-| ADR-0003 | Autenticación real, gateway y despliegue. |
-| ADR-0006 | Contratos OpenAPI, manejo de errores y checkout idempotente. |
 | ADR-0005 | Llamadas internas de `orders` a `catalog`. |
+
+> Los ADR de autenticación (0003, 0006, 0009, 0010 y 0011) ya están aceptados. El siguiente bloqueo de autenticación es de implementación: falta `security.openapi.yaml` y el ciclo de sesiones en `security-service`.
 
 ---
 
-**Última actualización:** 2026-11-10
+**Última actualización:** 2026-11-14

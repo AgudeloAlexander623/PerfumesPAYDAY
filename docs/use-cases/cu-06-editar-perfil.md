@@ -24,7 +24,7 @@ El usuario selecciona **Editar** en la pantalla de su perfil.
 1. El usuario abre **Mi perfil** y selecciona **Editar**.
 2. El formulario muestra el nombre actual.
 3. El usuario modifica el nombre y guarda.
-4. El frontend valida que no esté vacío ni supere la longitud máxima.
+4. El frontend valida que no esté vacío y que tenga entre 1 y 120 caracteres.
 5. Envía la solicitud al gateway y este la enruta a `security-service`.
 6. `security-service` actualiza únicamente los campos permitidos del usuario del token.
 7. Devuelve el perfil actualizado y el frontend lo muestra.
@@ -53,8 +53,9 @@ El usuario selecciona **Editar** en la pantalla de su perfil.
 
 ## Reglas de negocio
 
-- En la beta solo se puede editar el nombre.
-- El correo, el rol y el identificador son inmutables desde este flujo.
+- En la beta solo se puede editar el nombre (`name`, 1–120 caracteres).
+- El correo, el rol, el estado y el identificador son inmutables desde este flujo.
+- Los campos no permitidos enviados en la solicitud se ignoran.
 - Cambiar contraseña es un caso aparte (CU-24).
 - Cambiar el correo requiere verificación y queda fuera del alcance.
 

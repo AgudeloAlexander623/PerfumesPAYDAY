@@ -23,13 +23,13 @@ El frontend recibe un `401` por token expirado o detecta que el token está por 
 ## Flujo principal
 
 1. El frontend detecta que el access token expiró.
-2. Envía la solicitud de renovación al gateway; el refresh token viaja en la cookie `httpOnly`.
-3. El gateway valida el origen y enruta la petición a `security-service`.
-4. `security-service` busca la sesión por el hash del refresh token.
+2. Envía la solicitud de renovación al gateway; el refresh token opaco viaja en la cookie `HttpOnly` (sin cuerpo ni URL).
+3. El gateway valida `Origin`/`Referer` y enruta la petición a `security-service`.
+4. `security-service` busca la sesión por el hash SHA-256 del refresh token.
 5. Verifica que la sesión no esté expirada, revocada ni asociada a un usuario inactivo.
-6. Revoca el refresh token usado y emite uno nuevo (**rotación**).
-7. Emite un nuevo access token y actualiza la sesión.
-8. Devuelve el access token y renueva la cookie del refresh token.
+6. Revoca el refresh token usado y emite uno nuevo (**rotación atómica**).
+7. Emite un nuevo access token (15 minutos) y actualiza la sesión.
+8. Responde `200` con el nuevo access token, renueva la cookie del refresh token y envía `Cache-Control: no-store`.
 9. El frontend reintenta una sola vez la petición original.
 
 ## Flujos alternativos
@@ -68,24 +68,24 @@ El frontend recibe un `401` por token expirado o detecta que el token está por 
 ## Reglas de negocio
 
 - La rotación del refresh token es obligatoria en cada renovación.
-- Cada dispositivo mantiene su propia sesión.
-- La sesión tiene una vida absoluta aunque se renueve varias veces.
-- Un refresh token revocado no puede volver a usarse.
+- Cada dispositivo mantiene su propia sesión (`family_id`).
+- La sesión tiene una vida absoluta de 30 días, aunque se renueve varias veces (inactividad: 7 días).
+- Un refresh token revocado o ya rotado no puede volver a usarse; su reutilización revoca las sesiones del usuario.
 - Renovar no requiere contraseña.
 
 ## Datos y servicios involucrados
 
 - **Servicio:** `security-service`.
 - **Base de datos:** `security_db`.
-- **Entidad:** `sessions` con `id`, `user_id`, `refresh_token_hash`, `expires_at`, `revoked_at`, `replaced_by`, `user_agent`, `ip`, `created_at`.
+- **Entidad:** `sessions` con `id`, `user_id`, `family_id`, `refresh_token_hash`, `expires_at`, `absolute_expires_at`, `revoked_at`, `replaced_by`, `user_agent`, `ip`, `created_at`, `last_used_at`.
 
 ## Seguridad
 
-- Refresh token en cookie `httpOnly`, `Secure` y `SameSite`.
-- Solo se guarda el hash del refresh token, nunca el valor completo.
-- La reutilización de un token revoca toda la cadena de sesiones.
-- El gateway valida el origen para prevenir CSRF.
-- Ningún token se escribe en logs.
+- Refresh token opaco en cookie `HttpOnly`, `Secure` en producción (`SameSite=Lax`, nombre/`Path` según entorno; ver [ADR-0009](../adr/0009-sesiones-refresh-cookies.md)).
+- Solo se guarda el hash SHA-256 del refresh token, nunca el valor completo.
+- La reutilización de un token revocado/rotado revoca todas las sesiones del usuario.
+- El gateway/servicio valida `Origin`/`Referer` para prevenir CSRF.
+- Ningún token se escribe en logs. Respuestas de renovación con `Cache-Control: no-store`.
 
 ## Criterios de aceptación
 

@@ -2,7 +2,7 @@
 
 Documento de convenciones y contratos de la API pública de **PerfumesPAYDAY**. El gateway es el único punto de entrada; los servicios internos implementan los contratos que aquí se describen.
 
-> **Estado:** borrador. El contrato del gateway existe a nivel de superficie; los contratos detallados de `security`, `catalog` y `orders` están pendientes y dependen de [ADR-0004](../adr/0004-propiedad-datos.md) y [ADR-0006](../adr/0006-errores-paginacion-idempotencia.md).
+> **Estado:** borrador. Los contratos del gateway y de seguridad existen a nivel de borrador; los contratos de `catalog` y `orders` dependen de [ADR-0004](../adr/0004-propiedad-datos.md). El envelope de errores ya está aceptado en [ADR-0006](../adr/0006-errores-paginacion-idempotencia.md).
 
 ---
 
@@ -11,7 +11,7 @@ Documento de convenciones y contratos de la API pública de **PerfumesPAYDAY**. 
 | Archivo | Servicio | Estado |
 |---|---|---|
 | [`gateway.openapi.yaml`](gateway.openapi.yaml) | Gateway | Borrador |
-| `security.openapi.yaml` | `security-service` | Pendiente |
+| [`security.openapi.yaml`](security.openapi.yaml) | `security-service` | Borrador (Fase 1) |
 | `catalog.openapi.yaml` | `catalog-service` | Pendiente |
 | `orders.openapi.yaml` | `order-service` | Pendiente |
 
@@ -31,7 +31,9 @@ La fuente de verdad de cada contrato es el archivo OpenAPI del servicio. El gate
 | Nombres de rutas | Sustantivos en plural y kebab-case |
 | Nombres de campos | `camelCase` |
 | Autenticación | `Authorization: Bearer <access token>` |
-| Refresh token | Cookie `httpOnly`, `Secure`, `SameSite` |
+| Refresh token | Cookie `httpOnly` con token opaco; nunca en cuerpo ni URL |
+| Access token | JWT RS256 de 15 minutos; `typ: "access"` |
+| Refresh token | 7 días por inactividad; 30 días absolutos; rotación en cada uso |
 | Versión | `/api/v1`; un cambio incompatible crea `/api/v2` |
 
 ---
@@ -40,11 +42,13 @@ La fuente de verdad de cada contrato es el archivo OpenAPI del servicio. El gate
 
 - Los endpoints públicos no requieren token: catálogo, búsqueda, detalle y autenticación.
 - Los endpoints protegidos requieren un access token JWT válido.
-- El refresh token no se envía en el cuerpo ni en la URL; viaja en cookie.
+- El refresh token no se envía en el cuerpo ni en la URL; viaja en cookie `httpOnly`.
 - El `user_id` y el rol salen del token; nunca del cuerpo ni de la URL.
 - Las rutas de administración requieren rol `admin` validado en gateway y servicio.
+- `POST /api/v1/auth/refresh` y `POST /api/v1/auth/logout` validan `Origin`/`Referer`.
+- El contrato de autenticación y cuenta se define en [`security.openapi.yaml`](security.openapi.yaml) (borrador, Fase 1).
 
-**Decisión abierta:** la entrega de la clave pública está en [ADR-0003](../adr/0003-jwt-rs256.md).
+**Decisiones:** claves en [ADR-0003](../adr/0003-jwt-rs256.md), sesiones y cookies en [ADR-0009](../adr/0009-sesiones-refresh-cookies.md), revocación en [ADR-0010](../adr/0010-revocacion-access-tokens.md) y contraseñas en [ADR-0011](../adr/0011-politica-contrasenas.md).
 
 ---
 
@@ -126,7 +130,7 @@ Respuesta:
 |---|---|---|---|
 | `/health` | Gateway | — | Pública |
 | `/api/v1/auth/*` | `security-service` | CU-01 a CU-04 | Pública / cookie |
-| `/api/v1/users/me` | `security-service` | CU-05, CU-06, CU-24 | Bearer |
+| `/api/v1/users/me`, `/api/v1/users/me/password` | `security-service` | CU-05, CU-06, CU-24 | Bearer |
 | `/api/v1/products*` | `catalog-service` | CU-07 a CU-09 | Pública |
 | `/api/v1/brands`, `/api/v1/categories` | `catalog-service` | CU-07, CU-08, CU-25 | Pública (lectura) |
 | `/api/v1/cart*` | `order-service` | CU-11 a CU-15 | Bearer |
@@ -217,5 +221,5 @@ No se instala ninguna dependencia en esta fase; el comando es una referencia par
 
 ---
 
-**Última actualización:** 2026-11-10
-**Estado:** convenciones redactadas; contratos de servicio pendientes.
+**Última actualización:** 2026-11-16
+**Estado:** `security.openapi.yaml` redactado en borrador (Fase 1); faltan contratos de catálogo y pedidos.

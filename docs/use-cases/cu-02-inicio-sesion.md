@@ -29,10 +29,10 @@ El usuario selecciona **Iniciar sesión** en el encabezado del sitio o al intent
 5. El gateway enruta la petición a `security-service`.
 6. `security-service` busca al usuario por correo en `security_db`.
 7. `security-service` compara la contraseña recibida con el hash guardado usando una comparación de tiempo constante.
-8. Si las credenciales son válidas, emite un **access token** de corta duración y un **refresh token**.
-9. Registra el refresh token (también hasheado) y los datos de la sesión en `security_db`.
-10. Responde con los tokens y los datos mínimos del usuario: `id`, nombre y rol.
-11. El frontend guarda la sesión y actualiza la interfaz.
+8. Si las credenciales son válidas, emite un **access token JWT** de 15 minutos y un **refresh token opaco** de 7 días de inactividad (máximo 30 días absolutos).
+9. Guarda únicamente el **hash SHA-256** del refresh token y los datos de la sesión en `security_db`.
+10. Responde `200` con el access token y los datos mínimos del usuario (`id`, `name`, `email`, `role`) y envía el refresh token en una cookie `HttpOnly` (`Set-Cookie`, `Cache-Control: no-store`).
+11. El frontend guarda el access token en memoria y actualiza la interfaz.
 12. Si existía un carrito de invitado, se ejecuta la fusión descrita en el [CU-15](cu-15-fusionar-carrito.md).
 13. El sistema redirige según el rol: cliente al catálogo, administrador al panel.
 
@@ -74,11 +74,11 @@ El usuario selecciona **Iniciar sesión** en el encabezado del sitio o al intent
 ## Reglas de negocio
 
 - El correo se compara sin distinguir mayúsculas y minúsculas.
-- El mensaje de error es siempre el mismo para correo inexistente y contraseña incorrecta.
-- El rol se lee de la base de datos; nunca se acepta desde el cliente.
+- El mensaje de error es siempre el mismo para correo inexistente y contraseña incorrecta (`401`).
+- El rol se asigna/lee desde el servidor y nunca se acepta desde el cliente; se incluye en el token y en la respuesta mínima.
 - Se permite más de una sesión activa: una por dispositivo.
-- El access token dura pocos minutos y el refresh token varios días; los valores exactos se definen en configuración.
-- El refresh token se rota cada vez que se usa.
+- El access token dura 15 minutos; el refresh token dura 7 días por inactividad y 30 días de vida absoluta.
+- El refresh token es opaco, se rota en cada uso y solo se persiste su hash SHA-256.
 - Un inicio de sesión exitoso reinicia el contador de intentos fallidos.
 
 ## Datos y servicios involucrados
@@ -86,21 +86,19 @@ El usuario selecciona **Iniciar sesión** en el encabezado del sitio o al intent
 - **Servicio:** `security-service`.
 - **Base de datos:** `security_db`.
 - **Entidades:**
-  - `users`: `id`, `email`, `password_hash`, `role`, `status`, `last_login_at`.
-  - `sessions`: `id`, `user_id`, `refresh_token_hash`, `expires_at`, `revoked_at`, `user_agent`, `ip`, `created_at`.
+  - `users`: `id`, `name`, `email`, `password_hash`, `role`, `status`, `created_at`, `updated_at`, `last_login_at`.
+  - `sessions`: `id`, `user_id`, `family_id`, `refresh_token_hash`, `expires_at`, `absolute_expires_at`, `revoked_at`, `replaced_by`, `user_agent`, `ip`, `created_at`, `last_used_at`.
 
 ## Seguridad
 
 - Todo el tráfico viaja por HTTPS a través del gateway.
-- La comparación de contraseñas usa una función de tiempo constante para evitar ataques de temporización.
+- La verificación de contraseñas usa **Argon2id** (comparación de tiempo constante).
 - Los tokens nunca se escriben en logs ni se devuelven en la URL.
-- El access token se mantiene en memoria; el refresh token viaja en una cookie `httpOnly`, `Secure` y `SameSite`.
-- Si se usan cookies, el gateway debe validar el origen para prevenir CSRF.
+- El access token se mantiene en memoria; el refresh token opaco viaja en una cookie `HttpOnly` (`Secure` y nombre `__Host-` en producción, `SameSite=Lax`; ver [ADR-0009](../adr/0009-sesiones-refresh-cookies.md)).
+- El gateway valida `Origin`/`Referer` en operaciones con cookie de refresh para prevenir CSRF.
 - El límite de intentos protege contra fuerza bruta.
-- El cierre de sesión revoca el refresh token correspondiente.
+- El cierre de sesión revoca el refresh token correspondiente; el access token vigente expira como máximo en 15 minutos (ver [ADR-0010](../adr/0010-revocacion-access-tokens.md)).
 - Las rutas de administración validan el rol `admin` en el servidor, no solo en la interfaz.
-
-> Si el equipo decide guardar los tokens de otra forma, la decisión debe quedar registrada en un ADR.
 
 ## Criterios de aceptación
 

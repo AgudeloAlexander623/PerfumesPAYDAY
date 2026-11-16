@@ -3,7 +3,7 @@
 > **Estado:** redactado — pendiente de validación con el equipo.
 > **Última actualización:** 2026-11-11
 > **Fuente de verdad del trabajo:** el **tablero de GitHub Projects**. Este documento define *cómo* se trabaja (ceremonias, DoR, DoD, sprints y métricas).
-> **Documentos relacionados:** [`../user-stories/`](../user-stories/user-stories.md) (historias de usuario), [`technical-stories.md`](technical-stories.md) (historias técnicas), [`../beta-criteria.md`](../beta-criteria.md) (criterios de aceptación), [`../../README.md`](../../README.md) (alcance y cronograma).
+> **Documentos relacionados:** [`user-stories.md`](user-stories.md) (historias de usuario), [`technical-stories.md`](technical-stories.md) (historias técnicas), [`../beta-criteria.md`](../beta-criteria.md) (criterios de aceptación), [`../../README.md`](../../README.md) (alcance y cronograma).
 
 ---
 

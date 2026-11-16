@@ -46,10 +46,12 @@ Decidir cómo se construirá el backend antes de escribir código: framework, co
 | ORM | Prisma / Drizzle | Prisma | Confirmado |
 | Dependencias | npm workspaces / package por servicio | npm workspaces | Confirmado |
 | Validación | Zod / manual | Zod | Propuesto |
-| Autenticación | JWT RS256 | Validar en gateway y servicios | Definido por arquitectura |
-| API | REST/JSON `/api/v1` | OpenAPI por servicio | Pendiente |
-| Errores | Envelope JSON uniforme | Definir en ADR | Pendiente |
-| Paginación | Offset / cursor | Offset para catálogo beta | Pendiente |
+| Autenticación | JWT RS256 | Validar en gateway y servicios | Confirmado (ADR-0003, ADR-0010) |
+| Sesiones | Refresh opaco + rotación | Cookie `httpOnly` y revocación | Confirmado (ADR-0009) |
+| Contraseñas | Argon2id | Longitud mínima de 12 | Confirmado (ADR-0011) |
+| API | REST/JSON `/api/v1` | OpenAPI por servicio | Pendiente (`security.openapi.yaml`) |
+| Errores | Envelope JSON uniforme | Definir en ADR | Confirmado (ADR-0006) |
+| Paginación | Offset / cursor | Offset para catálogo beta | Confirmado (ADR-0006) |
 | Idempotencia | Header `Idempotency-Key` | Carrito y checkout | Definido en CU-15 y CU-17 |
 | Logs | JSON estructurado | Sin datos personales | Pendiente |
 | Bases de datos | Una por servicio | Sin joins entre bases | Confirmado |
@@ -69,7 +71,7 @@ Decidir cómo se construirá el backend antes de escribir código: framework, co
 
 La autorización para código aplica desde F2. F0 y F1 son documentación y decisiones.
 
-Estado actual: F0 y F2 están completas. De F1 solo está aceptado ADR-0008; faltan ADR-0003, ADR-0004, ADR-0005 y ADR-0006. F5 está avanzada: la validación JWT RS256, los claims, los guards de rol y el proxy del gateway con CORS y rate limit ya funcionan; falta el emisor real en `security-service` y la agregación de auditoría.
+Estado actual: F0 y F2 están completas. En F1 están aceptados ADR-0003, ADR-0006, ADR-0008, ADR-0009, ADR-0010 y ADR-0011; faltan ADR-0004 (propiedad de datos de catálogo/pedidos) y ADR-0005 (comunicación interna). F5 está avanzada: la validación JWT RS256, los claims, los guards de rol, el proxy del gateway con CORS y rate limit y el emisor `security-service` ya funcionan. Falta el ciclo de sesiones (registro, login, refresh y logout), la base `security_db`, el contrato `security.openapi.yaml` y la agregación de auditoría.
 
 La secuencia detallada, el orden de dependencias y las puertas de salida de cada fase están en [`ROADMAP.md`](ROADMAP.md).
 
@@ -97,8 +99,10 @@ Cuando se elija el framework se instalarán sus plugins en cada servicio, no en 
 - **Rate limit:** el almacén en memoria sirve para una instancia; si se escala, hará falta Redis u otro almacén externo.
 - **Prisma 7:** requiere `@prisma/adapter-pg` y `pg`; el cliente aún no está generado y hay que confirmar la configuración de conexión y la ruta de generación.
 - **Workspaces:** npm puede hoistar dependencias y ocultar una que falte en un servicio. Verificar con `npm ls` al agregar paquetes.
-- **Contratos:** faltan el formato de error, la paginación y los códigos de respuesta uniformes.
-- **JWT:** falta decidir si la clave pública se pasa por variable de entorno o por archivo montado.
+- **Contratos:** el envelope, la paginación y la idempotencia ya están aceptados (ADR-0006); falta escribir `security.openapi.yaml` y los contratos de catálogo/pedidos.
+- **JWT:** resuelto en ADR-0003: JWKS como mecanismo principal y PEM por entorno como respaldo. Falta implementar la rotación con múltiples claves.
+- **Sesiones:** resuelto en ADR-0009 y ADR-0010: refresh opaco con rotación, cookie `httpOnly`, access token de 15 minutos y revocación diferida. Falta implementar `security_db` y los endpoints.
+- **Contraseñas:** resuelto en ADR-0011: Argon2id, mínimo de 12 caracteres y bloqueo de contraseñas comunes. Falta agregar la dependencia y el validador.
 - **Comunicación interna:** falta confirmar si `order-service` llama a `catalog-service` por red interna directa o a través del gateway. La arquitectura sugiere red interna directa, sin exponer el servicio.
 - **Auditoría e idempotencia:** falta definir retención, limpieza y responsables.
 - **Entornos:** Docker y `.env.example` ya existen; falta CI.
@@ -106,11 +110,12 @@ Cuando se elija el framework se instalarán sus plugins en cada servicio, no en 
 
 ## 8. Próximos pasos
 
-1. Crear los ADR de framework, formato de errores, autenticación y propiedad de datos.
-2. Convertir los casos `Must` en contratos OpenAPI.
-3. Diseñar los esquemas Prisma por servicio.
-4. Instalar las utilidades de prueba de integración cuando existan endpoints.
-5. Pedir autorización y recién entonces crear el esqueleto de los servicios.
+1. Escribir `docs/api/security.openapi.yaml` con registro, login, refresh, logout, perfil y cambio de contraseña.
+2. Agregar `security_db` a Docker Compose y crear las migraciones de `users` y `sessions`.
+3. Implementar los endpoints de autenticación y el validador de contraseñas.
+4. Endurecer el gateway: `typ`, CSRF, cookies, `WWW-Authenticate`, redacción de logs y rotación JWKS.
+5. Agregar pruebas E2E y CI antes de la demo.
+6. Cerrar ADR-0004 y ADR-0005 para catálogo y pedidos.
 
 ## 9. Registro de decisiones
 
@@ -122,4 +127,9 @@ Cuando se elija el framework se instalarán sus plugins en cada servicio, no en 
 | 2026-11-10 | Usar Fastify 5 con plugins por servicio | Confirmado e instalado |
 | 2026-11-10 | ADR-0008: ESM, project references y paquete `@perfumespayday/shared` | Aceptado |
 | 2026-11-10 | Esqueleto del backend con `/health`, Docker y pruebas | Hecho |
-| 2026-11-10 | Contratos OpenAPI y ADR restantes | Pendiente |
+| 2026-11-14 | ADR-0003: JWKS principal y PEM como respaldo | Aceptado |
+| 2026-11-14 | ADR-0006: errores, paginación e idempotencia | Aceptado |
+| 2026-11-14 | ADR-0009: sesiones, refresh opaco y cookies | Aceptado |
+| 2026-11-14 | ADR-0010: access token de 15 minutos sin denylist en beta | Aceptado |
+| 2026-11-14 | ADR-0011: Argon2id y política de contraseñas | Aceptado |
+| 2026-11-14 | Contrato `security.openapi.yaml` y `security_db` | Pendiente |

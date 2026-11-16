@@ -11,6 +11,8 @@
 
 La base de datos es responsabilidad de otra persona del equipo. El backend necesita leer y escribir en `catalog_db` y `orders_db`, pero **no debe diseñar los esquemas por su cuenta**. Hoy el backend tiene instalados `prisma`, `@prisma/client`, `@prisma/adapter-pg` y `pg`, pero no existe un `schema.prisma` ni un contrato de acceso a datos.
 
+`security_db` no entra en este ADR: es propiedad de `security-service` y su modelo se define en [ADR-0009](0009-sesiones-refresh-cookies.md). Este ADR cubre `catalog_db` y `orders_db`.
+
 Esta decisión bloquea:
 
 - El diseño de catálogo y pedidos.

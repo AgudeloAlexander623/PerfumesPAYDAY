@@ -180,3 +180,11 @@ function parseCorsOrigins(value: string): string[] {
     .map((origin) => origin.trim())
     .filter(Boolean);
 }
+
+function keysGatewayRoutes(): UpstreamName[] {
+  if (gatewayRoutes.length === 0) {
+    throw new Error('No se han definido rutas en el gateway');
+  }
+
+  return [...new Set(gatewayRoutes.map((route) => route.upstream))];
+}

@@ -11,8 +11,9 @@ info:
 
     Este archivo documenta la **superficie** y el **enrutamiento**. Los cuerpos
     detallados de cada operación viven en el contrato OpenAPI del servicio
-    correspondiente (`security.openapi.yaml`, `catalog.openapi.yaml` u
-    `orders.openapi.yaml`), que está pendiente.
+    correspondiente ([`security.openapi.yaml`](security.openapi.yaml),
+    `catalog.openapi.yaml` u `orders.openapi.yaml`); los de catálogo y pedidos
+    siguen pendientes.
 
     Convenciones transversales: ver `docs/api/README.md` y el ADR-0006.
   contact:
@@ -198,6 +199,33 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '422':
           $ref: '#/components/responses/UnprocessableEntity'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+
+  /api/v1/users/me/password:
+    patch:
+      tags: [Cuenta]
+      summary: Cambiar la contraseña propia (CU-24)
+      operationId: changeMyPassword
+      security:
+        - bearerAuth: []
+      x-service: security
+      x-contract: security.openapi.yaml
+      x-cu: CU-24
+      x-status: draft
+      requestBody:
+        $ref: '#/components/requestBodies/ProxiedJson'
+      responses:
+        '204':
+          $ref: '#/components/responses/NoContent'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
         '503':
           $ref: '#/components/responses/ServiceUnavailable'
 

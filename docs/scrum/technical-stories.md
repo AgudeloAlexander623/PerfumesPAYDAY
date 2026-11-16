@@ -3,7 +3,7 @@
 > **Estado:** borrador 0.1 — pendiente de validación con el equipo.
 > **Última actualización:** 2026-11-11
 > **Fuente de verdad del comportamiento:** [`../use-cases/`](../use-cases/README.md). Estas historias no cambian el comportamiento funcional: habilitan que las historias de usuario se puedan construir, integrar, desplegar y aprobar.
-> **Documentos relacionados:** [`../user-stories/`](../user-stories/user-stories.md) (historias de usuario), [`scrum.md`](scrum.md) (sprints y DoD), [`../beta-criteria.md`](../beta-criteria.md) (criterios de aceptación).
+> **Documentos relacionados:** [`user-stories.md`](user-stories.md) (historias de usuario), [`scrum.md`](scrum.md) (sprints y DoD), [`../beta-criteria.md`](../beta-criteria.md) (criterios de aceptación).
 
 ---
 
