@@ -2,8 +2,9 @@
 
 | Campo | Valor |
 |---|---|
-| Estado | Propuesto |
+| Estado | Aceptado |
 | Fecha | 2026-11-10 |
+| Aceptado | 2026-11-14 |
 | Decisores | Equipo |
 | Relacionados | [`api/README.md`](../api/README.md), CU-07, CU-11, CU-15, CU-17, CU-18, CU-21 |
 
@@ -11,7 +12,7 @@
 
 Los casos de uso definen respuestas `400`, `401`, `403`, `404`, `409`, `422`, `429` y `503`, pero no existe un formato uniforme de error. Tampoco están definidos la paginación ni el mecanismo de idempotencia del carrito y el checkout. Sin esto, cada servicio inventaría su propio formato y el frontend tendría que adaptarse a cada uno.
 
-## Decisión propuesta
+## Decisión
 
 ### 1. Envelope de error
 
@@ -115,13 +116,23 @@ Listados de catálogo, historial, pedidos administrativos y auditoría usan pagi
 - Los contratos OpenAPI deben declarar `Idempotency-Key` y el esquema de error.
 - Los logs deben incluir `requestId` para correlacionar.
 
+## Estado de implementación
+
+- [x] Envelope de error en el paquete compartido de Node y en `security-service`.
+- [x] Propagación de `x-request-id` y códigos HTTP base.
+- [x] Contrato de paginación por offset documentado.
+- [x] Contrato de idempotencia documentado.
+- [ ] Códigos de error concretos por servicio.
+- [ ] Middleware de idempotencia en carrito y checkout.
+- [ ] Pruebas de contrato de paginación e idempotencia.
+- [ ] Decidir si una página fuera de rango devuelve `400` o la última página.
+
 ## Pendientes
 
-- Aprobar el formato.
 - Definir los códigos de error concretos por servicio.
-- Definir la retención de idempotencia.
-- Definir si la paginación fuera de rango devuelve `400` o la última página.
-- Implementar el middleware de errores en gateway y servicios.
+- Definir la retención definitiva de idempotencia.
+- Implementar la idempotencia en carrito y checkout.
+- Validar el envelope en las pruebas de contrato de todos los servicios.
 
 ## Referencias
 

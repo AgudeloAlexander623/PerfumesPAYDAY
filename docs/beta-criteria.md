@@ -2,7 +2,7 @@
 
 > **Estado:** redactado — pendiente de validación con el equipo y el profesor.
 > **Última actualización:** 2026-11-11
-> **Fuente de verdad:** el comportamiento funcional vive en [`use-cases/`](use-cases/README.md) y las historias en [`user-stories/`](user-stories/user-stories.md). Este documento no los repite: los convierte en **criterios verificables** y en el **guion de demo**.
+> **Fuente de verdad:** el comportamiento funcional vive en [`use-cases/`](use-cases/README.md) y las historias en [`scrum/user-stories.md`](scrum/user-stories.md). Este documento no los repite: los convierte en **criterios verificables** y en el **guion de demo**.
 > **Propósito:** ser el contrato de aceptación de la beta. Cuando todos los criterios de la sección 4 estén en verde, la beta se considera terminada.
 
 ---
