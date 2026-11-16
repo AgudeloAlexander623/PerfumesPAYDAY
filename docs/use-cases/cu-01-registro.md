@@ -28,9 +28,9 @@ El visitante selecciona **Crear cuenta** desde la pantalla de inicio de sesión 
 4. El frontend envía la solicitud al gateway.
 5. El gateway enruta la solicitud a `security-service`.
 6. `security-service` verifica que el correo no exista y asigna el rol `customer`.
-7. `security-service` hashea la contraseña con Argon2 o bcrypt.
+7. `security-service` hashea la contraseña con **Argon2id** según la política vigente.
 8. `security-service` guarda el usuario en `security_db`.
-9. El servicio responde con el usuario creado, sin datos sensibles.
+9. El servicio responde `201` con el usuario creado, sin datos sensibles ni sesión.
 10. El frontend muestra el registro exitoso y lleva al visitante a iniciar sesión.
 
 ## Flujos alternativos
@@ -47,8 +47,8 @@ El visitante selecciona **Crear cuenta** desde la pantalla de inicio de sesión 
 
 ### A3 — Contraseña débil
 
-- **Cuándo ocurre:** la contraseña no cumple la longitud o complejidad mínima.
-- **Respuesta del sistema:** responde `422` y explica los requisitos antes de reenviar.
+- **Cuándo ocurre:** la contraseña no cumple la política de seguridad (longitud, contraseña común, o igual al correo/nombre).
+- **Respuesta del sistema:** responde `422` con código `WEAK_PASSWORD` y explica los requisitos antes de reenviar.
 
 ### A4 — Demasiados intentos
 
@@ -71,7 +71,9 @@ El visitante selecciona **Crear cuenta** desde la pantalla de inicio de sesión 
 - El correo es único y se guarda en minúsculas.
 - El rol siempre es `customer`; el usuario no puede enviarlo ni cambiarlo.
 - La contraseña nunca se guarda ni se devuelve en texto plano.
-- El nombre es obligatorio y tiene una longitud máxima definida.
+- La contraseña debe tener entre 12 y 128 caracteres, no recortarse, no ser común y no ser igual al correo o al nombre (sin exigir composición obligatoria).
+- El nombre es obligatorio y tiene entre 1 y 120 caracteres.
+- El registro no crea sesión automáticamente.
 - El registro no confirma públicamente si un correo existe más allá del `409` estándar.
 
 ## Datos y servicios involucrados
@@ -83,7 +85,7 @@ El visitante selecciona **Crear cuenta** desde la pantalla de inicio de sesión 
 ## Seguridad
 
 - Validación de datos en el servidor con Pydantic, no solo en el frontend.
-- Hash con Argon2 o bcrypt; nunca cifrado reversible.
+- Hash con **Argon2id**; nunca cifrado reversible (ver [ADR-0011](../adr/0011-politica-contrasenas.md)).
 - Límite de intentos por IP y por correo.
 - Respuestas sin `password_hash` ni datos internos.
 - Comunicación por HTTPS a través del gateway.

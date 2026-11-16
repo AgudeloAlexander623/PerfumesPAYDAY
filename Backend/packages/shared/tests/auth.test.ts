@@ -84,6 +84,12 @@ afterAll(async () => {
 });
 
 describe('registro de autenticación', () => {
+  it('exige al menos un rol al crear el guard', () => {
+    expect(() => app.requireRole()).toThrow(
+      'requireRole necesita al menos un rol.',
+    );
+  });
+
   it('deja pasar rutas públicas sin token', async () => {
     const response = await app.inject({ method: 'GET', url: '/public' });
 

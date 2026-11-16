@@ -8,3 +8,4 @@ await startService({
     await configureJwtAuth(app, env);
   },
 });
+
