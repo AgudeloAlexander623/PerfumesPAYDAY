@@ -14,10 +14,10 @@ import {
   createJwtVerifier,
   normalizePem,
   registerAuth,
-} from '@perfumespayday/shared';
+} from '@perfumesgold/shared';
 
-const ISSUER = 'perfumespayday-security';
-const AUDIENCE = 'perfumespayday-api';
+const ISSUER = 'perfumesgold-security';
+const AUDIENCE = 'perfumesgold-api';
 const SUBJECT = '11111111-1111-4111-8111-111111111111';
 
 interface TokenOptions {

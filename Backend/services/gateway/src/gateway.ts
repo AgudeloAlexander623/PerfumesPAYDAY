@@ -3,7 +3,7 @@ import httpProxy from '@fastify/http-proxy';
 import rateLimit from '@fastify/rate-limit';
 import type { FastifyInstance } from 'fastify';
 import type { IncomingHttpHeaders } from 'node:http';
-import { AppError, errorEnvelope } from '@perfumespayday/shared';
+import { AppError, errorEnvelope } from '@perfumesgold/shared';
 import type { GatewayEnv } from './config/env.js';
 import {
   gatewayRoutes,

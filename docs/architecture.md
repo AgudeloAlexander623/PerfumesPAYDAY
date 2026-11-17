@@ -1,6 +1,6 @@
 # Arquitectura del sistema
 
-Documento de diseño de **PerfumesPAYDAY**. Explica cómo se compone el sistema, qué responsabilidad tiene cada servicio, quién es dueño de cada dato y cómo se comunican las piezas.
+Documento de diseño de **Perfumes GOLD**. Explica cómo se compone el sistema, qué responsabilidad tiene cada servicio, quién es dueño de cada dato y cómo se comunican las piezas.
 
 > **Alcance:** beta académica de 3 semanas y 4 personas. No hay código de aplicación ni base de datos creada. Este documento describe el diseño acordado y las decisiones aún abiertas; no reemplaza los [casos de uso](use-cases/README.md) ni los [contratos OpenAPI](api/README.md).
 

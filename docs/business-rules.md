@@ -1,6 +1,6 @@
 # Reglas de negocio
 
-Documento central de reglas de negocio de **PerfumesPAYDAY**. Consolida y normaliza las reglas definidas en los [casos de uso](use-cases/README.md), los [ADR](adr/README.md), los [contratos de API](api/README.md) y la documentación de [seguridad](security.md) y [arquitectura](architecture.md).
+Documento central de reglas de negocio de **Perfumes GOLD**. Consolida y normaliza las reglas definidas en los [casos de uso](use-cases/README.md), los [ADR](adr/README.md), los [contratos de API](api/README.md) y la documentación de [seguridad](security.md) y [arquitectura](architecture.md).
 
 > **Estado:** borrador vivo. Si una regla cambia, se actualiza primero el caso de uso/ADR correspondiente y luego este documento en el mismo cambio.  
 > **Última actualización:** 2026-11-16

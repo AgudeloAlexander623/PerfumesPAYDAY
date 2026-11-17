@@ -1,4 +1,4 @@
-# PerfumesPAYDAY
+# Perfumes GOLD
 
 Tienda online de perfumes creada como proyecto académico. La experiencia está inspirada en **MercadoLibre**: una persona puede registrarse, iniciar sesión, armar su propio carrito, registrar una dirección de envío y simular una compra.
 
@@ -32,7 +32,7 @@ Tienda online de perfumes creada como proyecto académico. La experiencia está 
 
 ## 1. ¿Qué es este proyecto?
 
-PerfumesPAYDAY será una página web para explorar y comprar perfumes. El proyecto busca parecerse a una tienda real, pero con fines educativos.
+Perfumes GOLD será una página web para explorar y comprar perfumes. El proyecto busca parecerse a una tienda real, pero con fines educativos.
 
 La aplicación permitirá:
 
@@ -105,7 +105,7 @@ Resumen de qué existe **hoy** en la rama `main`:
 La estructura está organizada por áreas y por servicio. Cada carpeta tiene una única responsabilidad.
 
 ```text
-PerfumesPAYDAY/
+PerfumesGOLD/
 ├── Backend/
 │   ├── package.json                 # Workspace npm del backend
 │   ├── package-lock.json
@@ -123,7 +123,7 @@ PerfumesPAYDAY/
 │   │       ├── src/
 │   │       ├── tests/
 │   │       └── package.json
-│   ├── packages/shared/             # Utilidades compartidas (@perfumespayday/shared)
+│   ├── packages/shared/             # Utilidades compartidas (@perfumesgold/shared)
 │   └── docs/                        # Plan y notas de trabajo del backend
 ├── Frontend/                         # Landing page funcional (React + Vite + Tailwind)
 │   ├── public/                       # Favicon e iconos públicos
@@ -677,7 +677,7 @@ Si eres una IA que colabora en este repositorio:
 
 | Recurso | Enlace |
 |---|---|
-| Repositorio | <https://github.com/AgudeloAlexander623/PerfumesPAYDAY> |
+| Repositorio | <https://github.com/AgudeloAlexander623/PerfumesGOLD> |
 | Tablero Kanban | Pendiente |
 | Entorno desplegado | Pendiente |
 | Casos de uso | [`docs/use-cases/README.md`](docs/use-cases/README.md) |

@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { baseEnvSchema, jwtEnvSchema, portSchema } from '@perfumespayday/shared';
+import { baseEnvSchema, jwtEnvSchema, portSchema } from '@perfumesgold/shared';
 
 const gatewayEnvSchema = baseEnvSchema.extend(jwtEnvSchema.shape).extend({
   PORT: portSchema(3000),

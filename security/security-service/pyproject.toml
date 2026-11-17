@@ -1,7 +1,7 @@
 [project]
-name = "perfumespayday-security"
+name = "perfumesgold-security"
 version = "0.1.0"
-description = "Emisor de tokens JWT RS256 y API de autenticación de PerfumesPAYDAY."
+description = "Emisor de tokens JWT RS256 y API de autenticación de Perfumes GOLD."
 requires-python = ">=3.12"
 dependencies = [
   "fastapi>=0.115,<1.0",

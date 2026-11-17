@@ -4,7 +4,7 @@ export const Navbar = () => {
       <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
         <div className="flex items-center space-x-2">
           <span className="text-xl font-bold tracking-tight text-[#7A1E35] font-serif">
-            PerfumesPAYDAY
+            Perfumes GOLD
           </span>
         </div>
         <div className="hidden md:flex space-x-8 text-sm font-medium text-stone-600">

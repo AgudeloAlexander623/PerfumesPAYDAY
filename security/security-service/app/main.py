@@ -12,7 +12,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     issuer = JwtIssuer.from_settings(resolved_settings)
 
     app = FastAPI(
-        title="PerfumesPAYDAY Security Service",
+        title="Perfumes GOLD Security Service",
         version="0.1.0",
         description="Emisión de tokens JWT RS256 y publicación de JWKS.",
         docs_url=None if resolved_settings.is_production else "/docs",

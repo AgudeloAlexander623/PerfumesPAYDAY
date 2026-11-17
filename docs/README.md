@@ -1,6 +1,6 @@
 # Documentación del proyecto
 
-Punto de entrada a la documentación global de **PerfumesPAYDAY**. El [README raíz](../README.md) explica el producto, el equipo, la estructura y el alcance; este índice organiza los documentos que desarrollan esos temas.
+Punto de entrada a la documentación global de **Perfumes GOLD**. El [README raíz](../README.md) explica el producto, el equipo, la estructura y el alcance; este índice organiza los documentos que desarrollan esos temas.
 
 > **Estado del proyecto:** el backend ya tiene su esqueleto técnico y la validación JWT RS256 compartida (verificación de firma, claims y roles). Todavía no hay endpoints de negocio, base de datos creada ni contratos implementados. La documentación sigue siendo la fuente de verdad para el resto del desarrollo.
 
@@ -162,4 +162,4 @@ Estas decisiones están documentadas y afectan total o parcialmente otros docume
 ---
 
 **Última actualización:** 2026-11-14
-**Responsable:** equipo PerfumesPAYDAY
+**Responsable:** equipo Perfumes GOLD

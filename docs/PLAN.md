@@ -125,7 +125,7 @@ Cuando se elija el framework se instalarán sus plugins en cada servicio, no en 
 | 2026-11-10 | Organizar el backend con npm workspaces | Confirmado |
 | 2026-11-10 | Instalar base TypeScript, Vitest, Zod, `jose` y Prisma | Hecho |
 | 2026-11-10 | Usar Fastify 5 con plugins por servicio | Confirmado e instalado |
-| 2026-11-10 | ADR-0008: ESM, project references y paquete `@perfumespayday/shared` | Aceptado |
+| 2026-11-10 | ADR-0008: ESM, project references y paquete `@perfumesgold/shared` | Aceptado |
 | 2026-11-10 | Esqueleto del backend con `/health`, Docker y pruebas | Hecho |
 | 2026-11-14 | ADR-0003: JWKS principal y PEM como respaldo | Aceptado |
 | 2026-11-14 | ADR-0006: errores, paginación e idempotencia | Aceptado |

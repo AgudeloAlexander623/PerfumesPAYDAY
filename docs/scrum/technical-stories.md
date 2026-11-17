@@ -1,4 +1,4 @@
-# Historias técnicas (habilitadoras) — PerfumesPAYDAY
+# Historias técnicas (habilitadoras) — Perfumes GOLD
 
 > **Estado:** borrador 0.1 — pendiente de validación con el equipo.
 > **Última actualización:** 2026-11-11
@@ -132,7 +132,7 @@ Con criterios de aceptación en formato **Dado / Cuando / Entonces**, verificabl
 **Criterios de aceptación**
 
 - **Dado** el workspace, **cuando** instalo dependencias, **entonces** todos los servicios comparten la configuración base de TypeScript.
-- **Dado** un tipo o utilidad común, **cuando** lo necesito, **entonces** lo importo desde `@perfumespayday/shared` en lugar de reescribirlo.
+- **Dado** un tipo o utilidad común, **cuando** lo necesito, **entonces** lo importo desde `@perfumesgold/shared` en lugar de reescribirlo.
 - **Dado** el repositorio, **cuando** compilo, **entonces** los servicios compilan sin errores de tipos.
 
 ---

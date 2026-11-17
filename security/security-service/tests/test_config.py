@@ -27,7 +27,7 @@ def test_defaults_match_the_node_contract() -> None:
         jwt_private_key="clave-de-prueba",
     )
 
-    assert settings.jwt_issuer == "perfumespayday-security"
-    assert settings.jwt_audience == "perfumespayday-api"
+    assert settings.jwt_issuer == "perfumesgold-security"
+    assert settings.jwt_audience == "perfumesgold-api"
     assert settings.jwt_access_ttl_seconds == 900
     assert settings.is_production is False

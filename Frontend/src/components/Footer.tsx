@@ -9,7 +9,7 @@ export const Footer = () => {
 
       {/* Footer final */}
       <footer className="bg-[#FAF7F2] py-8 px-6 text-center border-t border-stone-200">
-        <span className="font-serif font-bold text-[#7A1E35] text-sm">PerfumesPAYDAY</span>
+        <span className="font-serif font-bold text-[#7A1E35] text-sm">Perfumes GOLD</span>
         <p className="text-[11px] text-stone-500 mt-1">
           Proyecto académico. Simulador sin pagos, facturación ni envíos reales.
         </p>

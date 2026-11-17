@@ -23,8 +23,8 @@ class Settings(BaseSettings):
     host: str = "0.0.0.0"
     port: int = Field(default=8000, ge=1, le=65535)
 
-    jwt_issuer: str = "perfumespayday-security"
-    jwt_audience: str = "perfumespayday-api"
+    jwt_issuer: str = "perfumesgold-security"
+    jwt_audience: str = "perfumesgold-api"
     jwt_private_key: str
     jwt_public_key: str | None = None
     jwt_key_id: str | None = None

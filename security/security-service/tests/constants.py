@@ -1,3 +1,3 @@
-ISSUER = "perfumespayday-security"
-AUDIENCE = "perfumespayday-api"
+ISSUER = "perfumesgold-security"
+AUDIENCE = "perfumesgold-api"
 SUBJECT = "11111111-1111-4111-8111-111111111111"

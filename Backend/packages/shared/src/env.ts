@@ -19,8 +19,8 @@ export type BaseEnv = z.infer<typeof baseEnvSchema>;
 export const jwtEnvSchema = z.object({
   JWT_PUBLIC_KEY: z.string().min(1).optional(),
   JWT_JWKS_URL: z.string().min(1).optional(),
-  JWT_ISSUER: z.string().min(1).default('perfumespayday-security'),
-  JWT_AUDIENCE: z.string().min(1).default('perfumespayday-api'),
+  JWT_ISSUER: z.string().min(1).default('perfumesgold-security'),
+  JWT_AUDIENCE: z.string().min(1).default('perfumesgold-api'),
 });
 
 export type JwtEnv = z.infer<typeof jwtEnvSchema>;

@@ -1,4 +1,4 @@
-import { configureJwtAuth, startService } from '@perfumespayday/shared';
+import { configureJwtAuth, startService } from '@perfumesgold/shared';
 import { envSchema } from './config/env.js';
 
 await startService({

@@ -1,9 +1,9 @@
 openapi: 3.1.0
 
 info:
-  title: PerfumesPAYDAY Gateway API
+  title: Perfumes GOLD Gateway API
   version: 0.1.0
-  summary: Superficie pública del gateway de PerfumesPAYDAY.
+  summary: Superficie pública del gateway de Perfumes GOLD.
   description: |
     Borrador del contrato público del gateway. El gateway enruta `/api/v1/*`
     hacia `security-service`, `catalog-service` u `order-service`, valida el
@@ -17,7 +17,7 @@ info:
 
     Convenciones transversales: ver `docs/api/README.md` y el ADR-0006.
   contact:
-    name: Equipo PerfumesPAYDAY
+    name: Equipo Perfumes GOLD
   license:
     name: Proyecto académico
 

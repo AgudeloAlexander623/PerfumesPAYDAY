@@ -1,4 +1,4 @@
-# Historias de usuario — PerfumesPAYDAY
+# Historias de usuario — Perfumes GOLD
 
 > **Estado:** borrador 0.2 — alineado con los 25 casos de uso (CU-01 a CU-25) y con el ADR-0007 (carrito híbrido).
 > **Última actualización:** 2026-11-11

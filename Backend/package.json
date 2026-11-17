@@ -1,9 +1,9 @@
 {
-  "name": "perfumespayday-backend",
+  "name": "perfumesgold-backend",
   "version": "0.0.0",
   "private": true,
   "type": "module",
-  "description": "Backend de PerfumesPAYDAY: gateway, catalog y orders.",
+  "description": "Backend de Perfumes GOLD: gateway, catalog y orders.",
   "engines": {
     "node": ">=22"
   },
@@ -17,9 +17,9 @@
     "build": "tsc -b",
     "typecheck": "tsc -b",
     "clean": "tsc -b --clean",
-    "dev:gateway": "npm run dev -w @perfumespayday/gateway",
-    "dev:catalog": "npm run dev -w @perfumespayday/catalog",
-    "dev:orders": "npm run dev -w @perfumespayday/orders",
+    "dev:gateway": "npm run dev -w @perfumesgold/gateway",
+    "dev:catalog": "npm run dev -w @perfumesgold/catalog",
+    "dev:orders": "npm run dev -w @perfumesgold/orders",
     "jwt:keys": "node scripts/generate-jwt-keys.mjs",
     "test": "vitest run --passWithNoTests",
     "test:watch": "vitest"

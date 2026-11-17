@@ -33,8 +33,8 @@ Sin resolver esto no se podía compilar ni arrancar ningún servicio. Además, l
 - Escribir los imports relativos con extensión `.js` (`import { envSchema } from './config/env.js'`).
 - Compilar con `tsc -b` y **project references**: un `tsconfig.json` solución en `Backend/` y uno por paquete.
 - Usar `tsx` para desarrollo y `tsc` para producción.
-- Concentrar lo transversal en el paquete privado `@perfumespayday/shared`: configuración de entorno, envelope de errores, `/health`, `requestId`, Helmet y ciclo de vida.
-- Ejecutar las pruebas con Vitest y un alias que resuelve `@perfumespayday/shared` a su código fuente, sin exigir compilación previa.
+- Concentrar lo transversal en el paquete privado `@perfumesgold/shared`: configuración de entorno, envelope de errores, `/health`, `requestId`, Helmet y ciclo de vida.
+- Ejecutar las pruebas con Vitest y un alias que resuelve `@perfumesgold/shared` a su código fuente, sin exigir compilación previa.
 
 Cada servicio queda reducido a su configuración y su punto de entrada:
 
@@ -58,7 +58,7 @@ services/gateway/
 - Los imports relativos se escriben con `.js`, también en TypeScript.
 - `tsc -b` construye `shared` antes que los servicios; el orden lo resuelven las referencias, no los scripts.
 - `npm run dev:*` compila `shared` una vez mediante `predev`; después `tsx` vigila solo el servicio.
-- Los tests no dependen del build porque Vitest resuelve `@perfumespayday/shared` al fuente.
+- Los tests no dependen del build porque Vitest resuelve `@perfumesgold/shared` al fuente.
 - Cualquier paquete nuevo del workspace debe declarar `"type": "module"`.
 - El paquete compartido es una dependencia de compilación, no un servicio en ejecución: cada imagen contiene su propia copia compilada.
 - VSCode debe usar la versión de TypeScript del workspace para no mezclar configuraciones.

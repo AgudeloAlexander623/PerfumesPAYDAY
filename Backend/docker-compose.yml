@@ -1,11 +1,11 @@
-name: perfumespayday-backend
+name: perfumesgold-backend
 
 x-environment: &environment
   NODE_ENV: production
   HOST: 0.0.0.0
   LOG_LEVEL: info
-  JWT_ISSUER: perfumespayday-security
-  JWT_AUDIENCE: perfumespayday-api
+  JWT_ISSUER: perfumesgold-security
+  JWT_AUDIENCE: perfumesgold-api
   JWT_PUBLIC_KEY: ${JWT_PUBLIC_KEY:?define_JWT_PUBLIC_KEY_con_npm_run_jwt_keys}
 
 x-service: &service
@@ -37,8 +37,8 @@ services:
       ENVIRONMENT: production
       HOST: 0.0.0.0
       PORT: "8000"
-      JWT_ISSUER: perfumespayday-security
-      JWT_AUDIENCE: perfumespayday-api
+      JWT_ISSUER: perfumesgold-security
+      JWT_AUDIENCE: perfumesgold-api
       JWT_PRIVATE_KEY: ${JWT_PRIVATE_KEY:?define_JWT_PRIVATE_KEY_con_scripts_generate_jwt_keys}
     expose:
       - "8000"

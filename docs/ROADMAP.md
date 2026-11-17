@@ -69,7 +69,7 @@ Cerrar lo que hoy impide escribir código:
 ### Etapa 2 — Esqueleto técnico
 
 - `"type": "module"` y un `tsconfig.json` por paquete que extienda `tsconfig.base.json`.
-- Paquete `@perfumespayday/shared` con configuración, errores, `/health`, `requestId`, Helmet y ciclo de vida.
+- Paquete `@perfumesgold/shared` con configuración, errores, `/health`, `requestId`, Helmet y ciclo de vida.
 - Estructura mínima por servicio: `src/config/env.ts` y `src/server.ts`.
 - `GET /health` en gateway y en cada servicio.
 - Manejador de errores uniforme y `requestId` (según ADR-0006).

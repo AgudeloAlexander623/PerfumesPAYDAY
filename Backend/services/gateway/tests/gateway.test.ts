@@ -1,12 +1,12 @@
 import Fastify, { type FastifyInstance } from 'fastify';
 import { exportSPKI, generateKeyPair, SignJWT, type CryptoKey } from 'jose';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
-import { configureJwtAuth, createApp } from '@perfumespayday/shared';
+import { configureJwtAuth, createApp } from '@perfumesgold/shared';
 import { envSchema } from '../src/config/env.js';
 import { registerGateway } from '../src/gateway.js';
 
-const ISSUER = 'perfumespayday-security';
-const AUDIENCE = 'perfumespayday-api';
+const ISSUER = 'perfumesgold-security';
+const AUDIENCE = 'perfumesgold-api';
 const SUBJECT = '11111111-1111-4111-8111-111111111111';
 
 interface UpstreamCall {

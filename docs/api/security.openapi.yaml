@@ -1,7 +1,7 @@
 openapi: 3.1.0
 
 info:
-  title: PerfumesPAYDAY Security Service API
+  title: Perfumes GOLD Security Service API
   version: 0.1.0
   summary: Contrato de autenticación, sesiones y cuenta de security-service.
   description: |
@@ -23,7 +23,7 @@ info:
     El gateway enruta la superficie pública bajo `/api/v1`. Las operaciones
     marcadas como técnicas pueden no exponerse a través del gateway.
   contact:
-    name: Equipo PerfumesPAYDAY
+    name: Equipo Perfumes GOLD
   license:
     name: Proyecto académico
 
