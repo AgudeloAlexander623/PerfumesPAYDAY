@@ -1,0 +1,46 @@
+---
+title: 03. Flujo de autenticación
+---
+%%{init: {"htmlLabels": false, "theme": "base", "themeVariables": {"fontFamily": "Arial, sans-serif", "fontSize": "16px", "lineColor": "#455A64", "actorBkg": "#FFF3E0", "actorBorder": "#EF6C00", "actorTextColor": "#1a1a1a", "signalColor": "#455A64", "signalTextColor": "#1a1a1a", "labelBoxBkgColor": "#FFFDE7", "labelBoxBorderColor": "#F9A825", "noteBkgColor": "#FAFAFA", "noteBorderColor": "#9E9E9E", "noteTextColor": "#37474F"}}}%%
+sequenceDiagram
+    autonumber
+    actor U as Usuario
+    participant W as Frontend web
+    participant G as Gateway
+    participant S as Security Service
+    participant DB as security_db
+
+    Note over U,S: Antes del login, el registro crea el usuario<br/>con rol customer y contraseña hasheada.
+
+    U->>W: Ingresa correo y contraseña
+    W->>G: Solicita inicio de sesión
+    G->>S: Valida credenciales
+    S->>DB: Busca usuario por correo
+    DB-->>S: Usuario y hash de contraseña
+
+    alt Credenciales inválidas
+        S-->>G: Error 401
+        G-->>W: Error de autenticación
+        W-->>U: Mensaje genérico
+    else Credenciales válidas
+        S->>S: Verifica contraseña con Argon2 o bcrypt
+        S->>DB: Registra refresh token
+        S-->>G: Access token + refresh token
+        G-->>W: Entrega tokens
+        W-->>U: Sesión iniciada
+    end
+
+    Note over W,S: El access token viaja en cada petición.<br/>Los servicios validan su firma.
+
+    loop Access token expirado
+        W->>G: Solicita renovación
+        G->>S: Valida refresh token
+        S-->>G: Nuevo access token
+        G-->>W: Token renovado
+    end
+
+    U->>W: Cerrar sesión
+    W->>G: Solicita cierre de sesión
+    G->>S: Revoca refresh token
+    S->>DB: Invalida la sesión
+    W-->>U: Sesión cerrada

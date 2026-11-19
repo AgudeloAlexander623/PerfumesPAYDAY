@@ -1,0 +1,33 @@
+---
+title: 07. Flujo del historial de pedidos
+---
+%%{init: {"htmlLabels": false, "flowchart": {"curve": "basis", "useMaxWidth": false, "nodeSpacing": 30, "rankSpacing": 40}, "theme": "base", "themeVariables": {"fontFamily": "Arial, sans-serif", "fontSize": "16px", "lineColor": "#455A64"}}}%%
+flowchart TD
+    INI(["Inicio"]):::terminal
+    OPEN["El usuario abre Mis pedidos"]:::process
+    REQ["El frontend solicita el historial"]:::frontend
+    GW["El gateway valida la sesión<br/>y enruta a order-service"]:::gateway
+    QUERY["order-service consulta orders_db<br/>usando el user_id del token"]:::service
+    HAS{"¿Tiene pedidos?"}:::decision
+    EMPTY["Mostrar estado vacío"]:::error
+    LIST["Mostrar pedidos:<br/>fecha, estado y total"]:::process
+    DETAIL["Seleccionar un pedido"]:::process
+    OWNER{"¿El pedido pertenece al usuario?"}:::decision
+    DENY["Responder 403 o 404<br/>sin revelar datos"]:::error
+    SHOW["Mostrar detalle con snapshot:<br/>productos, precios y dirección"]:::success
+    FIN(["Fin"]):::terminal
+
+    INI --> OPEN --> REQ --> GW --> QUERY --> HAS
+    HAS -- No --> EMPTY --> FIN
+    HAS -- Sí --> LIST --> DETAIL --> OWNER
+    OWNER -- No --> DENY --> FIN
+    OWNER -- Sí --> SHOW --> FIN
+
+    classDef terminal fill:#ECEFF1,stroke:#546E7A,stroke-width:2px,color:#1a1a1a;
+    classDef decision fill:#FFFDE7,stroke:#F9A825,stroke-width:2px,color:#1a1a1a;
+    classDef process fill:#E3F2FD,stroke:#1565C0,stroke-width:2px,color:#1a1a1a;
+    classDef frontend fill:#E3F2FD,stroke:#1565C0,stroke-width:2px,color:#1a1a1a;
+    classDef gateway fill:#E0F7FA,stroke:#00838F,stroke-width:2px,color:#1a1a1a;
+    classDef service fill:#E8F5E9,stroke:#2E7D32,stroke-width:2px,color:#1a1a1a;
+    classDef success fill:#E8F5E9,stroke:#2E7D32,stroke-width:2px,color:#1a1a1a;
+    classDef error fill:#FFEBEE,stroke:#C62828,stroke-width:2px,color:#1a1a1a;
