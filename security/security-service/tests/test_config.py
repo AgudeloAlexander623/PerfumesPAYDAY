@@ -31,3 +31,26 @@ def test_defaults_match_the_node_contract() -> None:
     assert settings.jwt_audience == "perfumesgold-api"
     assert settings.jwt_access_ttl_seconds == 900
     assert settings.is_production is False
+
+
+def test_session_defaults_match_adr_0009() -> None:
+    settings = Settings(
+        _env_file=None,
+        jwt_private_key="clave-de-prueba",
+    )
+
+    assert settings.refresh_ttl_days == 7
+    assert settings.session_absolute_ttl_days == 30
+    assert settings.login_max_failed_attempts == 5
+    assert settings.login_lockout_minutes == 15
+    assert "security_db" in settings.database_url
+
+
+def test_absolute_ttl_cannot_be_shorter_than_refresh_ttl() -> None:
+    with pytest.raises(ValidationError):
+        Settings(
+            _env_file=None,
+            jwt_private_key="clave-de-prueba",
+            refresh_ttl_days=30,
+            session_absolute_ttl_days=7,
+        )

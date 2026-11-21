@@ -1,9 +1,24 @@
+from collections.abc import AsyncIterator
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 
 from app.api.errors import register_error_handlers
 from app.api.routes import health, jwks
 from app.core.config import Settings, get_settings
 from app.core.security import JwtIssuer
+from app.db import create_database
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI) -> AsyncIterator[None]:
+    """Inicializa el pool de base de datos y lo libera al apagar el servicio."""
+    database = create_database(app.state.settings.database_url)
+    app.state.database = database
+    try:
+        yield
+    finally:
+        await database.engine.dispose()
 
 
 def create_app(settings: Settings | None = None) -> FastAPI:
@@ -18,6 +33,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         docs_url=None if resolved_settings.is_production else "/docs",
         redoc_url=None,
         openapi_url=None if resolved_settings.is_production else "/openapi.json",
+        lifespan=lifespan,
     )
 
     app.state.settings = resolved_settings

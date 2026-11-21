@@ -2,7 +2,7 @@
 
 Punto de entrada a la documentación global de **Perfumes GOLD**. El [README raíz](../README.md) explica el producto, el equipo, la estructura y el alcance; este índice organiza los documentos que desarrollan esos temas.
 
-> **Estado del proyecto:** el backend ya tiene su esqueleto técnico y la validación JWT RS256 compartida (verificación de firma, claims y roles). Todavía no hay endpoints de negocio, base de datos creada ni contratos implementados. La documentación sigue siendo la fuente de verdad para el resto del desarrollo.
+> **Estado del proyecto:** el backend ya tiene su esqueleto técnico y la validación JWT RS256 compartida (verificación de firma, claims y roles). `security-service` cuenta con emisor JWT/JWKS, modelo de `users`/`sessions` y migración versionada. Todavía no hay endpoints de negocio ni contratos implementados. La documentación sigue siendo la fuente de verdad para el resto del desarrollo.
 
 ---
 
@@ -10,7 +10,7 @@ Punto de entrada a la documentación global de **Perfumes GOLD**. El [README ra�
 
 | Documento | Qué responde | Estado | Última actualización |
 |---|---|---|---|
-| [`../README.md`](../README.md) | Qué es el proyecto, equipo, estructura, stack, flujos, reglas y cronograma | Redactado | 2026-11-10 |
+| [`../README.md`](../README.md) | Qué es el proyecto, equipo, estructura, stack, flujos, reglas y cronograma | Redactado | 2026-11-20 |
 | [`architecture.md`](architecture.md) | Cómo se compone el sistema, qué posee cada servicio y cómo se comunica | Redactado | 2026-11-10 |
 | [`security.md`](security.md) | Qué amenazas existen, qué controles se aplican y cómo se prueba la seguridad | Redactado | 2026-11-10 |
 | [`beta-criteria.md`](beta-criteria.md) | Cómo se demuestra que la beta está lista | Redactado | 2026-11-11 |
@@ -58,7 +58,7 @@ Punto de entrada a la documentación global de **Perfumes GOLD**. El [README ra�
 5. [`api/README.md`](api/README.md): convenciones y contratos.
 6. [`security.md`](security.md): controles obligatorios.
 7. [`use-cases/`](use-cases/README.md): comportamiento esperado y criterios de aceptación.
-8. [Bitácora del backend](../Backend/docs/README.md): cambios realizados, fechas y motivos.
+8. [Bitácora del backend](../Backend/docs/Bitacora.alex.md): cambios realizados, fechas y motivos.
 
 ### Si vas a programar el frontend
 
@@ -161,5 +161,5 @@ Estas decisiones están documentadas y afectan total o parcialmente otros docume
 
 ---
 
-**Última actualización:** 2026-11-14
+**Última actualización:** 2026-11-20
 **Responsable:** equipo Perfumes GOLD
