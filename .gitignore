@@ -1,0 +1,4 @@
+#Se añade este Ignore para evitar que se añada 
+postgres_local.session.sql
+#Eliminar los Keep (Solicitado por el PO)
+.gitkeep
