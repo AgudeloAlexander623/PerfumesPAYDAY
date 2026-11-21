@@ -12,6 +12,8 @@ En el camino aparecieron tres detalles pequeños que corregimos con calma, y al 
 
 **Fecha:** 2026-11-20
 hicimos la primera daily para poder ver los avances dentro del proyecto, angel y daniel an habanzado en las tareas que ese les assignaron el dia lunes, a su ves se estan cumpliendo las metas del Sprint-GOAL para el dia Domingo realizaremos una vista previa para ver si realizamos parte del Sprint-backlog y ver que podemos mejorar para el dia lunes que es el dia de la sprint-planing de la segun semana
+
+tambien hablamos con el scrum para poder ver si empezamos con la realizacion del Front para poder empezar con la creacion y coneccion de las API's que manejara el proyecto, ya que estas las tenemos que desarrollar desde cero para poder implementar el tema de los microservicios aparte de eso para poder conectarla como debe de ser con la aotomatizacion del proyecto
   
 
 ## 2026-11-13 — Capa JWT del backend
@@ -26,3 +28,4 @@ Durante el día se completó la capa de autenticación JWT del backend. En Node.
 
 **Fecha:** 2026-11-13
 Se realizaron cambios en el rol de PO (Product Owner) del proyecto.
+
