@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="1038" viewBox="0 0 1280 1038" role="img"><title>3.1 · Rastrear pedido</title><desc>Detalle de un pedido con su línea de estado.</desc><defs><marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#E0B02B" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><style>
+text{font-family:"Plus Jakarta Sans",Outfit,Arial,Helvetica,sans-serif;fill:#FFFFFF}
+.h1{font-size:48px;font-weight:700}
+.h2{font-size:30px;font-weight:700}
+.h3{font-size:18px;font-weight:700}
+.t{font-size:15px}
+.tb{font-size:15px;font-weight:700}
+.tb2{font-size:13px;font-weight:700}
+.st{font-size:16px;fill:#9CA3AF}
+.m{font-size:13px;fill:#9CA3AF}
+.lb{font-size:13px;font-weight:700}
+.gd{fill:#E0B02B}
+.up{font-size:12px;font-weight:700;fill:#E0B02B;letter-spacing:1px}
+.hd{font-size:11px;font-weight:700;fill:#9CA3AF;letter-spacing:1px}
+.nv{font-size:13px;font-weight:700;letter-spacing:.5px}
+.bk{font-size:14px;font-weight:700;fill:#14110A;letter-spacing:1px}
+.bw{font-size:13px;font-weight:700;letter-spacing:1px}
+.bd{font-size:10px;font-weight:700;fill:#14110A}
+.er{font-size:13px;fill:#FCA5A5}
+.rd{font-size:13px;fill:#F87171}
+.nt{font-size:13px;fill:#D1D5DB}
+.card{fill:#15151D;stroke:#2A2A35;stroke-width:1}
+.inp{fill:#0C0C12;stroke:#2A2A35;stroke-width:1}
+.chk{fill:#0C0C12;stroke:#3A3A48;stroke-width:1.2}
+.gold{fill:#E0B02B}
+.out{fill:none;stroke:#3A3A48;stroke-width:1.5}
+.outg{fill:none;stroke:#E0B02B;stroke-width:1}
+.outgd{fill:none;stroke:#E0B02B;stroke-width:1.5;stroke-dasharray:6 4}
+.errb{fill:#2A1518;stroke:#7F1D1D;stroke-width:1}
+.ln{stroke:#2A2A35;stroke-width:1}
+.lng{stroke:#E0B02B;stroke-width:2}
+.ar{stroke:#E0B02B;stroke-width:1.5;fill:none}
+.ph{fill:#E5E7EB}
+.phx{stroke:#9CA3AF;stroke-width:1}
+.chip{fill:#1B1B24;stroke:#2A2A35;stroke-width:1}
+.ic{fill:#1B1B24;stroke:#2A2A35;stroke-width:1}
+.gl{fill:none;stroke:#FFFFFF;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.glm{fill:none;stroke:#9CA3AF;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.glk{fill:none;stroke:#14110A;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.glg{fill:none;stroke:#E0B02B;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.hf{fill:#E0B02B}
+.note{fill:#101017;stroke:#3A3A48;stroke-width:1;stroke-dasharray:6 4}
+</style><rect width="1280" height="1038" fill="#0C0C12"/><polygon points="143.0,25.0 161.0,25.0 166.0,31.0 152.0,44.0 138.0,31.0" class="gl"/><text x="182" y="38" class="h3" text-anchor="start">PERFUMERÍA GOLD</text><text x="520" y="37" class="nv" text-anchor="start">INICIO</text><text x="610" y="37" class="nv" text-anchor="start">CATÁLOGO</text><text x="720" y="37" class="nv" text-anchor="start">MIS PEDIDOS</text><line x1="720" y1="46" x2="814.6" y2="46" class="lng"/><circle cx="940" cy="32" r="18" class="ic"/><circle cx="988" cy="32" r="18" class="ic"/><circle cx="1036" cy="32" r="18" class="ic"/><circle cx="1084" cy="32" r="18" class="ic"/><circle cx="1132" cy="32" r="18" class="ic"/><path d="M943 25 A8 8 0 1 0 947 35 A6 6 0 0 1 943 25 Z" class="gl"/><circle cx="986" cy="30" r="6" class="gl"/><line x1="990" y1="34" x2="995" y2="39" class="gl"/><path transform="translate(1036 32)" d="M0,-4 C-2,-8 -8,-7 -8,-2 C-8,2 -3,5 0,8 C3,5 8,2 8,-2 C8,-7 2,-8 0,-4 Z" class="hf"/><rect x="1077" y="28" width="14" height="11" rx="3" class="gl"/><path d="M1081 28 v-2 a3 3 0 0 1 6 0 v2" class="gl"/><circle cx="1132" cy="28" r="4" class="gl"/><path d="M1124 41 Q1132 31 1140 41" class="gl"/><circle cx="1092" cy="18" r="8" class="gold"/><text x="1092" y="21.5" class="bd" text-anchor="middle">2</text><line x1="0" y1="64" x2="1280" y2="64" class="ln"/><rect x="940" y="90" width="200" height="34" rx="6" class="out"/><text x="1040.0" y="112.0" class="bw" text-anchor="middle">← VOLVER A MIS PEDIDOS</text><rect x="140" y="150" width="1000" height="84" rx="14" class="card"/><text x="166" y="188" class="h3" text-anchor="start">Pedido #[ID]</text><text x="166" y="212" class="m" text-anchor="start">Realizado el [FECHA Y HORA]</text><rect x="900" y="176" width="150" height="32" rx="6" class="out"/><text x="975.0" y="197.0" class="bw" text-anchor="middle">IMPRIMIR RECIBO</text><text x="1100" y="197" class="t" text-anchor="middle">Pagado</text><rect x="140" y="254" width="1000" height="170" rx="14" class="card"/><text x="166" y="290" class="h3" text-anchor="start">Estado del pedido</text><line x1="200" y1="340" x2="1080" y2="340" class="ln"/><circle cx="200" cy="340" r="18" class="ic"/><text x="200" y="380" class="m" text-anchor="middle">Pendiente</text><circle cx="420" cy="340" r="18" class="gold"/><text x="420" y="380" class="tb2" text-anchor="middle">Pagado</text><circle cx="640" cy="340" r="18" class="ic"/><text x="640" y="380" class="m" text-anchor="middle">Preparando</text><circle cx="860" cy="340" r="18" class="ic"/><text x="860" y="380" class="m" text-anchor="middle">Enviado</text><circle cx="1080" cy="340" r="18" class="ic"/><text x="1080" y="380" class="m" text-anchor="middle">Entregado</text><rect x="140" y="444" width="1000" height="190" rx="14" class="card"/><text x="166" y="480" class="h3" text-anchor="start">Productos comprados</text><line x1="160" y1="498" x2="1120" y2="498" class="ln"/><text x="170" y="522" class="hd" text-anchor="start">PRODUCTO</text><text x="560" y="522" class="hd" text-anchor="start">PRECIO UNITARIO</text><text x="760" y="522" class="hd" text-anchor="start">CANTIDAD</text><text x="1110" y="522" class="hd" text-anchor="end">TOTAL</text><line x1="160" y1="534" x2="1120" y2="534" class="ln"/><text x="170" y="570" class="t" text-anchor="start">[NOMBRE DEL PERFUME] · [MARCA] · [ml]</text><text x="560" y="570" class="t" text-anchor="start">$[PRECIO]</text><text x="760" y="570" class="t" text-anchor="start">[N]</text><text x="1110" y="570" class="tb" text-anchor="end">$[TOTAL]</text><line x1="0" y1="700" x2="1280" y2="700" class="ln"/><text x="140" y="744" class="h3 gd" text-anchor="start">PERFUMERÍA GOLD</text><text x="140" y="772" class="m" text-anchor="start">Perfumes para explorar, elegir y</text><text x="140" y="792" class="m" text-anchor="start">comprar. Proyecto académico: no se</text><text x="140" y="812" class="m" text-anchor="start">cobra ni se envían productos reales.</text><text x="540" y="744" class="h3 gd" text-anchor="start">Navegación</text><text x="540" y="772" class="m" text-anchor="start">Inicio</text><text x="540" y="794" class="m" text-anchor="start">Catálogo</text><text x="540" y="816" class="m" text-anchor="start">Mis pedidos</text><text x="780" y="744" class="h3 gd" text-anchor="start">Atención al cliente</text><text x="780" y="772" class="m" text-anchor="start">Mi cuenta</text><text x="780" y="794" class="m" text-anchor="start">Mis pedidos</text><text x="780" y="816" class="m" text-anchor="start">Carrito de compras</text><line x1="0" y1="870" x2="1280" y2="870" class="ln"/><rect x="40" y="900" width="1200" height="108" rx="10" class="note"/><text x="64" y="934" class="h3" text-anchor="start">Notas · 3.1 · Rastrear pedido</text><text x="64" y="966" class="nt" text-anchor="start">• Hoy la base solo tiene los estados pagado_simulado y cancelado: la línea de 5 pasos requiere ampliarlos</text><text x="64" y="990" class="nt" text-anchor="start">• El README deja fuera transportadoras y envíos reales (confirmar si se mantiene)</text><text x="644" y="966" class="nt" text-anchor="start">• Productos desde items_pedido: copia del nombre, marca, tamaño y precio al comprar</text><text x="644" y="990" class="nt" text-anchor="start">• IMPRIMIR RECIBO abre la pantalla 3.1.1</text></svg>
