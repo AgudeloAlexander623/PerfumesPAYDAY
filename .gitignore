@@ -26,3 +26,6 @@ htmlcov/
 *.log
 .DS_Store
 Thumbs.db
+
+#Basura
+.gitkeep
