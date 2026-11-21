@@ -1,6 +1,6 @@
 # Contratos de API
 
-Documento de convenciones y contratos de la API pública de **PerfumesPAYDAY**. El gateway es el único punto de entrada; los servicios internos implementan los contratos que aquí se describen.
+Documento de convenciones y contratos de la API pública de **Perfumes GOLD**. El gateway es el único punto de entrada; los servicios internos implementan los contratos que aquí se describen.
 
 > **Estado:** borrador. Los contratos del gateway y de seguridad existen a nivel de borrador; los contratos de `catalog` y `orders` dependen de [ADR-0004](../adr/0004-propiedad-datos.md). El envelope de errores ya está aceptado en [ADR-0006](../adr/0006-errores-paginacion-idempotencia.md).
 

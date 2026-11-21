@@ -1,4 +1,4 @@
-# Plan de trabajo (Scrum / Kanban) — PerfumesPAYDAY
+# Plan de trabajo (Scrum / Kanban) — Perfumes GOLD
 
 > **Estado:** redactado — pendiente de validación con el equipo.
 > **Última actualización:** 2026-11-11

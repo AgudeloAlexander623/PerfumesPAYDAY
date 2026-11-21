@@ -1,5 +1,5 @@
 {
-  "name": "@perfumespayday/catalog",
+  "name": "@perfumesgold/catalog",
   "version": "0.0.0",
   "private": true,
   "description": "Servicio de catálogo, marcas, productos, presentaciones, precios y stock.",
@@ -12,6 +12,6 @@
     "clean": "tsc -b --clean"
   },
   "dependencies": {
-    "@perfumespayday/shared": "*"
+    "@perfumesgold/shared": "*"
   }
 }

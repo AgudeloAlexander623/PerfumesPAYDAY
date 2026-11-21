@@ -1,5 +1,5 @@
 {
-  "name": "@perfumespayday/orders",
+  "name": "@perfumesgold/orders",
   "version": "0.0.0",
   "private": true,
   "description": "Servicio de carrito, direcciones, checkout, pedidos y auditoría.",
@@ -12,6 +12,6 @@
     "clean": "tsc -b --clean"
   },
   "dependencies": {
-    "@perfumespayday/shared": "*"
+    "@perfumesgold/shared": "*"
   }
 }

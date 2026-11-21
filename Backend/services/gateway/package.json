@@ -1,8 +1,8 @@
 {
-  "name": "@perfumespayday/gateway",
+  "name": "@perfumesgold/gateway",
   "version": "0.0.0",
   "private": true,
-  "description": "Punto único de entrada de la API de PerfumesPAYDAY.",
+  "description": "Punto único de entrada de la API de Perfumes GOLD.",
   "type": "module",
   "scripts": {
     "predev": "tsc -b ../../packages/shared",
@@ -15,7 +15,7 @@
     "@fastify/cors": "11.4.1",
     "@fastify/http-proxy": "11.6.6",
     "@fastify/rate-limit": "11.2.2",
-    "@perfumespayday/shared": "*",
+    "@perfumesgold/shared": "*",
     "jose": "6.2.17"
   }
 }

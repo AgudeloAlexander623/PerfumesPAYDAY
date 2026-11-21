@@ -1,8 +1,8 @@
 # Arquitectura del sistema
 
-Documento de diseño de **PerfumesPAYDAY**. Explica cómo se compone el sistema, qué responsabilidad tiene cada servicio, quién es dueño de cada dato y cómo se comunican las piezas.
+Documento de diseño de **Perfumes GOLD**. Explica cómo se compone el sistema, qué responsabilidad tiene cada servicio, quién es dueño de cada dato y cómo se comunican las piezas.
 
-> **Alcance:** beta académica de 3 semanas y 4 personas. No hay código de aplicación ni base de datos creada. Este documento describe el diseño acordado y las decisiones aún abiertas; no reemplaza los [casos de uso](use-cases/README.md) ni los [contratos OpenAPI](api/README.md).
+> **Alcance:** beta académica de 3 semanas y 4 personas. Ya existe código de aplicación en el backend y `security_db` tiene modelo y migración versionada; aún no hay endpoints de negocio. Este documento describe el diseño acordado y las decisiones aún abiertas; no reemplaza los [casos de uso](use-cases/README.md) ni los [contratos OpenAPI](api/README.md).
 
 ---
 
@@ -224,7 +224,7 @@ Reglas:
 |---|---|---|
 | Contrato backend–BD sin definir | Bloquea catálogo y pedidos | [ADR-0004](adr/0004-propiedad-datos.md) y `data-contracts.md`. |
 | Comunicación interna `orders` → `catalog` | Afecta latencia, red y seguridad | [ADR-0005](adr/0005-comunicacion-interna.md). |
-| Autenticación sin ciclo de sesiones | Bloquea el flujo real de login | Implementar `security_db` y los endpoints de [ADR-0009](adr/0009-sesiones-refresh-cookies.md). |
+| Autenticación sin ciclo de sesiones | Bloquea el flujo real de login | `security_db` ya existe; implementar repositorios y endpoints de [ADR-0009](adr/0009-sesiones-refresh-cookies.md). |
 | Rotación de claves JWT | Puede invalidar sesiones activas | Ventana de solape de [ADR-0003](adr/0003-jwt-rs256.md). |
 | Tiempo de la beta | Recorta alcance | Priorizar los 18 casos `Must`. |
 | Dependencias de base de datos | Pueden quedar sin uso | Confirmar ADR-0004 antes de programar. |

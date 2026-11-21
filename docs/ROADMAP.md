@@ -69,7 +69,7 @@ Cerrar lo que hoy impide escribir código:
 ### Etapa 2 — Esqueleto técnico
 
 - `"type": "module"` y un `tsconfig.json` por paquete que extienda `tsconfig.base.json`.
-- Paquete `@perfumespayday/shared` con configuración, errores, `/health`, `requestId`, Helmet y ciclo de vida.
+- Paquete `@perfumesgold/shared` con configuración, errores, `/health`, `requestId`, Helmet y ciclo de vida.
 - Estructura mínima por servicio: `src/config/env.ts` y `src/server.ts`.
 - `GET /health` en gateway y en cada servicio.
 - Manejador de errores uniforme y `requestId` (según ADR-0006).
@@ -186,7 +186,7 @@ flowchart LR
 
 La Fase 0 de autenticación quedó cerrada: ADR-0003, ADR-0006, ADR-0009, ADR-0010 y ADR-0011 aceptados. El *walking skeleton* y el emisor JWT ya funcionan.
 
-El siguiente paso es escribir `docs/api/security.openapi.yaml` (Fase 1), agregar `security_db` a Docker Compose (Fase 2) e implementar registro, login, refresh y logout (Fase 3). En paralelo, catálogo y pedidos siguen bloqueados por ADR-0004 y ADR-0005.
+El siguiente paso es escribir `docs/api/security.openapi.yaml` (Fase 1) e implementar registro, login, refresh y logout (Fase 3) sobre la `security_db` ya creada. En paralelo, catálogo y pedidos siguen bloqueados por ADR-0004 y ADR-0005.
 
 ## 9. Registro de avance
 
@@ -197,8 +197,9 @@ El siguiente paso es escribir `docs/api/security.openapi.yaml` (Fase 1), agregar
 | 2026-11-10 | 2. Esqueleto | Hecho | Build, 7 pruebas y contenedor verificados |
 | 2026-11-13 | 6. Gateway y seguridad | En progreso | Validación JWT, guards, proxy `/api/v1`, CORS, rate limit, JWKS y orígenes explícitos; 47 pruebas en verde |
 | 2026-11-14 | 1. Decisiones | En progreso | ADR-0003, 0006, 0009, 0010 y 0011 aceptados; faltan 0004 y 0005 |
-| 2026-11-14 | 6. Gateway y seguridad | En progreso | Decisiones de sesiones, refresh, cookies, revocación y contraseñas cerradas; falta implementar `security_db` y los endpoints |
+| 2026-11-14 | 6. Gateway y seguridad | En progreso | Decisiones de sesiones, refresh, cookies, revocación y contraseñas cerradas |
+| 2026-11-20 | 6. Gateway y seguridad | En progreso | `security_db` en Compose, modelos `users`/`sessions`, migración Alembic y JWKS en Node; 24 pruebas Python en verde |
 
 ---
 
-**Última actualización:** 2026-11-14
+**Última actualización:** 2026-11-20

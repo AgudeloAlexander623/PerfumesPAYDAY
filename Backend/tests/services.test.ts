@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { createApp } from '@perfumespayday/shared';
+import { createApp } from '@perfumesgold/shared';
 import { envSchema as catalogEnv } from '../services/catalog/src/config/env.js';
 import { envSchema as gatewayEnv } from '../services/gateway/src/config/env.js';
 import { envSchema as ordersEnv } from '../services/orders/src/config/env.js';

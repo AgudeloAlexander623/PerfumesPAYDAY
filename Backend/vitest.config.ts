@@ -4,7 +4,7 @@ import { defineConfig } from 'vitest/config';
 export default defineConfig({
   resolve: {
     alias: {
-      '@perfumespayday/shared': fileURLToPath(
+      '@perfumesgold/shared': fileURLToPath(
         new URL('./packages/shared/src/index.ts', import.meta.url),
       ),
     },

@@ -1,6 +1,6 @@
 # Seguridad del sistema
 
-Documento de amenazas, controles y pruebas de seguridad de **PerfumesPAYDAY**. Aplica a la beta académica y a todos los componentes: frontend, gateway, `security-service`, `catalog-service`, `order-service` y bases de datos.
+Documento de amenazas, controles y pruebas de seguridad de **Perfumes GOLD**. Aplica a la beta académica y a todos los componentes: frontend, gateway, `security-service`, `catalog-service`, `order-service` y bases de datos.
 
 > **Alcance:** simulador académico. No se manejan pagos reales, datos de tarjetas, facturación electrónica ni envíos reales. Los controles descritos son obligatorios para la beta y se verifican en las pruebas de hacking ético del profesor.
 

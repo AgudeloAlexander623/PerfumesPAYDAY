@@ -191,7 +191,7 @@ sessions
 
 ## Consecuencias
 
-- `security-service` necesita base de datos, migraciones, hashing y endpoints reales.
+- `security-service` ya tiene base de datos y migraciones; faltan hashing y endpoints reales.
 - El frontend debe implementar refresh silencioso con una sola petición en vuelo (single-flight).
 - El gateway debe reenviar cookies y validar el origen en refresh/logout.
 - Las pruebas deben cubrir rotación, reutilización, expiración, logout idempotente y cambio de contraseña.
@@ -199,7 +199,7 @@ sessions
 
 ## Pendientes
 
-- Implementar `security_db`, migraciones y repositorios.
+- Implementar los repositorios sobre `security_db` (base y migraciones ya creadas).
 - Implementar registro, login, refresh, logout y perfil.
 - Configurar la cookie y `Cache-Control: no-store`.
 - Implementar la validación de `Origin` en el gateway.

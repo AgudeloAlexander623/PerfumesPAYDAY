@@ -93,5 +93,5 @@ La persona de BD publica endpoints y el backend consume esa API.
 
 - [`architecture.md`](../architecture.md) §4
 - [`docs/PLAN.md`](../PLAN.md) §5, §7 y §9
-- [Bitácora del backend](../../Backend/docs/README.md)
+- [Bitácora del backend](../../Backend/docs/Bitacora.alex.md)
 - [CU-17 — Checkout simulado](../use-cases/cu-17-checkout-simulado.md)

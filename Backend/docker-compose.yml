@@ -1,12 +1,12 @@
-name: perfumespayday-backend
+name: perfumesgold-backend
 
 x-environment: &environment
   NODE_ENV: production
   HOST: 0.0.0.0
   LOG_LEVEL: info
-  JWT_ISSUER: perfumespayday-security
-  JWT_AUDIENCE: perfumespayday-api
-  JWT_PUBLIC_KEY: ${JWT_PUBLIC_KEY:?define_JWT_PUBLIC_KEY_con_npm_run_jwt_keys}
+  JWT_ISSUER: perfumesgold-security
+  JWT_AUDIENCE: perfumesgold-api
+  JWT_JWKS_URL: http://security:8000/.well-known/jwks.json
 
 x-service: &service
   restart: unless-stopped
@@ -27,19 +27,45 @@ x-service: &service
     start_period: 5s
 
 services:
+  security-db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    networks:
+      - backend
+    environment:
+      POSTGRES_DB: security_db
+      POSTGRES_USER: security
+      POSTGRES_PASSWORD: ${SECURITY_DB_PASSWORD:?define_SECURITY_DB_PASSWORD}
+    volumes:
+      - security-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U security -d security_db"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 5s
+
   security:
     build:
       context: ../security/security-service
     restart: unless-stopped
+    depends_on:
+      security-db:
+        condition: service_healthy
     networks:
       - backend
     environment:
       ENVIRONMENT: production
       HOST: 0.0.0.0
       PORT: "8000"
-      JWT_ISSUER: perfumespayday-security
-      JWT_AUDIENCE: perfumespayday-api
+      JWT_ISSUER: perfumesgold-security
+      JWT_AUDIENCE: perfumesgold-api
       JWT_PRIVATE_KEY: ${JWT_PRIVATE_KEY:?define_JWT_PRIVATE_KEY_con_scripts_generate_jwt_keys}
+      DATABASE_URL: postgresql+asyncpg://security:${SECURITY_DB_PASSWORD}@security-db:5432/security_db
+      REFRESH_TTL_DAYS: "7"
+      SESSION_ABSOLUTE_TTL_DAYS: "30"
+      LOGIN_MAX_FAILED_ATTEMPTS: "5"
+      LOGIN_LOCKOUT_MINUTES: "15"
     expose:
       - "8000"
     healthcheck:
@@ -99,3 +125,6 @@ services:
 networks:
   backend:
     driver: bridge
+
+volumes:
+  security-db-data:

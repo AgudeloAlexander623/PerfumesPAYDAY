@@ -5,7 +5,7 @@ import {
   portSchema,
   type JwtEnv,
   type ServiceEnv,
-} from '@perfumespayday/shared';
+} from '@perfumesgold/shared';
 
 export type CatalogEnv = ServiceEnv & JwtEnv;
 

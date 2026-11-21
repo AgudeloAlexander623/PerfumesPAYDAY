@@ -74,6 +74,7 @@ La lista de contraseñas comunes vive en `security-service` como recurso local, 
 - Los intentos fallidos se cuentan por cuenta y por IP; un login exitoso reinicia el contador.
 - Tras superar el umbral se responde `429` con `Retry-After`.
 - El bloqueo es temporal; no se bloquea la cuenta de forma permanente desde el login.
+- Umbral inicial confirmado para la beta: 5 intentos fallidos por cuenta/IP y bloqueo de 15 minutos, configurable con `LOGIN_MAX_FAILED_ATTEMPTS` y `LOGIN_LOCKOUT_MINUTES`.
 - Los intentos fallidos se registran sin contraseña, sin hash y sin token.
 
 ### 6. Datos y pruebas

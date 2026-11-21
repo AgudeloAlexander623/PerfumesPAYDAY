@@ -1,10 +1,10 @@
-# PerfumesPAYDAY
+# Perfumes GOLD
 
 Tienda online de perfumes creada como proyecto académico. La experiencia está inspirada en **MercadoLibre**: una persona puede registrarse, iniciar sesión, armar su propio carrito, registrar una dirección de envío y simular una compra.
 
 > **Importante:** es un simulador académico. No cobra dinero real, no emite facturas electrónicas y no envía productos reales.
 
-**Estado actual:** el proyecto ya dejó la fase de solo planeación. Hoy existen la **landing page funcional** (Frontend), los **esquemas SQL completos de las tres bases de datos** con sus diagramas ER, **25 casos de uso** redactados, **8 diagramas** de arquitectura y flujos y el **esqueleto del backend** (`gateway`, `catalog` y `orders` compilan, arrancan y responden `/health`). Véase [Estado actual del proyecto](#3-estado-actual-del-proyecto).
+**Estado actual:** el proyecto ya dejó la fase de solo planeación. Hoy existen la **landing page funcional** (Frontend), los **esquemas SQL completos de las tres bases de datos** con sus diagramas ER, **25 casos de uso** redactados, **8 diagramas** de arquitectura y flujos, el **esqueleto del backend** (`gateway`, `catalog` y `orders` compilan, arrancan y responden `/health`) y el **emisor JWT/JWKS con persistencia base de `security-service`**. Véase [Estado actual del proyecto](#3-estado-actual-del-proyecto).
 
 ---
 
@@ -32,7 +32,7 @@ Tienda online de perfumes creada como proyecto académico. La experiencia está 
 
 ## 1. ¿Qué es este proyecto?
 
-PerfumesPAYDAY será una página web para explorar y comprar perfumes. El proyecto busca parecerse a una tienda real, pero con fines educativos.
+Perfumes GOLD será una página web para explorar y comprar perfumes. El proyecto busca parecerse a una tienda real, pero con fines educativos.
 
 La aplicación permitirá:
 
@@ -82,7 +82,7 @@ Es parecido a un centro comercial: el usuario entra por una puerta principal (ga
 
 ## 3. Estado actual del proyecto
 
-Resumen de qué existe **hoy** en la rama `main`:
+Resumen de qué existe **hoy** en el repositorio (el backend se desarrolla en la rama `Alex_Backend_development`):
 
 | Área | Estado | Detalle |
 |---|---|---|
@@ -91,9 +91,9 @@ Resumen de qué existe **hoy** en la rama `main`:
 | Casos de uso | ✅ Redactados | 25 casos (CU-01 a CU-25) priorizados con MoSCoW: 18 Must, 6 Should, 1 Could ([`docs/use-cases/`](docs/use-cases/)) |
 | Diagramas | ✅ Publicados | 8 diagramas Mermaid con su SVG: contexto, contenedores, autenticación, catálogo, carrito, checkout, pedidos y administración ([`docs/diagrams/`](docs/diagrams/)) |
 | Backend | ✅ Esqueleto funcional | Rama `Alex_Backend_development`: workspace npm con `gateway`, `catalog` y `orders`; Fastify 5 + TypeScript 7 + Zod; paquete compartido, Docker Compose y pruebas. Los servicios compilan, arrancan y responden `/health`; aún sin endpoints de negocio |
-| Servicio de seguridad | 📋 Diseñado | Stack definido (Python + FastAPI + JWT); esqueleto de carpetas creado, sin código |
+| Servicio de seguridad | 🔨 En implementación | Python + FastAPI con emisor RS256, JWKS y modelo de `users`/`sessions` con migración Alembic; aún sin endpoints de registro, login, refresh ni logout |
 | App móvil | 📋 Planeada | Consumirá la misma API a través del gateway; fuera de la beta |
-| Infraestructura | 🔨 Parcial | Docker Compose del backend implementado en `Backend/`; `infra/` aún sin archivos |
+| Infraestructura | 🔨 Parcial | Docker Compose del backend con PostgreSQL para `security_db` y JWKS configurado; `infra/` aún sin archivos |
 | CI/CD | ⏳ Pendiente | `.github/workflows/` creado pero vacío |
 
 > El pago siempre es **simulado** (`pagos.metodo = 'simulado'`, `estado = 'aprobado_simulado'`): no se integra ninguna pasarela real.
@@ -105,7 +105,7 @@ Resumen de qué existe **hoy** en la rama `main`:
 La estructura está organizada por áreas y por servicio. Cada carpeta tiene una única responsabilidad.
 
 ```text
-PerfumesPAYDAY/
+PerfumesGOLD/
 ├── Backend/
 │   ├── package.json                 # Workspace npm del backend
 │   ├── package-lock.json
@@ -123,7 +123,7 @@ PerfumesPAYDAY/
 │   │       ├── src/
 │   │       ├── tests/
 │   │       └── package.json
-│   ├── packages/shared/             # Utilidades compartidas (@perfumespayday/shared)
+│   ├── packages/shared/             # Utilidades compartidas (@perfumesgold/shared)
 │   └── docs/                        # Plan y notas de trabajo del backend
 ├── Frontend/                         # Landing page funcional (React + Vite + Tailwind)
 │   ├── public/                       # Favicon e iconos públicos
@@ -137,12 +137,14 @@ PerfumesPAYDAY/
 │   └── tests/
 ├── security/
 │   ├── security-service/             # Autenticación, roles y tokens (Python + FastAPI)
-│   │   └── app/                      # api/, core/, models/, schemas/, services/
+│   │   ├── alembic.ini               # Configuración de migraciones
+│   │   ├── migrations/               # Migraciones versionadas de security_db
+│   │   └── app/                      # api/, core/, db/, domain/ y servicios
 │   └── docs/                         # Documentación de seguridad
 ├── Databases/
 │   ├── init/                         # 001-004: creación de BDs y tablas (SQL)
 │   ├── seeds/                        # 001_roles.sql: roles 'cliente' y 'admin'
-│   ├── migrations/                   # Cambios versionados (vacío por ahora)
+│   ├── migrations/                   # Cambios globales vacíos; security-service tiene los suyos
 │   └── docs/                         # README + diagramas ER Draw.io de las 3 BDs
 ├── movil/                            # Futura aplicación móvil
 │   ├── src/
@@ -200,16 +202,19 @@ Ese archivo **no es código**: solo indica "esta carpeta debe conservarse". Cuan
 | Zod | 4 | Backend | Validar los datos que entran y salen | ✅ En uso (validación de entorno) |
 | jose (JWT) | 6 | Backend | Validar tokens firmados RS256 en el gateway | 🔨 Instalado (rama backend) |
 | Vitest | 5 | Backend y frontend | Pruebas unitarias | ✅ En uso en backend |
-| Python | 3 | Seguridad | Lenguaje del servicio de autenticación | ✅ Confirmado |
-| FastAPI | — | Seguridad | Framework para construir la API de seguridad | ✅ Confirmado |
-| Pydantic | — | Seguridad | Validar los datos que entran y salen | ✅ Confirmado |
-| JWT RS256 | — | Seguridad | Identificar al usuario mediante tokens firmados | ✅ Confirmado |
-| Argon2 o bcrypt | — | Seguridad | Guardar contraseñas de forma segura | ✅ Confirmado |
-| PostgreSQL | 15+ | Bases de datos | Guardar información relacional | ✅ En uso (esquemas listos) |
+| Python | 3.12 | Seguridad | Lenguaje del servicio de autenticación | ✅ En uso |
+| FastAPI | — | Seguridad | Framework para construir la API de seguridad | ✅ En uso |
+| Pydantic | — | Seguridad | Validar los datos que entran y salen | ✅ En uso |
+| JWT RS256 | — | Seguridad | Identificar al usuario mediante tokens firmados | ✅ En uso (emisor y validador) |
+| SQLAlchemy | 2.x | Seguridad | ORM asíncrono de `security_db` | ✅ En uso |
+| asyncpg | 0.30+ | Seguridad | Driver PostgreSQL asíncrono | ✅ En uso |
+| Alembic | 1.x | Seguridad | Migraciones versionadas de `security_db` | ✅ En uso |
+| Argon2id | — | Seguridad | Guardar contraseñas de forma segura | 📋 Decidido; pendiente de instalar |
+| PostgreSQL | 15+ | Bases de datos | Guardar información relacional | ✅ En uso (esquemas y `security_db`) |
 | Docker / Compose | — | Infraestructura | Ejecutar el proyecto en contenedores | ✅ Implementado en backend |
 | GitHub Actions | — | Infraestructura | Ejecutar pruebas automáticas en cada cambio | 📋 Propuesto |
 | Playwright | — | Frontend | Pruebas de flujo en el navegador | 📋 Propuesto |
-| pytest | — | Seguridad y backend | Pruebas automáticas en Python | 📋 Propuesto |
+| pytest | — | Seguridad | Pruebas automáticas en Python | ✅ En uso |
 | OpenAPI | 3.1 | Documentación | Describir los contratos de la API | ✅ Confirmado |
 | Mermaid | — | Documentación | Crear diagramas dentro de Markdown | ✅ En uso |
 | Markdown + ADR | — | Documentación | Documentar el proyecto y sus decisiones | ✅ En uso |
@@ -278,19 +283,15 @@ El motor es **PostgreSQL**. Hay **una base de datos por microservicio** y todas 
 
 | Tabla | Propósito |
 |---|---|
-| `usuarios` | Registro de personas: correo único, hash de contraseña, nombre, teléfono, estado activo |
-| `roles` | Catálogo de roles (`cliente`, `admin`), asignado por el seed |
-| `usuario_roles` | Relación N:M entre usuarios y roles |
-| `tokens_refresco` | Refresh tokens guardados como hash, con expiración y revocación |
-| `registros_auditoria` | Trazabilidad de acciones administrativas (acción, entidad, detalles en JSONB) |
+| `users` | Cuentas: correo único (`CITEXT`), hash de contraseña, rol (`customer`/`admin`), estado y último inicio de sesión |
+| `sessions` | Refresh tokens opacos por dispositivo: hash SHA-256, familia de rotación, expiración, revocación y sesión sustituta |
 
 ```mermaid
 erDiagram
-    usuarios ||--o{ usuario_roles : tiene
-    roles ||--o{ usuario_roles : asigna
-    usuarios ||--o{ tokens_refresco : renueva
-    usuarios ||--o{ registros_auditoria : genera
+    users ||--o{ sessions : renueva
 ```
+
+> La implementación operativa sigue el modelo de [ADR-0009](docs/adr/0009-sesiones-refresh-cookies.md) y vive en [`security-service/migrations/versions/0001_create_identity_tables.py`](security/security-service/migrations/versions/0001_create_identity_tables.py). El script [`Databases/init/002_security_db.sql`](Databases/init/002_security_db.sql) conserva el diseño SQL original (`usuarios`, `tokens_refresco`, etc.) y debe conciliarse con el ADR antes de usarse en un despliegue.
 
 ### 7.2 `catalog_db` — productos y precios
 
@@ -338,7 +339,9 @@ erDiagram
 ### Requisitos
 
 - Node.js ≥ 22 y npm
+- Python 3.12 para `security-service`
 - PostgreSQL 15 o superior en ejecución (conexión local usada por el equipo: `localhost:5432`, usuario `postgres`)
+- Docker y Docker Compose para el entorno completo
 
 ### Frontend (landing page) — funcional
 
@@ -362,18 +365,44 @@ psql -U postgres -f Databases/init/004_orders_db.sql              # tablas de or
 psql -U postgres -f Databases/seeds/001_roles.sql                 # roles cliente y admin
 ```
 
+### `security-service` — migraciones
+
+El servicio usa su propia base `security_db` y Alembic como fuente de verdad de sus tablas:
+
+```bash
+cd security/security-service
+python3 -m venv .venv
+.venv/bin/pip install -e '.[dev]'
+cp .env.example .env
+# Ajusta DATABASE_URL y JWT_PRIVATE_KEY en .env
+.venv/bin/alembic upgrade head
+.venv/bin/python -m pytest
+```
+
 ### Backend — en desarrollo (rama `Alex_Backend_development`)
 
-El workspace npm con los tres servicios (`gateway`, `catalog`, `orders`) y sus dependencias (Fastify, Prisma, Zod, jose, Vitest) ya está configurado en la rama `Alex_Backend_development`, pero **todavía no hay código de aplicación ni comando de arranque**:
+El workspace npm con los tres servicios (`gateway`, `catalog`, `orders`) y sus dependencias (Fastify, Prisma, Zod, jose, Vitest) ya tiene código en la rama `Alex_Backend_development`. Los servicios compilan, arrancan y responden `/health`, pero **aún no exponen endpoints de negocio**:
 
 ```bash
 git switch Alex_Backend_development
 cd Backend
 npm install
 npm test
+npm run dev:gateway    # o dev:catalog / dev:orders
 ```
 
-Cuando los servicios estén implementados, este README se actualizará con los puertos y las variables de entorno (`.env.example`) de cada uno.
+Las variables de entorno están documentadas en [`Backend/.env.example`](Backend/.env.example).
+
+### Docker Compose — entorno completo
+
+```bash
+cp Backend/.env.example Backend/.env
+# Define JWT_PRIVATE_KEY y SECURITY_DB_PASSWORD en Backend/.env
+docker compose -f Backend/docker-compose.yml up --build
+docker compose -f Backend/docker-compose.yml exec security alembic upgrade head
+```
+
+En Docker, `gateway`, `catalog` y `orders` validan tokens con `JWT_JWKS_URL`; `JWT_PUBLIC_KEY` queda como alternativa para ejecución local sin contenedores.
 
 ---
 
@@ -551,7 +580,7 @@ El punto de entrada a la documentación global es [`docs/README.md`](docs/README
 | Componente | Ruta |
 |---|---|
 | Frontend | [`Frontend/docs/README.md`](Frontend/docs/README.md) |
-| Backend | [Bitácora del backend](Backend/docs/README.md) |
+| Backend | [Bitácora del backend](Backend/docs/Bitacora.alex.md) |
 | Bases de datos | [`Databases/docs/README.md`](Databases/docs/README.md) |
 | Seguridad | [`security/docs/README.md`](security/docs/README.md) |
 | Móvil | [`movil/docs/README.md`](movil/docs/README.md) |
@@ -565,7 +594,7 @@ El punto de entrada a la documentación global es [`docs/README.md`](docs/README
 | `docs/PLAN.md` | Planeación del backend: fases, decisiones y pendientes | Redactado |
 | `docs/ROADMAP.md` | Ruta de desarrollo del backend por etapas | Redactado |
 | `docs/security.md` | Amenazas, controles y hacking ético | Redactado |
-| `docs/adr/` | Registro de decisiones de arquitectura (8 ADR) | En progreso |
+| `docs/adr/` | Registro de decisiones de arquitectura (11 ADR) | En progreso |
 | `docs/api/` | Convenciones y contratos OpenAPI por servicio | En progreso |
 | `docs/diagrams/` | 8 diagramas Mermaid + SVG (contexto, contenedores, flujos) | ✅ Completo |
 | `docs/use-cases/` | 25 casos de uso redactados con prioridades MoSCoW | ✅ Completo |
@@ -600,9 +629,11 @@ El punto de entrada a la documentación global es [`docs/README.md`](docs/README
 - [x] Diagramas de arquitectura y flujos (8).
 - [x] Esquemas SQL de las tres bases de datos + seed de roles + diagramas ER.
 - [x] Landing page funcional del frontend.
-- [ ] Backend con código de aplicación (en estructuración en `Alex_Backend_development`).
-- [ ] Servicio de seguridad implementado.
-- [ ] Entorno Docker Compose y CI.
+- [x] Backend con esqueleto funcional en `Alex_Backend_development`.
+- [x] `security_db` con modelo, migración y PostgreSQL en Docker Compose.
+- [ ] Endpoints de seguridad (registro, login, refresh y logout).
+- [x] Entorno Docker Compose del backend.
+- [ ] CI.
 - [ ] Catálogo con datos simulados (seed de productos).
 - [ ] Despliegue.
 
@@ -677,7 +708,7 @@ Si eres una IA que colabora en este repositorio:
 
 | Recurso | Enlace |
 |---|---|
-| Repositorio | <https://github.com/AgudeloAlexander623/PerfumesPAYDAY> |
+| Repositorio | <https://github.com/AgudeloAlexander623/PerfumesGOLD> |
 | Tablero Kanban | Pendiente |
 | Entorno desplegado | Pendiente |
 | Casos de uso | [`docs/use-cases/README.md`](docs/use-cases/README.md) |

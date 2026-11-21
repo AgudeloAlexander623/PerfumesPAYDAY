@@ -71,7 +71,7 @@ Decidir cómo se construirá el backend antes de escribir código: framework, co
 
 La autorización para código aplica desde F2. F0 y F1 son documentación y decisiones.
 
-Estado actual: F0 y F2 están completas. En F1 están aceptados ADR-0003, ADR-0006, ADR-0008, ADR-0009, ADR-0010 y ADR-0011; faltan ADR-0004 (propiedad de datos de catálogo/pedidos) y ADR-0005 (comunicación interna). F5 está avanzada: la validación JWT RS256, los claims, los guards de rol, el proxy del gateway con CORS y rate limit y el emisor `security-service` ya funcionan. Falta el ciclo de sesiones (registro, login, refresh y logout), la base `security_db`, el contrato `security.openapi.yaml` y la agregación de auditoría.
+Estado actual: F0 y F2 están completas. En F1 están aceptados ADR-0003, ADR-0006, ADR-0008, ADR-0009, ADR-0010 y ADR-0011; faltan ADR-0004 (propiedad de datos de catálogo/pedidos) y ADR-0005 (comunicación interna). F5 está avanzada: la validación JWT RS256, los claims, los guards de rol, el proxy del gateway con CORS y rate limit y el emisor `security-service` ya funcionan. `security_db` ya está en Docker Compose con modelo y migración de `users`/`sessions`. Falta el ciclo de sesiones (registro, login, refresh y logout), los repositorios, el contrato `security.openapi.yaml` y la agregación de auditoría.
 
 La secuencia detallada, el orden de dependencias y las puertas de salida de cada fase están en [`ROADMAP.md`](ROADMAP.md).
 
@@ -89,7 +89,8 @@ Criterio: instalar solo lo que se use y evitar paquetes que dupliquen funciones.
 | Gateway | `fastify`, `@fastify/cors`, `@fastify/helmet`, `@fastify/rate-limit`, `@fastify/http-proxy` | Instalado | Paquete del gateway |
 | Catálogo y pedidos | `fastify`, `@fastify/helmet` | Instalado | Paquete de cada servicio |
 | Pruebas de integración | `supertest` u equivalente | Pendiente | Paquete del servicio |
-| Frontend y seguridad | React, FastAPI, etc. | Fuera de esta carpeta | Otros componentes |
+| Seguridad (Python) | `fastapi`, `pydantic-settings`, `PyJWT`, `SQLAlchemy[asyncio]`, `asyncpg`, `alembic` | Instalado | `security-service/pyproject.toml` |
+| Frontend | React, Vite, Tailwind | Fuera de esta carpeta | `Frontend/` |
 
 Cuando se elija el framework se instalarán sus plugins en cada servicio, no en la raíz, salvo que sean herramientas compartidas. `prisma` se queda en la raíz porque es una herramienta de desarrollo; los esquemas y clientes se generan por servicio.
 
@@ -101,7 +102,7 @@ Cuando se elija el framework se instalarán sus plugins en cada servicio, no en 
 - **Workspaces:** npm puede hoistar dependencias y ocultar una que falte en un servicio. Verificar con `npm ls` al agregar paquetes.
 - **Contratos:** el envelope, la paginación y la idempotencia ya están aceptados (ADR-0006); falta escribir `security.openapi.yaml` y los contratos de catálogo/pedidos.
 - **JWT:** resuelto en ADR-0003: JWKS como mecanismo principal y PEM por entorno como respaldo. Falta implementar la rotación con múltiples claves.
-- **Sesiones:** resuelto en ADR-0009 y ADR-0010: refresh opaco con rotación, cookie `httpOnly`, access token de 15 minutos y revocación diferida. Falta implementar `security_db` y los endpoints.
+- **Sesiones:** resuelto en ADR-0009 y ADR-0010: refresh opaco con rotación, cookie `httpOnly`, access token de 15 minutos y revocación diferida. `security_db` ya tiene migración; faltan repositorios y endpoints.
 - **Contraseñas:** resuelto en ADR-0011: Argon2id, mínimo de 12 caracteres y bloqueo de contraseñas comunes. Falta agregar la dependencia y el validador.
 - **Comunicación interna:** falta confirmar si `order-service` llama a `catalog-service` por red interna directa o a través del gateway. La arquitectura sugiere red interna directa, sin exponer el servicio.
 - **Auditoría e idempotencia:** falta definir retención, limpieza y responsables.
@@ -111,8 +112,8 @@ Cuando se elija el framework se instalarán sus plugins en cada servicio, no en 
 ## 8. Próximos pasos
 
 1. Escribir `docs/api/security.openapi.yaml` con registro, login, refresh, logout, perfil y cambio de contraseña.
-2. Agregar `security_db` a Docker Compose y crear las migraciones de `users` y `sessions`.
-3. Implementar los endpoints de autenticación y el validador de contraseñas.
+2. Implementar los repositorios sobre la `security_db` ya migrada.
+3. Implementar los endpoints de autenticación y el validador Argon2id de contraseñas.
 4. Endurecer el gateway: `typ`, CSRF, cookies, `WWW-Authenticate`, redacción de logs y rotación JWKS.
 5. Agregar pruebas E2E y CI antes de la demo.
 6. Cerrar ADR-0004 y ADR-0005 para catálogo y pedidos.
@@ -125,11 +126,12 @@ Cuando se elija el framework se instalarán sus plugins en cada servicio, no en 
 | 2026-11-10 | Organizar el backend con npm workspaces | Confirmado |
 | 2026-11-10 | Instalar base TypeScript, Vitest, Zod, `jose` y Prisma | Hecho |
 | 2026-11-10 | Usar Fastify 5 con plugins por servicio | Confirmado e instalado |
-| 2026-11-10 | ADR-0008: ESM, project references y paquete `@perfumespayday/shared` | Aceptado |
+| 2026-11-10 | ADR-0008: ESM, project references y paquete `@perfumesgold/shared` | Aceptado |
 | 2026-11-10 | Esqueleto del backend con `/health`, Docker y pruebas | Hecho |
 | 2026-11-14 | ADR-0003: JWKS principal y PEM como respaldo | Aceptado |
 | 2026-11-14 | ADR-0006: errores, paginación e idempotencia | Aceptado |
 | 2026-11-14 | ADR-0009: sesiones, refresh opaco y cookies | Aceptado |
 | 2026-11-14 | ADR-0010: access token de 15 minutos sin denylist en beta | Aceptado |
 | 2026-11-14 | ADR-0011: Argon2id y política de contraseñas | Aceptado |
-| 2026-11-14 | Contrato `security.openapi.yaml` y `security_db` | Pendiente |
+| 2026-11-14 | Contrato `security.openapi.yaml` | Pendiente |
+| 2026-11-20 | `security_db`: modelo `users`/`sessions`, migración y PostgreSQL en Compose | Hecho |

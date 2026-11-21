@@ -1,1 +1,1 @@
-"""Servicio de seguridad de PerfumesPAYDAY."""
+"""Servicio de seguridad de Perfumes GOLD."""

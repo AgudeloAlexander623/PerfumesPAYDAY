@@ -1,4 +1,4 @@
-# Criterios de aceptación de la beta — PerfumesPAYDAY
+# Criterios de aceptación de la beta — Perfumes GOLD
 
 > **Estado:** redactado — pendiente de validación con el equipo y el profesor.
 > **Última actualización:** 2026-11-11
@@ -182,7 +182,7 @@ Cada criterio se cierra adjuntando su evidencia en la tarjeta del tablero. Tabla
 
 Recorrido sugerido (10 a 15 minutos) para la revisión final. Se ejecuta sobre la URL desplegada.
 
-1. **Presentación (1 min):** qué es PerfumesPAYDAY y que el pago es simulado.
+1. **Presentación (1 min):** qué es Perfumes GOLD y que el pago es simulado.
 2. **Catálogo (2 min):** explorar, buscar por marca y filtrar por género y familia olfativa.
 3. **Detalle (1 min):** abrir un producto, cambiar de presentación y ver precio y stock.
 4. **Carrito como visitante (1 min):** agregar sin sesión y ver el contador.
