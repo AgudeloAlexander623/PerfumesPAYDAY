@@ -83,4 +83,4 @@ Durante el día se completó la capa de autenticación JWT del backend. En Node.
 
 ### Cambios en el rol de PO
 
-- Se realizaron cambios en el rol de PO (Product Owner) del proyecto.
+- Se realizaron cambios dentro de la documentacion, relacionados con los
