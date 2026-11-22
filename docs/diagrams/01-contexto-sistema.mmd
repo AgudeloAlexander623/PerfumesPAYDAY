@@ -1,0 +1,43 @@
+---
+title: 01. Contexto del sistema
+---
+%%{init: {"htmlLabels": false, "flowchart": {"curve": "basis", "useMaxWidth": false, "nodeSpacing": 35, "rankSpacing": 55}, "theme": "base", "themeVariables": {"fontFamily": "Arial, sans-serif", "fontSize": "16px", "lineColor": "#455A64"}}}%%
+flowchart LR
+    U["Usuario<br/>Navegador web"]:::actor
+    A["Administrador<br/>Panel de gestión"]:::actor
+
+    subgraph PUBLIC["RED PÚBLICA"]
+        W["Frontend web<br/>React + TypeScript"]:::frontend
+        G["API Gateway<br/>Node.js + TypeScript"]:::gateway
+    end
+
+    subgraph PRIVATE["RED PRIVADA"]
+        S["Security Service<br/>Python + FastAPI<br/>identidad y sesiones"]:::service
+        C["Catalog Service<br/>Node.js + TypeScript<br/>productos y stock"]:::service
+        O["Order Service<br/>Node.js + TypeScript<br/>carrito y pedidos"]:::service
+    end
+
+    subgraph DATA["DATOS PRIVADOS"]
+        DB1[("security_db")]:::db
+        DB2[("catalog_db")]:::db
+        DB3[("orders_db")]:::db
+    end
+
+    U --> W
+    A --> W
+    W -->|"HTTPS / JSON"| G
+    G -->|"login, roles y tokens"| S
+    G -->|"catálogo y stock"| C
+    G -->|"carrito y pedidos"| O
+    S --> DB1
+    C --> DB2
+    O --> DB3
+
+    classDef actor fill:#FFF3E0,stroke:#EF6C00,stroke-width:2px,color:#1a1a1a;
+    classDef frontend fill:#E3F2FD,stroke:#1565C0,stroke-width:2px,color:#1a1a1a;
+    classDef gateway fill:#E0F7FA,stroke:#00838F,stroke-width:2px,color:#1a1a1a;
+    classDef service fill:#E8F5E9,stroke:#2E7D32,stroke-width:2px,color:#1a1a1a;
+    classDef db fill:#F3E5F5,stroke:#6A1B9A,stroke-width:2px,color:#1a1a1a;
+    style PUBLIC fill:#F5F9FF,stroke:#1565C0,stroke-width:1.5px
+    style PRIVATE fill:#F3FAF3,stroke:#2E7D32,stroke-width:1.5px
+    style DATA fill:#FBF5FD,stroke:#6A1B9A,stroke-width:1.5px

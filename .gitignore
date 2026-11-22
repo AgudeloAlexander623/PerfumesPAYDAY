@@ -2,3 +2,34 @@
 postgres_local.session.sql
 #Eliminar los Keep (Solicitado por el PO)
 .gitkeep
+# Dependencias
+node_modules/
+
+# Compilación y cobertura
+dist/
+coverage/
+
+# Variables de entorno
+.env
+.env.*
+!.env.example
+
+# Prisma
+**/generated/prisma/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Registros y temporales
+*.log
+.DS_Store
+Thumbs.db
+
+#Basura
+.gitkeep

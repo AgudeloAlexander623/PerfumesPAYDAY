@@ -1,0 +1,17 @@
+{
+  "files": [],
+  "references": [
+    {
+      "path": "packages/shared"
+    },
+    {
+      "path": "services/gateway"
+    },
+    {
+      "path": "services/catalog"
+    },
+    {
+      "path": "services/orders"
+    }
+  ]
+}
