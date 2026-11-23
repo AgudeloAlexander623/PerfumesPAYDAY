@@ -3,7 +3,6 @@
 CREATE TABLE calidades (
     id           UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     codigo       VARCHAR(20)  NOT NULL UNIQUE,
-    nombre       VARCHAR(60)  NOT NULL,
     descripcion  VARCHAR(255)
 );
 

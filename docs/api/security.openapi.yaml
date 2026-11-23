@@ -1,0 +1,901 @@
+openapi: 3.1.0
+
+info:
+  title: Perfumes GOLD Security Service API
+  version: 0.1.0
+  summary: Contrato de autenticación, sesiones y cuenta de security-service.
+  description: |
+    Borrador del contrato de `security-service`. Este servicio es el único
+    emisor de tokens JWT RS256 y el propietario de `security_db`.
+
+    Responsabilidades cubiertas por este contrato:
+    - Registro, inicio de sesión, renovación de sesión y cierre de sesión.
+    - Consulta y edición del perfil propio.
+    - Cambio de contraseña.
+
+    Convenciones transversales:
+    - Envelope de error y códigos HTTP según [ADR-0006](../adr/0006-errores-paginacion-idempotencia.md).
+    - Claves JWT y JWKS según [ADR-0003](../adr/0003-jwt-rs256.md).
+    - Sesiones, refresh token opaco y cookies según [ADR-0009](../adr/0009-sesiones-refresh-cookies.md).
+    - Revocación y vigencia de access tokens según [ADR-0010](../adr/0010-revocacion-access-tokens.md).
+    - Política de contraseñas según [ADR-0011](../adr/0011-politica-contrasenas.md).
+
+    El gateway enruta la superficie pública bajo `/api/v1`. Las operaciones
+    marcadas como técnicas pueden no exponerse a través del gateway.
+  contact:
+    name: Equipo Perfumes GOLD
+  license:
+    name: Proyecto académico
+
+servers:
+  - url: http://localhost:8000
+    description: Servicio interno local (puerto propuesto, pendiente de confirmar)
+  - url: http://localhost:3000
+    description: Acceso público vía gateway local
+
+tags:
+  - name: Auth
+    description: Registro, login, refresh y logout.
+  - name: Cuenta
+    description: Perfil y contraseña del usuario autenticado.
+  - name: Técnico
+    description: Operaciones técnicas del servicio (no expuestas por el gateway).
+
+paths:
+  /api/v1/auth/register:
+    post:
+      tags: [Auth]
+      summary: Registrar un usuario (CU-01)
+      description: |
+        Crea un usuario con rol `customer` y estado `active`. No inicia sesión
+        automáticamente. El correo se normaliza a minúsculas en el servidor.
+        Campos no permitidos enviados por el cliente (por ejemplo `role`) se
+        ignoran o se rechazan según validación; el rol siempre lo asigna el
+        servidor.
+      operationId: registerUser
+      security: []
+      x-service: security
+      x-cu: CU-01
+      x-status: draft
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+            examples:
+              valid:
+                summary: Registro válido
+                value:
+                  name: Ana Pérez
+                  email: ana@example.com
+                  password: contraseña-larga-segura
+      responses:
+        '201':
+          description: Usuario creado.
+          headers:
+            Cache-Control:
+              $ref: '#/components/headers/CacheControlNoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserPublic'
+              examples:
+                created:
+                  value:
+                    id: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+                    name: Ana Pérez
+                    email: ana@example.com
+                    role: customer
+                    status: active
+                    createdAt: '2026-11-16T12:00:00Z'
+                    updatedAt: '2026-11-16T12:00:00Z'
+                    lastLoginAt: null
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /api/v1/auth/login:
+    post:
+      tags: [Auth]
+      summary: Iniciar sesión (CU-02)
+      description: |
+        Valida credenciales y crea una sesión. Devuelve un access token JWT de
+        corta duración y establece el refresh token opaco en una cookie
+        `HttpOnly`. La respuesta no incluye el refresh token en el cuerpo.
+
+        Cookie (según entorno, ADR-0009):
+        - Producción: `__Host-ppd_refresh`; `Secure`; `Path=/`; `SameSite=Lax`.
+        - Desarrollo: `ppd_refresh`; sin `Secure`; `Path=/api/v1/auth`; `SameSite=Lax`.
+        - `HttpOnly=true`, `Max-Age=604800` (7 días), sin `Domain`.
+      operationId: loginUser
+      security: []
+      x-service: security
+      x-cu: CU-02
+      x-status: draft
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+            examples:
+              valid:
+                value:
+                  email: ana@example.com
+                  password: contraseña-larga-segura
+      responses:
+        '200':
+          description: Sesión iniciada.
+          headers:
+            Set-Cookie:
+              $ref: '#/components/headers/SetRefreshCookie'
+            Cache-Control:
+              $ref: '#/components/headers/CacheControlNoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+              examples:
+                success:
+                  value:
+                    accessToken: eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.example.signature
+                    tokenType: Bearer
+                    expiresIn: 900
+                    user:
+                      id: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+                      name: Ana Pérez
+                      email: ana@example.com
+                      role: customer
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /api/v1/auth/refresh:
+    post:
+      tags: [Auth]
+      summary: Renovar el access token (CU-03)
+      description: |
+        Lee el refresh token opaco desde la cookie, valida la sesión y realiza
+        rotación atómica: revoca el refresh usado y emite uno nuevo. No acepta
+        refresh token en el cuerpo ni en la URL.
+
+        Seguridad CSRF: el gateway/servicio valida `Origin`/`Referer` contra los
+        orígenes permitidos. En producción, si faltan ambos en una operación con
+        cookie, se responde `403`.
+      operationId: refreshSession
+      security:
+        - refreshCookieAuth: []
+      x-service: security
+      x-auth: refresh-cookie
+      x-cu: CU-03
+      x-status: draft
+      responses:
+        '200':
+          description: Access token renovado y refresh rotado.
+          headers:
+            Set-Cookie:
+              $ref: '#/components/headers/SetRefreshCookie'
+            Cache-Control:
+              $ref: '#/components/headers/CacheControlNoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RefreshResponse'
+              examples:
+                success:
+                  value:
+                    accessToken: eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.new.signature
+                    tokenType: Bearer
+                    expiresIn: 900
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /api/v1/auth/logout:
+    post:
+      tags: [Auth]
+      summary: Cerrar sesión (CU-04)
+      description: |
+        Revoca la sesión asociada al refresh token y elimina la cookie. La
+        operación es idempotente: responde `204` aunque no exista una sesión
+        activa.
+
+        - `all=false` (por defecto): cierra la sesión actual identificada por la cookie.
+        - `all=true`: revoca todas las sesiones del usuario autenticado; requiere
+          un access token Bearer válido.
+
+        Seguridad CSRF: cualquier logout que use cookie valida `Origin`/`Referer`.
+        En producción, si faltan ambos, se responde `403`.
+      operationId: logoutSession
+      security:
+        - refreshCookieAuth: []
+        - bearerAuth: []
+          refreshCookieAuth: []
+      x-service: security
+      x-auth: refresh-cookie
+      x-cu: CU-04
+      x-status: draft
+      parameters:
+        - $ref: '#/components/parameters/LogoutAll'
+      responses:
+        '204':
+          description: Sesión cerrada o ya inexistente.
+          headers:
+            Set-Cookie:
+              $ref: '#/components/headers/ClearRefreshCookie'
+            Cache-Control:
+              $ref: '#/components/headers/CacheControlNoStore'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /api/v1/users/me:
+    get:
+      tags: [Cuenta]
+      summary: Consultar el perfil propio (CU-05)
+      description: Devuelve los datos públicos de la cuenta del usuario autenticado.
+      operationId: getMyProfile
+      security:
+        - bearerAuth: []
+      x-service: security
+      x-cu: CU-05
+      x-status: draft
+      responses:
+        '200':
+          description: Perfil del usuario autenticado.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserPublic'
+              examples:
+                profile:
+                  value:
+                    id: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+                    name: Ana Pérez
+                    email: ana@example.com
+                    role: customer
+                    status: active
+                    createdAt: '2026-11-10T09:00:00Z'
+                    updatedAt: '2026-11-16T12:00:00Z'
+                    lastLoginAt: '2026-11-16T11:55:00Z'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+        '500':
+          $ref: '#/components/responses/InternalError'
+    patch:
+      tags: [Cuenta]
+      summary: Editar el nombre del perfil propio (CU-06)
+      description: |
+        Actualiza únicamente los campos permitidos del usuario autenticado. En la
+        beta solo `name` es editable. Campos no permitidos enviados en el cuerpo
+        (`email`, `role`, `id`, `status`, etc.) se ignoran y no generan error.
+      operationId: updateMyProfile
+      security:
+        - bearerAuth: []
+      x-service: security
+      x-cu: CU-06
+      x-status: draft
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateProfileRequest'
+            examples:
+              updateName:
+                value:
+                  name: Ana María Pérez
+      responses:
+        '200':
+          description: Perfil actualizado.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserPublic'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /api/v1/users/me/password:
+    patch:
+      tags: [Cuenta]
+      summary: Cambiar la contraseña propia (CU-24)
+      description: |
+        Verifica la contraseña actual, valida la nueva según ADR-0011, actualiza
+        el hash y revoca todas las sesiones del usuario. El cliente debe forzar un
+        nuevo inicio de sesión.
+      operationId: changeMyPassword
+      security:
+        - bearerAuth: []
+      x-service: security
+      x-cu: CU-24
+      x-status: draft
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangePasswordRequest'
+            examples:
+              valid:
+                value:
+                  currentPassword: contraseña-larga-segura
+                  newPassword: nueva-contraseña-larga-segura
+      responses:
+        '204':
+          description: Contraseña actualizada y sesiones revocadas.
+          headers:
+            Cache-Control:
+              $ref: '#/components/headers/CacheControlNoStore'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /.well-known/jwks.json:
+    get:
+      tags: [Técnico]
+      summary: Obtener el JSON Web Key Set (JWKS)
+      description: |
+        Expone las claves públicas activas para la verificación de JWT RS256.
+        Operación técnica definida por ADR-0003; no forma parte de la superficie
+        pública del gateway en la beta. El contenido incluye la clave actual y,
+        durante una ventana de rotación, la clave anterior.
+      operationId: getJwks
+      security: []
+      x-service: security
+      x-internal: true
+      x-cu: null
+      x-status: draft
+      responses:
+        '200':
+          description: Conjunto de claves públicas.
+          headers:
+            Cache-Control:
+              description: Puede ser cacheable según la política de rotación.
+              schema:
+                type: string
+                example: public, max-age=300
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Jwks'
+              examples:
+                jwks:
+                  value:
+                    keys:
+                      - kty: RSA
+                        use: sig
+                        kid: key-2026-11
+                        alg: RS256
+                        n: base64url-modulus
+                        e: AQAB
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: |
+        Access token JWT RS256 emitido por security-service. Vida útil: 15 minutos.
+        Claims esperados: `sub`, `iss`, `aud`, `iat`, `exp`, `jti`, `roles`, `typ`.
+        Solo se aceptan tokens con `typ: "access"`.
+    refreshCookieAuth:
+      type: apiKey
+      in: cookie
+      name: __Host-ppd_refresh
+      description: |
+        Refresh token opaco enviado en cookie `HttpOnly`.
+        - Producción: nombre `__Host-ppd_refresh`, `Secure`, `Path=/`.
+        - Desarrollo: nombre `ppd_refresh`, sin `Secure`, `Path=/api/v1/auth`.
+        Nunca se envía en el cuerpo ni en la URL.
+
+  parameters:
+    LogoutAll:
+      name: all
+      in: query
+      required: false
+      description: |
+        Si es `true`, revoca todas las sesiones del usuario autenticado. Requiere
+        access token Bearer válido además de la cookie de refresh.
+      schema:
+        type: boolean
+        default: false
+
+  headers:
+    CacheControlNoStore:
+      description: Evita el almacenamiento de respuestas con credenciales o tokens.
+      schema:
+        type: string
+        enum: [no-store]
+        example: no-store
+    WWWAuthenticate:
+      description: |
+        Desafío de autenticación Bearer. En `401` puede incluir `error="invalid_token"`;
+        en `403` de autorización insuficiente puede incluir `error="insufficient_scope"`.
+      schema:
+        type: string
+        example: Bearer error="invalid_token"
+    RetryAfter:
+      description: Tiempo de espera antes de reintentar, en segundos.
+      schema:
+        type: integer
+        minimum: 1
+        example: 60
+    SetRefreshCookie:
+      description: |
+        Establece o rota la cookie de refresh token (`HttpOnly`, `SameSite=Lax`, `Max-Age=604800`).
+        Producción: `__Host-ppd_refresh=...; Path=/; Secure; HttpOnly; SameSite=Lax; Max-Age=604800`.
+        Desarrollo: `ppd_refresh=...; Path=/api/v1/auth; HttpOnly; SameSite=Lax; Max-Age=604800`.
+      schema:
+        type: string
+      example: __Host-ppd_refresh=<opaque-token>; Path=/; Secure; HttpOnly; SameSite=Lax; Max-Age=604800
+    ClearRefreshCookie:
+      description: Elimina la cookie de refresh usando los mismos atributos con los que se creó.
+      schema:
+        type: string
+      example: __Host-ppd_refresh=; Path=/; Secure; HttpOnly; SameSite=Lax; Max-Age=0
+
+  schemas:
+    RegisterRequest:
+      type: object
+      additionalProperties: false
+      required: [name, email, password]
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 120
+          description: Nombre visible del usuario.
+          example: Ana Pérez
+        email:
+          type: string
+          format: email
+          maxLength: 254
+          description: Correo único; se normaliza a minúsculas en el servidor.
+          example: ana@example.com
+        password:
+          type: string
+          minLength: 12
+          maxLength: 128
+          format: password
+          description: |
+            Contraseña en texto plano solo en tránsito. No se recorta. Debe cumplir
+            la política de ADR-0011 (longitud, no común, no igual al nombre/correo).
+          example: contraseña-larga-segura
+
+    LoginRequest:
+      type: object
+      additionalProperties: false
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          format: email
+          maxLength: 254
+          example: ana@example.com
+        password:
+          type: string
+          minLength: 1
+          maxLength: 128
+          format: password
+          example: contraseña-larga-segura
+
+    LoginResponse:
+      type: object
+      additionalProperties: false
+      required: [accessToken, tokenType, expiresIn, user]
+      properties:
+        accessToken:
+          type: string
+          description: 'JWT RS256 de acceso (typ: "access").'
+        tokenType:
+          type: string
+          enum: [Bearer]
+          example: Bearer
+        expiresIn:
+          type: integer
+          minimum: 1
+          description: Vida útil del access token en segundos.
+          example: 900
+        user:
+          $ref: '#/components/schemas/AuthUser'
+
+    RefreshResponse:
+      type: object
+      additionalProperties: false
+      required: [accessToken, tokenType, expiresIn]
+      properties:
+        accessToken:
+          type: string
+          description: Nuevo JWT RS256 de acceso.
+        tokenType:
+          type: string
+          enum: [Bearer]
+          example: Bearer
+        expiresIn:
+          type: integer
+          minimum: 1
+          description: Vida útil del access token en segundos.
+          example: 900
+
+    AuthUser:
+      type: object
+      additionalProperties: false
+      required: [id, name, email, role]
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+          minLength: 1
+          maxLength: 120
+        email:
+          type: string
+          format: email
+        role:
+          $ref: '#/components/schemas/UserRole'
+
+    UserPublic:
+      type: object
+      additionalProperties: false
+      required: [id, name, email, role, status, createdAt, updatedAt]
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+          minLength: 1
+          maxLength: 120
+        email:
+          type: string
+          format: email
+        role:
+          $ref: '#/components/schemas/UserRole'
+        status:
+          $ref: '#/components/schemas/UserStatus'
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        lastLoginAt:
+          type:
+            - string
+            - 'null'
+          format: date-time
+          description: Fecha del último inicio de sesión exitoso, o `null` si nunca ha iniciado sesión.
+
+    UserRole:
+      type: string
+      enum: [customer, admin]
+      description: Rol asignado por el servidor; nunca aceptado desde el cliente.
+
+    UserStatus:
+      type: string
+      enum: [active, disabled]
+
+    UpdateProfileRequest:
+      type: object
+      description: |
+        Solo `name` es editable en la beta. Cualquier otro campo enviado se ignora.
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 120
+          description: Nuevo nombre visible.
+          example: Ana María Pérez
+      minProperties: 1
+      additionalProperties: true
+
+    ChangePasswordRequest:
+      type: object
+      additionalProperties: false
+      required: [currentPassword, newPassword]
+      properties:
+        currentPassword:
+          type: string
+          minLength: 1
+          maxLength: 128
+          format: password
+          description: Contraseña actual del usuario.
+        newPassword:
+          type: string
+          minLength: 12
+          maxLength: 128
+          format: password
+          description: |
+            Nueva contraseña. Debe cumplir ADR-0011 y no puede ser igual a la actual.
+
+    Jwks:
+      type: object
+      required: [keys]
+      properties:
+        keys:
+          type: array
+          items:
+            $ref: '#/components/schemas/Jwk'
+      additionalProperties: false
+
+    Jwk:
+      type: object
+      description: Clave pública JWK para verificación de firmas RS256.
+      required: [kty, use, kid, alg, n, e]
+      properties:
+        kty:
+          type: string
+          enum: [RSA]
+        use:
+          type: string
+          enum: [sig]
+        kid:
+          type: string
+        alg:
+          type: string
+          enum: [RS256]
+        n:
+          type: string
+          description: Módulo RSA en base64url.
+        e:
+          type: string
+          description: Exponente público RSA en base64url.
+      additionalProperties: true
+
+    Error:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: object
+          required: [code, message]
+          properties:
+            code:
+              type: string
+              description: Identificador estable del error.
+              enum:
+                - VALIDATION_ERROR
+                - WEAK_PASSWORD
+                - PASSWORD_REUSED
+                - EMAIL_ALREADY_REGISTERED
+                - INVALID_CREDENTIALS
+                - ACCOUNT_DISABLED
+                - INVALID_REFRESH_TOKEN
+                - CSRF_VALIDATION_FAILED
+                - RATE_LIMIT_EXCEEDED
+                - USER_NOT_FOUND
+                - SERVICE_UNAVAILABLE
+                - INTERNAL_ERROR
+              example: VALIDATION_ERROR
+            message:
+              type: string
+              description: Mensaje genérico apto para el usuario.
+              example: Los datos enviados no son válidos.
+            details:
+              type: array
+              description: Detalles por campo; presente principalmente en errores de validación.
+              items:
+                type: object
+                properties:
+                  field:
+                    type: string
+                    example: email
+                  code:
+                    type: string
+                    example: INVALID_FORMAT
+                  message:
+                    type: string
+                    example: El correo no tiene un formato válido.
+            requestId:
+              type: string
+              format: uuid
+              example: 6f1c2a9e-3b7d-4c1a-9e2f-8a4b5c6d7e8f
+      additionalProperties: false
+
+  responses:
+    BadRequest:
+      description: Petición mal formada, tipos inválidos o parámetros faltantes.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          examples:
+            validation:
+              value:
+                error:
+                  code: VALIDATION_ERROR
+                  message: Los datos enviados no son válidos.
+                  details:
+                    - field: email
+                      code: INVALID_FORMAT
+                      message: El correo no tiene un formato válido.
+                  requestId: 6f1c2a9e-3b7d-4c1a-9e2f-8a4b5c6d7e8f
+    Unauthorized:
+      description: Credenciales, token o sesión inválidos, ausentes o expirados.
+      headers:
+        WWW-Authenticate:
+          $ref: '#/components/headers/WWWAuthenticate'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          examples:
+            invalidCredentials:
+              value:
+                error:
+                  code: INVALID_CREDENTIALS
+                  message: Credenciales inválidas.
+                  requestId: 6f1c2a9e-3b7d-4c1a-9e2f-8a4b5c6d7e8f
+            invalidRefresh:
+              value:
+                error:
+                  code: INVALID_REFRESH_TOKEN
+                  message: La sesión no es válida o ha expirado.
+                  requestId: 6f1c2a9e-3b7d-4c1a-9e2f-8a4b5c6d7e8f
+    Forbidden:
+      description: Autenticado sin permiso, cuenta deshabilitada o validación CSRF fallida.
+      headers:
+        WWW-Authenticate:
+          $ref: '#/components/headers/WWWAuthenticate'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          examples:
+            accountDisabled:
+              value:
+                error:
+                  code: ACCOUNT_DISABLED
+                  message: No es posible acceder con esta cuenta.
+                  requestId: 6f1c2a9e-3b7d-4c1a-9e2f-8a4b5c6d7e8f
+            csrf:
+              value:
+                error:
+                  code: CSRF_VALIDATION_FAILED
+                  message: La solicitud no pudo ser validada.
+                  requestId: 6f1c2a9e-3b7d-4c1a-9e2f-8a4b5c6d7e8f
+    NotFound:
+      description: Recurso inexistente o no accesible.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          examples:
+            userNotFound:
+              value:
+                error:
+                  code: USER_NOT_FOUND
+                  message: El recurso solicitado no existe.
+                  requestId: 6f1c2a9e-3b7d-4c1a-9e2f-8a4b5c6d7e8f
+    Conflict:
+      description: Conflicto de negocio, como correo duplicado.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          examples:
+            emailExists:
+              value:
+                error:
+                  code: EMAIL_ALREADY_REGISTERED
+                  message: No fue posible completar el registro.
+                  requestId: 6f1c2a9e-3b7d-4c1a-9e2f-8a4b5c6d7e8f
+    UnprocessableEntity:
+      description: Datos bien formados que incumplen una regla de negocio.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          examples:
+            weakPassword:
+              value:
+                error:
+                  code: WEAK_PASSWORD
+                  message: La contraseña no cumple la política de seguridad.
+                  details:
+                    - field: password
+                      code: TOO_WEAK
+                      message: Usa una contraseña más larga y difícil de adivinar.
+                  requestId: 6f1c2a9e-3b7d-4c1a-9e2f-8a4b5c6d7e8f
+    TooManyRequests:
+      description: Límite de peticiones superado.
+      headers:
+        Retry-After:
+          $ref: '#/components/headers/RetryAfter'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          examples:
+            rateLimit:
+              value:
+                error:
+                  code: RATE_LIMIT_EXCEEDED
+                  message: Se superó el límite de intentos. Intenta más tarde.
+                  requestId: 6f1c2a9e-3b7d-4c1a-9e2f-8a4b5c6d7e8f
+    InternalError:
+      description: Error interno no previsto.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          examples:
+            internal:
+              value:
+                error:
+                  code: INTERNAL_ERROR
+                  message: Ocurrió un error inesperado.
+                  requestId: 6f1c2a9e-3b7d-4c1a-9e2f-8a4b5c6d7e8f
+    ServiceUnavailable:
+      description: Dependencia no disponible.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          examples:
+            unavailable:
+              value:
+                error:
+                  code: SERVICE_UNAVAILABLE
+                  message: El servicio no está disponible temporalmente.
+                  requestId: 6f1c2a9e-3b7d-4c1a-9e2f-8a4b5c6d7e8f

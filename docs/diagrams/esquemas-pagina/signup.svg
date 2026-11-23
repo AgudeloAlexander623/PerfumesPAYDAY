@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="1032" viewBox="0 0 1280 1032" role="img"><title>L2 · Registro (signUp)</title><desc>Registro de usuario.</desc><defs><marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#E0B02B" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><style>
+text{font-family:"Plus Jakarta Sans",Outfit,Arial,Helvetica,sans-serif;fill:#FFFFFF}
+.h1{font-size:48px;font-weight:700}
+.h2{font-size:30px;font-weight:700}
+.h3{font-size:18px;font-weight:700}
+.t{font-size:15px}
+.tb{font-size:15px;font-weight:700}
+.tb2{font-size:13px;font-weight:700}
+.st{font-size:16px;fill:#9CA3AF}
+.m{font-size:13px;fill:#9CA3AF}
+.lb{font-size:13px;font-weight:700}
+.gd{fill:#E0B02B}
+.up{font-size:12px;font-weight:700;fill:#E0B02B;letter-spacing:1px}
+.hd{font-size:11px;font-weight:700;fill:#9CA3AF;letter-spacing:1px}
+.nv{font-size:13px;font-weight:700;letter-spacing:.5px}
+.bk{font-size:14px;font-weight:700;fill:#14110A;letter-spacing:1px}
+.bw{font-size:13px;font-weight:700;letter-spacing:1px}
+.bd{font-size:10px;font-weight:700;fill:#14110A}
+.er{font-size:13px;fill:#FCA5A5}
+.rd{font-size:13px;fill:#F87171}
+.nt{font-size:13px;fill:#D1D5DB}
+.card{fill:#15151D;stroke:#2A2A35;stroke-width:1}
+.inp{fill:#0C0C12;stroke:#2A2A35;stroke-width:1}
+.chk{fill:#0C0C12;stroke:#3A3A48;stroke-width:1.2}
+.gold{fill:#E0B02B}
+.out{fill:none;stroke:#3A3A48;stroke-width:1.5}
+.outg{fill:none;stroke:#E0B02B;stroke-width:1}
+.outgd{fill:none;stroke:#E0B02B;stroke-width:1.5;stroke-dasharray:6 4}
+.errb{fill:#2A1518;stroke:#7F1D1D;stroke-width:1}
+.ln{stroke:#2A2A35;stroke-width:1}
+.lng{stroke:#E0B02B;stroke-width:2}
+.ar{stroke:#E0B02B;stroke-width:1.5;fill:none}
+.ph{fill:#E5E7EB}
+.phx{stroke:#9CA3AF;stroke-width:1}
+.chip{fill:#1B1B24;stroke:#2A2A35;stroke-width:1}
+.ic{fill:#1B1B24;stroke:#2A2A35;stroke-width:1}
+.gl{fill:none;stroke:#FFFFFF;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.glm{fill:none;stroke:#9CA3AF;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.glk{fill:none;stroke:#14110A;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.glg{fill:none;stroke:#E0B02B;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.hf{fill:#E0B02B}
+.note{fill:#101017;stroke:#3A3A48;stroke-width:1;stroke-dasharray:6 4}
+</style><rect width="1280" height="1032" fill="#0C0C12"/><polygon points="143.0,25.0 161.0,25.0 166.0,31.0 152.0,44.0 138.0,31.0" class="gl"/><text x="182" y="38" class="h3" text-anchor="start">PERFUMERÍA GOLD</text><text x="520" y="37" class="nv" text-anchor="start">INICIO</text><text x="610" y="37" class="nv" text-anchor="start">CATÁLOGO</text><text x="720" y="37" class="nv" text-anchor="start">MIS PEDIDOS</text><circle cx="940" cy="32" r="18" class="ic"/><circle cx="988" cy="32" r="18" class="ic"/><circle cx="1036" cy="32" r="18" class="ic"/><circle cx="1084" cy="32" r="18" class="ic"/><circle cx="1132" cy="32" r="18" class="ic"/><path d="M943 25 A8 8 0 1 0 947 35 A6 6 0 0 1 943 25 Z" class="gl"/><circle cx="986" cy="30" r="6" class="gl"/><line x1="990" y1="34" x2="995" y2="39" class="gl"/><path transform="translate(1036 32)" d="M0,-4 C-2,-8 -8,-7 -8,-2 C-8,2 -3,5 0,8 C3,5 8,2 8,-2 C8,-7 2,-8 0,-4 Z" class="hf"/><rect x="1077" y="28" width="14" height="11" rx="3" class="gl"/><path d="M1081 28 v-2 a3 3 0 0 1 6 0 v2" class="gl"/><circle cx="1132" cy="28" r="4" class="gl"/><path d="M1124 41 Q1132 31 1140 41" class="gl"/><line x1="0" y1="64" x2="1280" y2="64" class="ln"/><rect x="420" y="100" width="440" height="710" rx="14" class="card"/><polygon points="627.4,138.2 652.6,138.2 659.6,146.6 640.0,164.8 620.4,146.6" class="gl"/><text x="640" y="216" class="h2" text-anchor="middle">Crear cuenta</text><text x="640" y="244" class="m" text-anchor="middle">Regístrate para armar tu carrito y comprar</text><text x="460" y="283" class="lb" text-anchor="start">Nombre completo</text><rect x="460" y="292" width="360" height="46" rx="8" class="inp"/><text x="476" y="320.0" class="m" text-anchor="start">Nombre y apellido</text><text x="460" y="361" class="lb" text-anchor="start">Correo electrónico</text><rect x="460" y="370" width="360" height="46" rx="8" class="inp"/><text x="476" y="398.0" class="m" text-anchor="start">correo@ejemplo.com</text><text x="460" y="439" class="lb" text-anchor="start">Teléfono (opcional)</text><rect x="460" y="448" width="360" height="46" rx="8" class="inp"/><text x="476" y="476.0" class="m" text-anchor="start">3000000000</text><text x="460" y="517" class="lb" text-anchor="start">Contraseña</text><rect x="460" y="526" width="360" height="46" rx="8" class="inp"/><text x="476" y="554.0" class="m" text-anchor="start">••••••••</text><text x="460" y="595" class="lb" text-anchor="start">Confirmar contraseña</text><rect x="460" y="604" width="360" height="46" rx="8" class="inp"/><text x="476" y="632.0" class="m" text-anchor="start">••••••••</text><rect x="460" y="688" width="360" height="48" rx="6" class="gold"/><text x="640.0" y="717.0" class="bk" text-anchor="middle">CREAR CUENTA</text><text x="640" y="772" class="m" text-anchor="middle">¿Ya tienes cuenta? <tspan class="gd">Inicia sesión</tspan></text><line x1="0" y1="840" x2="1280" y2="840" class="ln"/><rect x="40" y="870" width="1200" height="132" rx="10" class="note"/><text x="64" y="904" class="h3" text-anchor="start">Notas · L2 · Registro (signUp)</text><text x="64" y="936" class="nt" text-anchor="start">• Campos según la tabla usuarios: nombre_completo, correo y telefono</text><text x="64" y="960" class="nt" text-anchor="start">• La contraseña se guarda como hash (Argon2 o bcrypt)</text><text x="64" y="984" class="nt" text-anchor="start">• Confirmar contraseña debe coincidir; errores por campo</text><text x="644" y="936" class="nt" text-anchor="start">• Rol asignado por defecto: cliente</text><text x="644" y="960" class="nt" text-anchor="start">• Correo único en el sistema</text><text x="644" y="984" class="nt" text-anchor="start">• Límite de intentos en el registro</text></svg>
