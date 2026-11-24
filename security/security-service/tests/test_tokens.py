@@ -1,10 +1,9 @@
 import base64
+from collections.abc import Callable
 from datetime import datetime, timedelta, timezone
 
 import jwt
 import pytest
-from cryptography.hazmat.primitives import serialization
-from cryptography.hazmat.primitives.asymmetric import rsa
 from fastapi.testclient import TestClient
 
 from app.core.security import (
@@ -100,13 +99,10 @@ def test_rejects_unknown_roles(client: TestClient) -> None:
 
 def test_rejects_a_public_key_that_does_not_match(
     rsa_key_pair: tuple[str, str],
+    rsa_key_pair_factory: Callable[[], tuple[str, str]],
 ) -> None:
     private_pem, _ = rsa_key_pair
-    other_key = rsa.generate_private_key(public_exponent=65537, key_size=2048)
-    other_public_pem = other_key.public_key().public_bytes(
-        encoding=serialization.Encoding.PEM,
-        format=serialization.PublicFormat.SubjectPublicKeyInfo,
-    ).decode("ascii")
+    _, other_public_pem = rsa_key_pair_factory()
 
     with pytest.raises(JwtConfigurationError, match="no corresponde"):
         JwtIssuer(

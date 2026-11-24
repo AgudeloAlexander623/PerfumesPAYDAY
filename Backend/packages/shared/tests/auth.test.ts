@@ -27,19 +27,24 @@ interface TokenOptions {
   roles?: string[];
   issuedAt?: number;
   expiresAt?: number;
+  tokenType?: string;
   key?: CryptoKey;
 }
 
 let privateKey: CryptoKey;
 let publicKey: CryptoKey;
 let otherPrivateKey: CryptoKey;
+let otherPublicKey: CryptoKey;
 let publicKeyPem: string;
 let app: FastifyInstance;
 
 async function signToken(options: TokenOptions = {}): Promise<string> {
   const issuedAt = options.issuedAt ?? Math.floor(Date.now() / 1000);
 
-  return new SignJWT({ roles: options.roles ?? ['customer'] })
+  return new SignJWT({
+    roles: options.roles ?? ['customer'],
+    typ: options.tokenType ?? 'access',
+  })
     .setProtectedHeader({ alg: 'RS256' })
     .setSubject(options.subject ?? SUBJECT)
     .setIssuer(options.issuer ?? ISSUER)
@@ -59,7 +64,9 @@ beforeAll(async () => {
   privateKey = pair.privateKey;
   publicKey = pair.publicKey;
   publicKeyPem = await exportSPKI(pair.publicKey);
-  otherPrivateKey = (await generateKeyPair('RS256')).privateKey;
+  const otherPair = await generateKeyPair('RS256');
+  otherPrivateKey = otherPair.privateKey;
+  otherPublicKey = otherPair.publicKey;
 
   app = await createApp({ name: 'auth-test', logLevel: 'silent' });
   await registerAuth(app, {
@@ -222,6 +229,16 @@ describe('validación del token', () => {
     expect(response.statusCode).toBe(401);
   });
 
+  it('rechaza un token cuyo typ no es access', async () => {
+    const response = await app.inject({
+      method: 'GET',
+      url: '/private',
+      headers: bearer(await signToken({ tokenType: 'refresh' })),
+    });
+
+    expect(response.statusCode).toBe(401);
+  });
+
   it('rechaza claims obligatorios inválidos', async () => {
     const response = await app.inject({
       method: 'GET',
@@ -321,7 +338,7 @@ describe('formatos de clave pública', () => {
       });
 
       const now = Math.floor(Date.now() / 1000);
-      const token = await new SignJWT({ roles: ['customer'] })
+      const token = await new SignJWT({ roles: ['customer'], typ: 'access' })
         .setProtectedHeader({ alg: 'RS256', kid: 'clave-de-prueba' })
         .setSubject(SUBJECT)
         .setIssuer(ISSUER)
@@ -336,6 +353,93 @@ describe('formatos de clave pública', () => {
     } finally {
       await jwksApp.close();
     }
+  });
+
+  it('recarga el JWKS cuando aparece un kid desconocido', async () => {
+    const jwksApp = await createApp({ name: 'jwks-rotation-test', logLevel: 'silent' });
+    const initialJwk = await exportJWK(publicKey);
+    const rotatedJwk = await exportJWK(otherPublicKey);
+    let keys = [{ ...initialJwk, kid: 'inicial', alg: 'RS256', use: 'sig' }];
+
+    jwksApp.get('/.well-known/jwks.json', async () => ({ keys }));
+    await jwksApp.listen({ port: 0, host: '127.0.0.1' });
+    const address = jwksApp.server.address();
+
+    if (!address || typeof address === 'string') {
+      throw new Error('No se pudo obtener el puerto del JWKS de prueba.');
+    }
+
+    try {
+      const verifier = await createJwtVerifier({
+        jwksUrl: `http://127.0.0.1:${address.port}/.well-known/jwks.json`,
+        issuer: ISSUER,
+        audience: AUDIENCE,
+      });
+
+      const now = Math.floor(Date.now() / 1000);
+      const initialToken = await new SignJWT({ roles: ['customer'], typ: 'access' })
+        .setProtectedHeader({ alg: 'RS256', kid: 'inicial' })
+        .setSubject(SUBJECT)
+        .setIssuer(ISSUER)
+        .setAudience(AUDIENCE)
+        .setIssuedAt(now)
+        .setExpirationTime(now + 900)
+        .sign(privateKey);
+
+      await expect(verifier.verify(initialToken)).resolves.toMatchObject({
+        sub: SUBJECT,
+      });
+
+      // Simulamos la rotación: el JWKS ya solo publica la clave nueva.
+      keys = [{ ...rotatedJwk, kid: 'rotada', alg: 'RS256', use: 'sig' }];
+
+      const rotatedToken = await new SignJWT({ roles: ['customer'], typ: 'access' })
+        .setProtectedHeader({ alg: 'RS256', kid: 'rotada' })
+        .setSubject(SUBJECT)
+        .setIssuer(ISSUER)
+        .setAudience(AUDIENCE)
+        .setIssuedAt(now)
+        .setExpirationTime(now + 900)
+        .sign(otherPrivateKey);
+
+      await expect(verifier.verify(rotatedToken)).resolves.toMatchObject({
+        sub: SUBJECT,
+      });
+    } finally {
+      await jwksApp.close();
+    }
+  });
+
+  it('responde 503 si el JWKS no está disponible', async () => {
+    const brokenApp = await createApp({
+      name: 'auth-jwks-down',
+      logLevel: 'silent',
+    });
+
+    await configureJwtAuth(brokenApp, {
+      NODE_ENV: 'test',
+      JWT_JWKS_URL: 'http://127.0.0.1:1/.well-known/jwks.json',
+      JWT_ISSUER: ISSUER,
+      JWT_AUDIENCE: AUDIENCE,
+    });
+
+    brokenApp.get('/private', { preHandler: brokenApp.authenticate }, async () => ({
+      ok: true,
+    }));
+
+    const response = await brokenApp.inject({
+      method: 'GET',
+      url: '/private',
+      headers: bearer(await signToken()),
+    });
+
+    expect(response.statusCode).toBe(503);
+    expect(response.json()).toMatchObject({
+      error: { code: 'UPSTREAM_UNAVAILABLE' },
+    });
+    expect(response.headers['www-authenticate']).toBeUndefined();
+
+    await brokenApp.close();
   });
 
   it('exige una fuente de clave', async () => {
