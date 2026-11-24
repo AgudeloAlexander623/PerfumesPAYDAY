@@ -25,7 +25,7 @@ let calls: UpstreamCall[];
 function token(roles: string[] = ['customer']): Promise<string> {
   const now = Math.floor(Date.now() / 1000);
 
-  return new SignJWT({ roles })
+  return new SignJWT({ roles, typ: 'access' })
     .setProtectedHeader({ alg: 'RS256' })
     .setSubject(SUBJECT)
     .setIssuer(ISSUER)

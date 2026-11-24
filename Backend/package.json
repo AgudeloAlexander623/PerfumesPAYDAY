@@ -15,7 +15,8 @@
   ],
   "scripts": {
     "build": "tsc -b",
-    "typecheck": "tsc -b",
+    "typecheck": "tsc -b && npm run typecheck:contracts",
+    "typecheck:contracts": "tsc -p tests/contract/tsconfig.json --noEmit",
     "clean": "tsc -b --clean",
     "dev:gateway": "npm run dev -w @perfumesgold/gateway",
     "dev:catalog": "npm run dev -w @perfumesgold/catalog",

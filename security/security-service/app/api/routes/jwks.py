@@ -11,6 +11,6 @@ async def jwks(request: Request) -> JSONResponse:
     Solo expone `kty`, `n`, `e`, `kid`, `alg` y `use`; nunca material privado.
     """
     issuer = request.app.state.jwt_issuer
-    response = JSONResponse({"keys": [issuer.public_jwk]})
+    response = JSONResponse({"keys": issuer.public_jwks})
     response.headers["Cache-Control"] = "public, max-age=300"
     return response

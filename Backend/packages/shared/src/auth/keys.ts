@@ -1,10 +1,35 @@
 import {
   createRemoteJWKSet,
+  customFetch,
   importSPKI,
   type CryptoKey,
+  type FetchImplementation,
   type JWTVerifyGetKey,
   type RemoteJWKSetOptions,
 } from 'jose';
+import { AppError } from '../errors.js';
+
+export const JWKS_UNAVAILABLE_MESSAGE =
+  'No se pudo obtener la clave pública JWT.';
+
+/** Convierte cualquier fallo de red o respuesta no 200 en un 503 explícito. */
+const fetchJwks: FetchImplementation = async (resource, init) => {
+  try {
+    const response = await fetch(resource, init);
+
+    if (!response.ok) {
+      throw new AppError('UPSTREAM_UNAVAILABLE', JWKS_UNAVAILABLE_MESSAGE, 503);
+    }
+
+    return response;
+  } catch (error) {
+    if (error instanceof AppError) {
+      throw error;
+    }
+
+    throw new AppError('UPSTREAM_UNAVAILABLE', JWKS_UNAVAILABLE_MESSAGE, 503);
+  }
+};
 
 /** Clave local ya importada o resolvedor JWKS remoto. */
 export type JwtVerificationKey = CryptoKey | JWTVerifyGetKey;
@@ -35,7 +60,14 @@ export async function createVerificationKey(
   }
 
   if (options.jwksUrl) {
-    return createRemoteJWKSet(new URL(options.jwksUrl), options.jwks);
+    // jose recarga ante un kid desconocido, pero su caché por defecto es de
+    // 10 min; el ADR-0003 la limita a 5 min. El cooldown de 30 s se mantiene
+    // en el valor por defecto de la librería.
+    return createRemoteJWKSet(new URL(options.jwksUrl), {
+      cacheMaxAge: 300_000,
+      [customFetch]: fetchJwks,
+      ...options.jwks,
+    });
   }
 
   throw new Error('Falta JWT_PUBLIC_KEY o JWT_JWKS_URL para validar tokens.');

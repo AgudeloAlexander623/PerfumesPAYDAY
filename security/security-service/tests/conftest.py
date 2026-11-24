@@ -1,4 +1,4 @@
-from collections.abc import Iterator
+from collections.abc import Callable, Iterator
 
 import pytest
 from cryptography.hazmat.primitives import serialization
@@ -10,19 +10,31 @@ from app.main import create_app
 
 
 @pytest.fixture(scope="session")
-def rsa_key_pair() -> tuple[str, str]:
+def rsa_key_pair_factory() -> Callable[[], tuple[str, str]]:
+    """Fábrica de pares RSA efímeros; cada llamada simula una clave distinta."""
+
+    def generate() -> tuple[str, str]:
+        key = rsa.generate_private_key(public_exponent=65537, key_size=2048)
+        private_pem = key.private_bytes(
+            encoding=serialization.Encoding.PEM,
+            format=serialization.PrivateFormat.PKCS8,
+            encryption_algorithm=serialization.NoEncryption(),
+        ).decode("ascii")
+        public_pem = key.public_key().public_bytes(
+            encoding=serialization.Encoding.PEM,
+            format=serialization.PublicFormat.SubjectPublicKeyInfo,
+        ).decode("ascii")
+        return private_pem, public_pem
+
+    return generate
+
+
+@pytest.fixture(scope="session")
+def rsa_key_pair(
+    rsa_key_pair_factory: Callable[[], tuple[str, str]],
+) -> tuple[str, str]:
     """Par RSA efímero para que las pruebas no dependan de secretos."""
-    key = rsa.generate_private_key(public_exponent=65537, key_size=2048)
-    private_pem = key.private_bytes(
-        encoding=serialization.Encoding.PEM,
-        format=serialization.PrivateFormat.PKCS8,
-        encryption_algorithm=serialization.NoEncryption(),
-    ).decode("ascii")
-    public_pem = key.public_key().public_bytes(
-        encoding=serialization.Encoding.PEM,
-        format=serialization.PublicFormat.SubjectPublicKeyInfo,
-    ).decode("ascii")
-    return private_pem, public_pem
+    return rsa_key_pair_factory()
 
 
 @pytest.fixture

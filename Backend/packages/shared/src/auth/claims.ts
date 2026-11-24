@@ -23,6 +23,9 @@ export const authClaimsSchema = z
     iat: z.number().int().nonnegative(),
     jti: z.string().min(1).optional(),
     roles: z.array(roleSchema).default([]),
+    // Un refresh token también está firmado por security-service: exigir este
+    // claim evita que se use como access token (ADR-0003 y ADR-0010).
+    typ: z.literal('access'),
   })
   .passthrough();
 
