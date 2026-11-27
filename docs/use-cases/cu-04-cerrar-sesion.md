@@ -22,10 +22,10 @@ El usuario selecciona **Cerrar sesión**.
 ## Flujo principal
 
 1. El usuario selecciona **Cerrar sesión**.
-2. El frontend envía la solicitud al gateway.
-3. El gateway enruta la petición a `security-service`.
-4. `security-service` identifica la sesión por el refresh token.
-5. Marca la sesión como revocada y elimina la cookie.
+2. El frontend envía la solicitud al gateway con la cookie de refresh.
+3. El gateway valida `Origin`/`Referer` y enruta la petición a `security-service`.
+4. `security-service` identifica la sesión por el hash del refresh token.
+5. Marca la sesión como revocada, elimina la cookie (`Set-Cookie` de expiración) y responde `204` con `Cache-Control: no-store`.
 6. El frontend borra el access token de memoria y los datos del usuario.
 7. El sistema redirige al inicio o al login.
 
@@ -43,8 +43,8 @@ El usuario selecciona **Cerrar sesión**.
 
 ### A3 — Cerrar sesión en todos los dispositivos
 
-- **Cuándo ocurre:** el usuario elige esta opción desde su perfil.
-- **Respuesta del sistema:** `security-service` revoca todas las sesiones del `user_id` y responde `204`. El dispositivo actual también queda desconectado.
+- **Cuándo ocurre:** el usuario elige esta opción (`?all=true`) desde su perfil.
+- **Respuesta del sistema:** el cliente envía un access token Bearer válido y la cookie de refresh; `security-service` revoca todas las sesiones del `user_id` y responde `204`. El dispositivo actual también queda desconectado.
 
 ## Postcondiciones
 
@@ -57,8 +57,9 @@ El usuario selecciona **Cerrar sesión**.
 
 - El cierre de sesión nunca elimina el carrito ni el historial.
 - El carrito de invitado no se conserva después de cerrar sesión; el carrito autenticado permanece en `order-service`.
-- La operación es idempotente: repetirla no genera error.
-- Cerrar sesión en todos los dispositivos requiere una sesión válida en el dispositivo actual.
+- La operación es idempotente: repetirla no genera error (`204`).
+- Cerrar sesión en todos los dispositivos requiere un access token Bearer válido y la cookie de refresh del dispositivo actual.
+- El access token ya emitido puede seguir siendo válido hasta su expiración (máximo 15 minutos); el frontend debe descartarlo inmediatamente (ver [ADR-0010](../adr/0010-revocacion-access-tokens.md)).
 
 ## Datos y servicios involucrados
 
@@ -70,6 +71,7 @@ El usuario selecciona **Cerrar sesión**.
 
 - El refresh token se revoca en el servidor, no solo se borra en el navegador.
 - La cookie se elimina con las mismas propiedades con que se creó.
+- Las operaciones con cookie validan `Origin`/`Referer` para prevenir CSRF.
 - No se registran tokens en logs.
 - A3 permite responder ante la pérdida de un dispositivo.
 

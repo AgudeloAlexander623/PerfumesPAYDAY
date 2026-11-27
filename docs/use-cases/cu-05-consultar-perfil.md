@@ -25,7 +25,7 @@ El usuario selecciona **Mi perfil** en el menú de su cuenta.
 2. El frontend solicita los datos al gateway.
 3. El gateway enruta a `security-service`.
 4. `security-service` busca al usuario por el `user_id` del token.
-5. Devuelve nombre, correo, rol, fecha de registro y último acceso.
+5. Devuelve `id`, nombre, correo, rol, estado, fecha de registro, fecha de actualización y último acceso.
 6. El frontend muestra la información y un acceso a las direcciones de envío (CU-16).
 
 ## Flujos alternativos
@@ -65,7 +65,7 @@ El usuario selecciona **Mi perfil** en el menú de su cuenta.
 
 ## Criterios de aceptación
 
-- [ ] El usuario ve su nombre, correo, rol y fechas de cuenta.
-- [ ] La respuesta no incluye datos sensibles.
+- [ ] El usuario ve su `id`, nombre, correo, rol, estado y fechas de cuenta (`createdAt`, `updatedAt`, `lastLoginAt`).
+- [ ] La respuesta no incluye datos sensibles (`passwordHash`, tokens o identificadores internos de sesión).
 - [ ] Un usuario no puede consultar el perfil de otro.
 - [ ] Si la sesión expiró, se intenta renovar antes de cerrar.
