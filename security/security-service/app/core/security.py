@@ -1,6 +1,7 @@
 import base64
 import hashlib
 import json
+from dataclasses import dataclass
 from collections.abc import Sequence
 from datetime import datetime, timedelta, timezone
 from typing import Literal
@@ -88,8 +89,51 @@ def _thumbprint(jwk: dict[str, str]) -> str:
     return _base64url(hashlib.sha256(canonical.encode("ascii")).digest())
 
 
+@dataclass(frozen=True)
+class SigningKey:
+    """Par de claves y su JWK público; nunca guarda la privada en el JWKS."""
+
+    private_key: rsa.RSAPrivateKey
+    public_key: rsa.RSAPublicKey
+    key_id: str
+    jwk: dict[str, str]
+
+
+def build_signing_key(
+    private_value: str,
+    public_value: str | None = None,
+    key_id: str | None = None,
+) -> SigningKey:
+    """Carga una clave, comprueba su pública opcional y calcula su `kid`."""
+    private_key = load_private_key(private_value)
+    public_key = private_key.public_key()
+
+    if public_value is not None:
+        provided_public_key = load_public_key(public_value)
+        if provided_public_key.public_numbers() != public_key.public_numbers():
+            raise JwtConfigurationError(
+                "La clave pública no corresponde a la clave privada."
+            )
+
+    numbers = public_key.public_numbers()
+    jwk = {
+        "kty": "RSA",
+        "n": _int_to_base64url(numbers.n),
+        "e": _int_to_base64url(numbers.e),
+    }
+    kid = key_id or _thumbprint(jwk)
+    jwk.update({"kid": kid, "alg": "RS256", "use": "sig"})
+
+    return SigningKey(
+        private_key=private_key,
+        public_key=public_key,
+        key_id=kid,
+        jwk=jwk,
+    )
+
+
 class JwtIssuer:
-    """Firma access tokens RS256 y publica la clave pública en formato JWK."""
+    """Firma access tokens RS256 y publica las claves vigentes en formato JWK."""
 
     def __init__(
         self,
@@ -100,34 +144,33 @@ class JwtIssuer:
         public_key: str | None = None,
         ttl_seconds: int = 900,
         key_id: str | None = None,
+        previous_private_key: str | None = None,
+        previous_public_key: str | None = None,
+        previous_key_id: str | None = None,
+        previous_key_rotated_at: datetime | None = None,
+        key_overlap_seconds: int = 86400,
     ) -> None:
-        self._private_key = load_private_key(private_key)
-        derived_public_key = self._private_key.public_key()
+        # La clave activa firma; la anterior solo se publica durante el solape.
+        self._active = build_signing_key(private_key, public_key, key_id)
+        self._previous: SigningKey | None = None
+        self._previous_retained_until: datetime | None = None
 
-        if public_key is not None:
-            provided_public_key = load_public_key(public_key)
-            if (
-                provided_public_key.public_numbers()
-                != derived_public_key.public_numbers()
-            ):
-                raise JwtConfigurationError(
-                    "JWT_PUBLIC_KEY no corresponde a JWT_PRIVATE_KEY."
-                )
+        if previous_private_key:
+            self._previous = build_signing_key(
+                previous_private_key,
+                previous_public_key,
+                previous_key_id,
+            )
+            rotated_at = previous_key_rotated_at or datetime.now(timezone.utc)
+            if rotated_at.tzinfo is None:
+                rotated_at = rotated_at.replace(tzinfo=timezone.utc)
+            self._previous_retained_until = rotated_at + timedelta(
+                seconds=key_overlap_seconds
+            )
 
-        self._public_key = derived_public_key
         self.issuer = issuer
         self.audience = audience
         self.ttl_seconds = ttl_seconds
-
-        numbers = derived_public_key.public_numbers()
-        jwk = {
-            "kty": "RSA",
-            "n": _int_to_base64url(numbers.n),
-            "e": _int_to_base64url(numbers.e),
-        }
-        self.key_id = key_id or _thumbprint(jwk)
-        jwk.update({"kid": self.key_id, "alg": "RS256", "use": "sig"})
-        self._jwk = jwk
 
     @classmethod
     def from_settings(cls, settings: Settings) -> "JwtIssuer":
@@ -138,16 +181,36 @@ class JwtIssuer:
             audience=settings.jwt_audience,
             ttl_seconds=settings.jwt_access_ttl_seconds,
             key_id=settings.jwt_key_id,
+            previous_private_key=settings.jwt_previous_private_key,
+            previous_public_key=settings.jwt_previous_public_key,
+            previous_key_id=settings.jwt_previous_key_id,
+            previous_key_rotated_at=settings.jwt_previous_key_rotated_at,
+            key_overlap_seconds=settings.jwt_key_overlap_seconds,
         )
 
     @property
-    def public_jwk(self) -> dict[str, str]:
-        """Copia del JWK público; nunca incluye material privado."""
-        return dict(self._jwk)
+    def key_id(self) -> str:
+        """`kid` con el que se firman los tokens nuevos."""
+        return self._active.key_id
+
+    @property
+    def public_jwks(self) -> list[dict[str, str]]:
+        """JWK activo y, mientras dure el solape, el anterior."""
+        keys = [dict(self._active.jwk)]
+        retained_until = self._previous_retained_until
+
+        if (
+            self._previous
+            and retained_until
+            and datetime.now(timezone.utc) < retained_until
+        ):
+            keys.append(dict(self._previous.jwk))
+
+        return keys
 
     @property
     def public_key_pem(self) -> str:
-        return self._public_key.public_bytes(
+        return self._active.public_key.public_bytes(
             encoding=serialization.Encoding.PEM,
             format=serialization.PublicFormat.SubjectPublicKeyInfo,
         ).decode("ascii")
@@ -194,7 +257,7 @@ class JwtIssuer:
 
         return jwt.encode(
             payload,
-            self._private_key,
+            self._active.private_key,
             algorithm="RS256",
             headers={"kid": self.key_id, "typ": "JWT"},
         )

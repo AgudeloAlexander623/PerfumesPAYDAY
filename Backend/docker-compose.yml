@@ -61,6 +61,13 @@ services:
       JWT_ISSUER: perfumesgold-security
       JWT_AUDIENCE: perfumesgold-api
       JWT_PRIVATE_KEY: ${JWT_PRIVATE_KEY:?define_JWT_PRIVATE_KEY_con_scripts_generate_jwt_keys}
+      # Rotación (ADR-0003): descomenta el bloque completo al cambiar de clave.
+      # Las variables se leen de tu .env; consulta security/.env.example.
+      # JWT_PREVIOUS_PRIVATE_KEY: ${JWT_PREVIOUS_PRIVATE_KEY}
+      # JWT_PREVIOUS_PUBLIC_KEY: ${JWT_PREVIOUS_PUBLIC_KEY}
+      # JWT_PREVIOUS_KEY_ID: ${JWT_PREVIOUS_KEY_ID}
+      # JWT_PREVIOUS_KEY_ROTATED_AT: ${JWT_PREVIOUS_KEY_ROTATED_AT}
+      JWT_KEY_OVERLAP_SECONDS: ${JWT_KEY_OVERLAP_SECONDS:-86400}
       DATABASE_URL: postgresql+asyncpg://security:${SECURITY_DB_PASSWORD}@security-db:5432/security_db
       REFRESH_TTL_DAYS: "7"
       SESSION_ABSOLUTE_TTL_DAYS: "30"

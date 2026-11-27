@@ -1,3 +1,4 @@
+from datetime import datetime
 from functools import lru_cache
 from typing import Literal, Self
 
@@ -62,6 +63,14 @@ class Settings(DatabaseSettings):
     jwt_public_key: str | None = None
     jwt_key_id: str | None = None
     jwt_access_ttl_seconds: int = Field(default=900, ge=60, le=3600)
+
+    # Rotación: la clave anterior sigue publicada durante el solape (ADR-0003).
+    # jwt_previous_key_rotated_at se expresa en ISO 8601; si falta se toma el arranque.
+    jwt_previous_private_key: str | None = None
+    jwt_previous_public_key: str | None = None
+    jwt_previous_key_id: str | None = None
+    jwt_previous_key_rotated_at: datetime | None = None
+    jwt_key_overlap_seconds: int = Field(default=86400, ge=60, le=604800)
 
     @field_validator("jwt_private_key")
     @classmethod

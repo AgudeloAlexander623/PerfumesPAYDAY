@@ -55,6 +55,20 @@ describe('createApp', () => {
     await app.close();
   });
 
+  it('añade WWW-Authenticate a toda respuesta 401', async () => {
+    const app = await createApp({ name: 'test', logLevel: 'silent' });
+    app.get('/protegido', async () => {
+      throw new AppError('UNAUTHORIZED', 'Se requiere autenticación.', 401);
+    });
+
+    const response = await app.inject({ method: 'GET', url: '/protegido' });
+
+    expect(response.statusCode).toBe(401);
+    expect(response.headers['www-authenticate']).toBe('Bearer');
+
+    await app.close();
+  });
+
   it('oculta el detalle de un error no controlado', async () => {
     const app = await createApp({ name: 'test', logLevel: 'silent' });
     app.get('/boom', async () => {

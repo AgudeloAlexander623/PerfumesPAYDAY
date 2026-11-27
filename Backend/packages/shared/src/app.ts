@@ -26,6 +26,12 @@ export async function createApp({
 
   app.addHook('onSend', async (request, reply) => {
     reply.header('x-request-id', request.id);
+
+    // El receptor de un 401 debe saber que debe renovar o autenticarse de nuevo.
+    // Se aplica aquí una sola vez para cubrir todos los servicios y todos los 401.
+    if (reply.statusCode === 401) {
+      reply.header('WWW-Authenticate', 'Bearer');
+    }
   });
 
   await app.register(helmet);
