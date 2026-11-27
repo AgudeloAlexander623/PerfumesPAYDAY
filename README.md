@@ -1,10 +1,10 @@
-# PerfumesPAYDAY
+# Perfumes GOLD
 
 Tienda online de perfumes creada como proyecto académico. La experiencia está inspirada en **MercadoLibre**: una persona puede registrarse, iniciar sesión, armar su propio carrito, registrar una dirección de envío y simular una compra.
 
 > **Importante:** es un simulador académico. No cobra dinero real, no emite facturas electrónicas y no envía productos reales.
 
-**Estado actual:** fase de planeación y estructura base. Todavía no existe código funcional de la aplicación.
+**Estado actual:** el proyecto ya dejó la fase de solo planeación. Hoy existen la **landing page funcional** (Frontend), los **esquemas SQL completos de las tres bases de datos** con sus diagramas ER, **25 casos de uso** redactados, **8 diagramas** de arquitectura y flujos, el **esqueleto del backend** (`gateway`, `catalog` y `orders` compilan, arrancan y responden `/health`) y el **emisor JWT/JWKS con persistencia base de `security-service`**. Véase [Estado actual del proyecto](#3-estado-actual-del-proyecto).
 
 ---
 
@@ -12,24 +12,27 @@ Tienda online de perfumes creada como proyecto académico. La experiencia está 
 
 1. [¿Qué es este proyecto?](#1-qué-es-este-proyecto)
 2. [Equipo](#2-equipo)
-3. [Estructura del repositorio](#3-estructura-del-repositorio)
-4. [Tecnologías utilizadas](#4-tecnologías-utilizadas)
-5. [¿Cómo funcionará la aplicación?](#5-cómo-funcionará-la-aplicación)
-6. [Flujos principales](#6-flujos-principales)
-7. [Seguridad](#7-seguridad)
-8. [Reglas y alcance del proyecto](#8-reglas-y-alcance-del-proyecto)
-9. [Cómo colaborar](#9-cómo-colaborar)
-10. [Documentación](#10-documentación)
-11. [Cronograma](#11-cronograma)
-12. [Glosario para principiantes](#12-glosario-para-principiantes)
-13. [Instrucciones para asistentes de IA](#13-instrucciones-para-asistentes-de-ia)
-14. [Enlaces de referencia](#14-enlaces-de-referencia)
+3. [Estado actual del proyecto](#3-estado-actual-del-proyecto)
+4. [Estructura del repositorio](#4-estructura-del-repositorio)
+5. [Tecnologías utilizadas](#5-tecnologías-utilizadas)
+6. [¿Cómo funcionará la aplicación?](#6-cómo-funcionará-la-aplicación)
+7. [Bases de datos](#7-bases-de-datos)
+8. [Cómo ejecutar el proyecto](#8-cómo-ejecutar-el-proyecto)
+9. [Flujos principales](#9-flujos-principales)
+10. [Seguridad](#10-seguridad)
+11. [Reglas y alcance del proyecto](#11-reglas-y-alcance-del-proyecto)
+12. [Cómo colaborar](#12-cómo-colaborar)
+13. [Documentación](#13-documentación)
+14. [Cronograma](#14-cronograma)
+15. [Glosario para principiantes](#15-glosario-para-principiantes)
+16. [Instrucciones para asistentes de IA](#16-instrucciones-para-asistentes-de-ia)
+17. [Enlaces de referencia](#17-enlaces-de-referencia)
 
 ---
 
 ## 1. ¿Qué es este proyecto?
 
-PerfumesPAYDAY será una página web para explorar y comprar perfumes. El proyecto busca parecerse a una tienda real, pero con fines educativos.
+Perfumes GOLD será una página web para explorar y comprar perfumes. El proyecto busca parecerse a una tienda real, pero con fines educativos.
 
 La aplicación permitirá:
 
@@ -69,88 +72,98 @@ Es parecido a un centro comercial: el usuario entra por una puerta principal (ga
 | Nombre completo | Carrera | Rol | Código de estudiante |
 |---|---|---|---|
 | Jessid Agudelo | T.D.S. | Backend Developer | 2478460 |
-| Pendiente | Pendiente | Pendiente | Pendiente |
-| Pendiente | Pendiente | Pendiente | Pendiente |
-| Pendiente | Pendiente | Pendiente | Pendiente |
+| Angel Torres Panesso | T.D.S. | BBDD y Design | Pendiente |
+| Alejandro Rojas Serna | T.D.S. | FrontEnd y Pruebas | Pendiente |
+| Daniel Rey Cardona | T.D.S. | FrontEnd y Pruebas | Pendiente |
 
-> Reemplazar los datos pendientes cuando el resto del equipo los confirme.
+> Pendiente los codigos
 
 ---
 
-## 3. Estructura del repositorio
+## 3. Estado actual del proyecto
+
+Resumen de qué existe **hoy** en el repositorio (el backend se desarrolla en la rama `Alex_Backend_development`):
+
+| Área | Estado | Detalle |
+|---|---|---|
+| Frontend web | ✅ Landing page funcional | React 19 + Vite + TypeScript + Tailwind; barra de navegación, hero, "cómo funciona", catálogo destacado y pie de página ([`Frontend/`](Frontend/)) |
+| Bases de datos | ✅ Esquemas completos | Scripts SQL de creación de `security_db`, `catalog_db` y `orders_db`, seed de roles y diagramas ER en Draw.io ([`Databases/`](Databases/)) |
+| Casos de uso | ✅ Redactados | 25 casos (CU-01 a CU-25) priorizados con MoSCoW: 18 Must, 6 Should, 1 Could ([`docs/use-cases/`](docs/use-cases/)) |
+| Diagramas | ✅ Publicados | 8 diagramas Mermaid con su SVG: contexto, contenedores, autenticación, catálogo, carrito, checkout, pedidos y administración ([`docs/diagrams/`](docs/diagrams/)) |
+| Backend | ✅ Esqueleto funcional | Rama `Alex_Backend_development`: workspace npm con `gateway`, `catalog` y `orders`; Fastify 5 + TypeScript 7 + Zod; paquete compartido, Docker Compose y pruebas. Los servicios compilan, arrancan y responden `/health`; aún sin endpoints de negocio |
+| Servicio de seguridad | 🔨 En implementación | Python + FastAPI con emisor RS256, JWKS y modelo de `users`/`sessions` con migración Alembic; aún sin endpoints de registro, login, refresh ni logout |
+| App móvil | 📋 Planeada | Consumirá la misma API a través del gateway; fuera de la beta |
+| Infraestructura | 🔨 Parcial | Docker Compose del backend con PostgreSQL para `security_db` y JWKS configurado; `infra/` aún sin archivos |
+| CI/CD | ⏳ Pendiente | `.github/workflows/` creado pero vacío |
+| Integraciones (n8n, SRE, WordPress, Vercel) | 📋 Propuestas | Solo documentación; sin código, infraestructura ni despliegue ([`docs/integrations/`](docs/integrations/)) |
+
+> El pago siempre es **simulado** (`pagos.metodo = 'simulado'`, `estado = 'aprobado_simulado'`): no se integra ninguna pasarela real.
+
+---
+
+## 4. Estructura del repositorio
 
 La estructura está organizada por áreas y por servicio. Cada carpeta tiene una única responsabilidad.
 
 ```text
-PerfumesPAYDAY/
+PerfumesGOLD/
 ├── Backend/
+│   ├── package.json                 # Workspace npm del backend
+│   ├── package-lock.json
+│   ├── tsconfig.base.json           # Configuración TypeScript compartida
 │   ├── services/
 │   │   ├── gateway/                 # Punto único de entrada a la API
 │   │   │   ├── src/                 # Código del servicio
 │   │   │   ├── tests/               # Pruebas automáticas
-│   │   │   └── docs/                # Documentación del servicio
-│   │   ├── catalog/                 # Marcas, productos, precios y stock
+│   │   │   └── package.json
+│   │   ├── catalog/                 # Marcas, productos, presentaciones, precios y stock
 │   │   │   ├── src/
 │   │   │   ├── tests/
-│   │   │   └── docs/
+│   │   │   └── package.json
 │   │   └── orders/                  # Carrito, checkout, pedidos y direcciones
 │   │       ├── src/
 │   │       ├── tests/
-│   │       └── docs/
-│   └── docs/                        # Documentación general del backend
-├── Frontend/
-│   ├── public/                      # Archivos públicos (imágenes, iconos)
+│   │       └── package.json
+│   ├── packages/shared/             # Utilidades compartidas (@perfumesgold/shared)
+│   └── docs/                        # Plan y notas de trabajo del backend
+├── Frontend/                         # Landing page funcional (React + Vite + Tailwind)
+│   ├── public/                       # Favicon e iconos públicos
 │   ├── src/
-│   │   ├── app/                     # Configuración principal de la aplicación
-│   │   ├── assets/                  # Recursos internos del frontend
-│   │   ├── components/              # Componentes reutilizables
-│   │   ├── features/                # Módulos por funcionalidad
-│   │   │   ├── auth/                # Registro e inicio de sesión
-│   │   │   ├── cart/                # Carrito de compras
-│   │   │   ├── catalog/             # Catálogo y detalle de producto
-│   │   │   ├── checkout/            # Confirmación de compra
-│   │   │   ├── orders/              # Historial de pedidos
-│   │   │   └── profile/             # Perfil y direcciones del usuario
-│   │   ├── hooks/                   # Lógica reutilizable de React
-│   │   ├── layouts/                 # Plantillas visuales de las páginas
-│   │   ├── lib/                     # Utilidades y configuración
-│   │   ├── pages/                   # Páginas de la aplicación
-│   │   ├── services/                # Comunicación con la API
-│   │   ├── store/                   # Estado global del frontend
-│   │   ├── styles/                  # Estilos globales
-│   │   └── types/                   # Tipos compartidos de TypeScript
-│   ├── tests/                       # Pruebas del frontend
-│   └── docs/                        # Documentación del frontend
+│   │   ├── components/               # Navbar, Hero, HowItWorks, FeaturedCatalog, Footer
+│   │   ├── pages/                    # Home
+│   │   ├── features/                 # auth/, cart/, catalog/, checkout/, orders/, profile/
+│   │   ├── hooks/ · layouts/ · lib/ · services/ · store/ · styles/ · types/
+│   │   └── index.css                 # Tailwind CSS 4
+│   ├── docs/                         # Documentación del frontend
+│   └── tests/
 ├── security/
-│   ├── security-service/            # Autenticación, roles y tokens
-│   │   ├── app/
-│   │   │   ├── api/                 # Rutas y endpoints
-│   │   │   ├── core/                # Configuración y utilidades centrales
-│   │   │   ├── models/              # Modelos de base de datos
-│   │   │   ├── schemas/             # Validación de datos
-│   │   │   └── services/            # Lógica del negocio de seguridad
-│   │   ├── tests/
-│   │   └── docs/
-│   └── docs/                        # Documentación de seguridad
+│   ├── security-service/             # Autenticación, roles y tokens (Python + FastAPI)
+│   │   ├── alembic.ini               # Configuración de migraciones
+│   │   ├── migrations/               # Migraciones versionadas de security_db
+│   │   └── app/                      # api/, core/, db/, domain/ y servicios
+│   └── docs/                         # Documentación de seguridad
 ├── Databases/
-│   ├── init/                        # Scripts de creación inicial
-│   ├── migrations/                  # Cambios versionados de la base de datos
-│   ├── seeds/                       # Datos de demostración
-│   └── docs/                        # Documentación de las bases de datos
-├── movil/                           # Futura aplicación móvil
+│   ├── init/                         # 001-004: creación de BDs y tablas (SQL)
+│   ├── seeds/                        # 001_roles.sql: roles 'cliente' y 'admin'
+│   ├── migrations/                   # Cambios globales vacíos; security-service tiene los suyos
+│   └── docs/                         # README + diagramas ER Draw.io de las 3 BDs
+├── movil/                            # Futura aplicación móvil
 │   ├── src/
 │   ├── tests/
 │   └── docs/
-├── docs/                            # Documentación global del proyecto
-│   ├── adr/                         # Decisiones de arquitectura
-│   ├── api/                         # Contratos OpenAPI
-│   ├── diagrams/                    # Diagramas de arquitectura y flujos
-│   └── use-cases/                   # Catálogo y detalle de casos de uso
+├── docs/                             # Documentación global del proyecto
+│   ├── README.md                     # Índice general de la documentación
+│   ├── architecture.md               # Arquitectura y requisitos no funcionales
+│   ├── security.md                   # Amenazas, controles y pruebas
+│   ├── diagrams/                     # 8 diagramas Mermaid + SVG renderizados
+│   ├── use-cases/                    # 25 casos de uso + README + RESUMEN
+│   ├── adr/                          # Decisiones de arquitectura
+│   └── api/                          # Contratos OpenAPI
 ├── infra/
-│   ├── docker/                      # Configuración de Docker y Docker Compose
-│   └── kubernetes/                  # Manifiestos para una fase posterior
-├── .github/
-│   └── workflows/                   # Automatizaciones de integración continua
+│   ├── docker/                       # Docker y Docker Compose (pendiente)
+│   └── kubernetes/                   # Manifiestos para una fase posterior
+├── .github/workflows/                # CI (pendiente)
+├── postgres_local.session.sql        # Artefacto de sesión de SQLTools en VS Code (vacío)
 └── README.md
 ```
 
@@ -162,7 +175,7 @@ Ese archivo **no es código**: solo indica "esta carpeta debe conservarse". Cuan
 
 ### Reglas de la estructura
 
-- Cada microservicio es dueño de su código, sus pruebas y su documentación.
+- Cada microservicio es dueño de su código y sus pruebas; su documentación se centraliza en `docs/`.
 - Cada servicio tiene su propia base de datos; no se comparten tablas.
 - El gateway es el único servicio público.
 - La documentación global vive en `docs/`.
@@ -171,48 +184,55 @@ Ese archivo **no es código**: solo indica "esta carpeta debe conservarse". Cuan
 
 ---
 
-## 4. Tecnologías utilizadas
+## 5. Tecnologías utilizadas
 
-| Tecnología | Dónde se usa | Para qué sirve | Estado |
-|---|---|---|---|
-| Vite | Frontend | Crear y ejecutar la aplicación web de forma rápida | Confirmado |
-| React | Frontend | Construir la interfaz por componentes | Confirmado |
-| TypeScript | Frontend y backend | JavaScript con tipos para reducir errores | Confirmado |
-| Tailwind CSS | Frontend | Crear estilos de forma rápida y consistente | Confirmado |
-| React Router | Frontend | Navegar entre páginas sin recargar el sitio | Propuesto |
-| TanStack Query | Frontend | Manejar datos que vienen de la API | Propuesto |
-| Zustand | Frontend | Manejar estado global, por ejemplo el carrito | Propuesto |
-| Node.js | Backend | Ejecutar JavaScript en el servidor | Confirmado |
-| Fastify o NestJS | Backend | Framework para construir la API | Pendiente de decisión |
-| Python | Seguridad | Lenguaje del servicio de autenticación | Confirmado |
-| FastAPI | Seguridad | Framework para construir la API de seguridad | Confirmado |
-| Pydantic | Seguridad | Validar los datos que entran y salen | Confirmado |
-| JWT | Seguridad | Identificar al usuario mediante tokens firmados | Confirmado |
-| Argon2 o bcrypt | Seguridad | Guardar contraseñas de forma segura | Confirmado |
-| PostgreSQL | Bases de datos | Guardar información relacional | Confirmado |
-| Prisma o Drizzle | Bases de datos | Gestionar modelos y migraciones | Pendiente de decisión |
-| Docker | Infraestructura | Ejecutar el proyecto en contenedores | Confirmado |
-| Docker Compose | Infraestructura | Levantar todos los servicios juntos en local | Confirmado |
-| GitHub Actions | Infraestructura | Ejecutar pruebas automáticas en cada cambio | Propuesto |
-| Vitest | Frontend | Pruebas unitarias | Propuesto |
-| Playwright | Frontend | Pruebas de flujo en el navegador | Propuesto |
-| pytest | Seguridad y backend | Pruebas automáticas en Python | Propuesto |
-| OpenAPI | Documentación | Describir los contratos de la API | Confirmado |
-| Mermaid | Documentación | Crear diagramas dentro de Markdown | Confirmado |
-| Markdown + ADR | Documentación | Documentar el proyecto y sus decisiones | Confirmado |
+| Tecnología | Versión | Dónde se usa | Para qué sirve | Estado |
+|---|---|---|---|---|
+| Vite | 8 | Frontend | Crear y ejecutar la aplicación web de forma rápida | ✅ En uso |
+| React | 19 | Frontend | Construir la interfaz por componentes | ✅ En uso |
+| TypeScript | 6 | Frontend (y backend) | JavaScript con tipos para reducir errores | ✅ En uso |
+| Tailwind CSS | 4 | Frontend | Crear estilos de forma rápida y consistente | ✅ En uso |
+| ESLint | 10 | Frontend | Detectar errores y mantener consistencia | ✅ En uso |
+| React Router | — | Frontend | Navegar entre páginas sin recargar el sitio | 📋 Propuesto |
+| TanStack Query | — | Frontend | Manejar datos que vienen de la API | 📋 Propuesto |
+| Zustand | — | Frontend | Manejar estado global, por ejemplo el carrito | 📋 Propuesto |
+| Node.js | ≥ 22 | Backend | Ejecutar JavaScript en el servidor | ✅ Confirmado |
+| Fastify | 5 | Backend | Framework para construir la API (elegido sobre NestJS) | ✅ En uso (esqueleto backend) |
+| TypeScript (backend) | 7 | Backend | Tipos estrictos compartidos entre servicios | ✅ En uso (esqueleto backend) |
+| Prisma | 7 | Bases de datos | Gestionar modelos y migraciones (elegido sobre Drizzle) | 🔨 Instalado (rama backend) |
+| Zod | 4 | Backend | Validar los datos que entran y salen | ✅ En uso (validación de entorno) |
+| jose (JWT) | 6 | Backend | Validar tokens firmados RS256 en el gateway | 🔨 Instalado (rama backend) |
+| Vitest | 5 | Backend y frontend | Pruebas unitarias | ✅ En uso en backend |
+| Python | 3.12 | Seguridad | Lenguaje del servicio de autenticación | ✅ En uso |
+| FastAPI | — | Seguridad | Framework para construir la API de seguridad | ✅ En uso |
+| Pydantic | — | Seguridad | Validar los datos que entran y salen | ✅ En uso |
+| JWT RS256 | — | Seguridad | Identificar al usuario mediante tokens firmados | ✅ En uso (emisor y validador) |
+| SQLAlchemy | 2.x | Seguridad | ORM asíncrono de `security_db` | ✅ En uso |
+| asyncpg | 0.30+ | Seguridad | Driver PostgreSQL asíncrono | ✅ En uso |
+| Alembic | 1.x | Seguridad | Migraciones versionadas de `security_db` | ✅ En uso |
+| Argon2id | — | Seguridad | Guardar contraseñas de forma segura | 📋 Decidido; pendiente de instalar |
+| PostgreSQL | 15+ | Bases de datos | Guardar información relacional | ✅ En uso (esquemas y `security_db`) |
+| Docker / Compose | — | Infraestructura | Ejecutar el proyecto en contenedores | ✅ Implementado en backend |
+| GitHub Actions | — | Infraestructura | Ejecutar pruebas automáticas en cada cambio | 📋 Propuesto |
+| Playwright | — | Frontend | Pruebas de flujo en el navegador | 📋 Propuesto |
+| pytest | — | Seguridad | Pruebas automáticas en Python | ✅ En uso |
+| OpenAPI | 3.1 | Documentación | Describir los contratos de la API | ✅ Confirmado |
+| Mermaid | — | Documentación | Crear diagramas dentro de Markdown | ✅ En uso |
+| Markdown + ADR | — | Documentación | Documentar el proyecto y sus decisiones | ✅ En uso |
 
 ### ¿Por qué estas tecnologías?
 
 - **React + Vite:** permiten una aplicación web moderna sin la complejidad de otros frameworks.
 - **TypeScript:** ayuda a detectar errores antes de ejecutar el código.
 - **Node.js:** mantiene el mismo lenguaje en la mayor parte del backend.
+- **Fastify:** framework ligero y rápido, con buen soporte de plugins (CORS, helmet, rate limit, proxy).
 - **Python + FastAPI:** aísla la seguridad y facilita la validación de datos.
 - **PostgreSQL:** es confiable para productos, precios, stock, usuarios y pedidos.
 - **Docker:** permite que todo el equipo trabaje en un entorno parecido y facilita el despliegue.
 
 ---
 
-## 5. ¿Cómo funcionará la aplicación?
+## 6. ¿Cómo funcionará la aplicación?
 
 ```mermaid
 flowchart LR
@@ -242,6 +262,7 @@ En palabras sencillas:
 - **Contratos versionados:** las rutas usan el prefijo `/api/v1`.
 - **Una base de datos por servicio:** `security_db`, `catalog_db` y `orders_db`.
 - **Sin tablas compartidas:** cada servicio es dueño de su información.
+- **Referencias lógicas entre bases:** los `usuario_id` y `presentacion_id` que cruzan bases de datos no usan llave foránea física (PostgreSQL no permite FK entre bases distintas); la integridad la garantiza cada servicio.
 - **Snapshots en pedidos:** el pedido guarda una copia del nombre, la presentación, el precio y la dirección usados en el momento de la compra.
 - **Solo el gateway es público:** los servicios internos y PostgreSQL no se exponen a internet.
 - **Docker desde el inicio:** cada servicio tendrá su propio Dockerfile.
@@ -249,9 +270,146 @@ En palabras sencillas:
 
 ---
 
-## 6. Flujos principales
+## 7. Bases de datos
 
-### 6.1 Registro e inicio de sesión
+El motor es **PostgreSQL**. Hay **una base de datos por microservicio** y todas las tablas usan **UUID** como llave primaria (`gen_random_uuid()`).
+
+| Base de datos | Dueño | Responsabilidad | Script | Diagrama ER |
+|---|---|---|---|---|
+| `security_db` | Security Service | Usuarios, roles, tokens de refresco y auditoría | [`Databases/init/002_security_db.sql`](Databases/init/002_security_db.sql) | [`er-security_db.drawio`](Databases/docs/er-security_db.drawio) |
+| `catalog_db` | Catalog Service | Marcas, familias olfativas, productos y presentaciones | [`Databases/init/003_catalog_db.sql`](Databases/init/003_catalog_db.sql) | [`er-catalog_db.drawio`](Databases/docs/er-catalog_db.drawio) |
+| `orders_db` | Orders Service | Direcciones, carrito, pedidos, ítems y pagos | [`Databases/init/004_orders_db.sql`](Databases/init/004_orders_db.sql) | [`er-orders_db.drawio`](Databases/docs/er-orders_db.drawio) |
+
+### 7.1 `security_db` — identidad y auditoría
+
+| Tabla | Propósito |
+|---|---|
+| `users` | Cuentas: correo único (`CITEXT`), hash de contraseña, rol (`customer`/`admin`), estado y último inicio de sesión |
+| `sessions` | Refresh tokens opacos por dispositivo: hash SHA-256, familia de rotación, expiración, revocación y sesión sustituta |
+
+```mermaid
+erDiagram
+    users ||--o{ sessions : renueva
+```
+
+> La implementación operativa sigue el modelo de [ADR-0009](docs/adr/0009-sesiones-refresh-cookies.md) y vive en [`security-service/migrations/versions/0001_create_identity_tables.py`](security/security-service/migrations/versions/0001_create_identity_tables.py). El script [`Databases/init/002_security_db.sql`](Databases/init/002_security_db.sql) conserva el diseño SQL original (`usuarios`, `tokens_refresco`, etc.) y debe conciliarse con el ADR antes de usarse en un despliegue.
+
+### 7.2 `catalog_db` — productos y precios
+
+| Tabla | Propósito |
+|---|---|
+| `marcas` | Marcas de perfumes (nombre, slug, activa) |
+| `familias_olfativas` | Clasificación aromática (floral, amaderada, cítrica, etc.) |
+| `productos` | Perfumes con marca, familia olfativa, nombre, slug, descripción, género (`hombre`/`mujer`/`unisex`) e imagen |
+| `presentaciones` | Tamaños por producto: SKU único, `tamano_ml` (> 0) y `precio_cop NUMERIC(12,2)`; única combinación producto + tamaño |
+
+```mermaid
+erDiagram
+    marcas ||--o{ productos : fabrica
+    familias_olfativas ||--o{ productos : clasifica
+    productos ||--o{ presentaciones : se vende en
+```
+
+### 7.3 `orders_db` — compras y envíos
+
+| Tabla | Propósito |
+|---|---|
+| `direcciones` | Direcciones de envío por usuario (departamento, ciudad, dirección, referencias, principal) |
+| `carritos` | Un carrito por usuario (`usuario_id` único) |
+| `items_carrito` | Productos en el carrito; referencia lógica a `presentaciones` de `catalog_db` |
+| `pedidos` | Pedido con estado (`pagado_simulado` / `cancelado`), total en COP y **snapshot** de la dirección de envío |
+| `items_pedido` | **Snapshot** de cada producto comprado (nombre, marca, tamaño y precio del momento de la compra) |
+| `pagos` | Pago simulado: método `simulado`, estado `aprobado_simulado` |
+
+```mermaid
+erDiagram
+    carritos ||--o{ items_carrito : contiene
+    pedidos ||--o{ items_pedido : contiene
+    pedidos ||--o{ pagos : "se paga con"
+    direcciones ||--o{ pedidos : se usa como snapshot
+```
+
+### Datos iniciales (seed)
+
+[`Databases/seeds/001_roles.sql`](Databases/seeds/001_roles.sql) inserta los roles **`cliente`** y **`admin`** en `security_db` de forma idempotente (`ON CONFLICT DO NOTHING`).
+
+---
+
+## 8. Cómo ejecutar el proyecto
+
+### Requisitos
+
+- Node.js ≥ 22 y npm
+- Python 3.12 para `security-service`
+- PostgreSQL 15 o superior en ejecución (conexión local usada por el equipo: `localhost:5432`, usuario `postgres`)
+- Docker y Docker Compose para el entorno completo
+
+### Frontend (landing page) — funcional
+
+```bash
+cd Frontend
+npm install
+npm run dev
+```
+
+Abre <http://localhost:5173>. Scripts disponibles: `dev`, `build` (`tsc -b && vite build`), `lint` y `preview`.
+
+### Bases de datos — inicialización
+
+Los scripts usan `\connect`, así que se ejecutan **conectado a la base `postgres`** y en orden numérico:
+
+```bash
+psql -U postgres -f Databases/init/001_crear_bases_de_datos.sql   # crea security_db, catalog_db y orders_db
+psql -U postgres -f Databases/init/002_security_db.sql            # tablas de security_db
+psql -U postgres -f Databases/init/003_catalog_db.sql             # tablas de catalog_db
+psql -U postgres -f Databases/init/004_orders_db.sql              # tablas de orders_db
+psql -U postgres -f Databases/seeds/001_roles.sql                 # roles cliente y admin
+```
+
+### `security-service` — migraciones
+
+El servicio usa su propia base `security_db` y Alembic como fuente de verdad de sus tablas:
+
+```bash
+cd security/security-service
+python3 -m venv .venv
+.venv/bin/pip install -e '.[dev]'
+cp .env.example .env
+# Ajusta DATABASE_URL y JWT_PRIVATE_KEY en .env
+.venv/bin/alembic upgrade head
+.venv/bin/python -m pytest
+```
+
+### Backend — en desarrollo (rama `Alex_Backend_development`)
+
+El workspace npm con los tres servicios (`gateway`, `catalog`, `orders`) y sus dependencias (Fastify, Prisma, Zod, jose, Vitest) ya tiene código en la rama `Alex_Backend_development`. Los servicios compilan, arrancan y responden `/health`, pero **aún no exponen endpoints de negocio**:
+
+```bash
+git switch Alex_Backend_development
+cd Backend
+npm install
+npm test
+npm run dev:gateway    # o dev:catalog / dev:orders
+```
+
+Las variables de entorno están documentadas en [`Backend/.env.example`](Backend/.env.example).
+
+### Docker Compose — entorno completo
+
+```bash
+cp Backend/.env.example Backend/.env
+# Define JWT_PRIVATE_KEY y SECURITY_DB_PASSWORD en Backend/.env
+docker compose -f Backend/docker-compose.yml up --build
+docker compose -f Backend/docker-compose.yml exec security alembic upgrade head
+```
+
+En Docker, `gateway`, `catalog` y `orders` validan tokens con `JWT_JWKS_URL`; `JWT_PUBLIC_KEY` queda como alternativa para ejecución local sin contenedores.
+
+---
+
+## 9. Flujos principales
+
+### 9.1 Registro e inicio de sesión
 
 1. El usuario envía sus credenciales al gateway.
 2. El gateway las reenvía al servicio de seguridad.
@@ -259,21 +417,21 @@ En palabras sencillas:
 4. El frontend guarda la sesión y la renueva con el refresh token.
 5. Los demás servicios validan el token antes de responder.
 
-### 6.2 Catálogo
+### 9.2 Catálogo
 
 1. El frontend consulta los productos con filtros.
 2. El gateway envía la petición al servicio de catálogo.
 3. El servicio devuelve productos, presentaciones, precios y stock.
 4. El frontend muestra el listado y el detalle.
 
-### 6.3 Carrito por usuario
+### 9.3 Carrito por usuario
 
 1. El carrito se asocia a la sesión del usuario autenticado.
 2. El usuario agrega, actualiza o elimina productos.
-3. La forma exacta de persistencia se definirá en un ADR: navegador, backend o ambos.
+3. La persistencia es híbrida: carrito local para invitados y carrito en el backend para usuarios autenticados ([ADR-0007](docs/adr/0007-carrito-hibrido.md)).
 4. Al iniciar sesión, el usuario debe encontrar su carrito y no el de otra persona.
 
-### 6.4 Dirección de envío y checkout simulado
+### 9.4 Dirección de envío y checkout simulado
 
 1. El usuario registra una dirección en su perfil.
 2. La dirección incluye los datos necesarios para una entrega: nombre, teléfono, departamento, ciudad, dirección y referencias.
@@ -283,7 +441,7 @@ En palabras sencillas:
 6. El pago se marca como simulado; no se llama a ninguna pasarela real.
 7. El usuario ve la confirmación y el pedido en su historial.
 
-### 6.5 Administración
+### 9.5 Administración
 
 1. El administrador inicia sesión con rol `admin`.
 2. Accede al panel protegido.
@@ -292,7 +450,7 @@ En palabras sencillas:
 
 ---
 
-## 7. Seguridad
+## 10. Seguridad
 
 La seguridad se aplica desde el diseño, no al final.
 
@@ -322,11 +480,11 @@ El profesor realizará pruebas básicas sobre la versión desplegada. El equipo 
 - Pruebas de inyección SQL y XSS.
 - Revisión de CORS, rate limit y secretos expuestos.
 - Escaneo básico con OWASP ZAP.
-- Resultados y correcciones en `docs/security.md`.
+- Resultados y correcciones en [`docs/security.md`](docs/security.md).
 
 ---
 
-## 8. Reglas y alcance del proyecto
+## 11. Reglas y alcance del proyecto
 
 ### Reglas del equipo
 
@@ -368,12 +526,13 @@ El profesor realizará pruebas básicas sobre la versión desplegada. El equipo 
 - Reseñas, wishlist y fidelización.
 - Analítica avanzada, marketing y SEO.
 - Asesoría legal o gestión de marcas.
+- n8n, monitoreo SRE, WordPress en Lightsail y Vercel: registrados solo como **propuestos** en [`docs/integrations/`](docs/integrations/); requieren autorización explícita.
 
 > **Nota legal y ética:** no se deben usar imágenes, logotipos ni recursos con derechos de autor sin autorización. El catálogo es una simulación académica.
 
 ---
 
-## 9. Cómo colaborar
+## 12. Cómo colaborar
 
 ### Ramas
 
@@ -414,14 +573,16 @@ docs(readme): explicar la estructura del monorepo
 
 ---
 
-## 10. Documentación
+## 13. Documentación
+
+El punto de entrada a la documentación global es [`docs/README.md`](docs/README.md).
 
 ### Documentación por componente
 
 | Componente | Ruta |
 |---|---|
 | Frontend | [`Frontend/docs/README.md`](Frontend/docs/README.md) |
-| Backend | [`Backend/docs/README.md`](Backend/docs/README.md) |
+| Backend | [Bitácora del backend](Backend/docs/Bitacora.alex.md) |
 | Bases de datos | [`Databases/docs/README.md`](Databases/docs/README.md) |
 | Seguridad | [`security/docs/README.md`](security/docs/README.md) |
 | Móvil | [`movil/docs/README.md`](movil/docs/README.md) |
@@ -430,14 +591,22 @@ docs(readme): explicar la estructura del monorepo
 
 | Documento | Contenido | Estado |
 |---|---|---|
-| `docs/architecture.md` | Arquitectura, diagramas y decisiones | Pendiente |
-| `docs/adr/` | Registro de decisiones de arquitectura | Carpeta creada |
-| `docs/api/` | Contratos OpenAPI por servicio | Carpeta creada |
-| `docs/diagrams/` | Diagramas de arquitectura y flujos | Carpeta creada |
-| `docs/use-cases/` | Catálogo y detalle de casos de uso | En progreso |
+| `docs/README.md` | Índice general y estado de la documentación | Redactado |
+| `docs/architecture.md` | Arquitectura, componentes, datos y NFR | Redactado |
+| `docs/PLAN.md` | Planeación del backend: fases, decisiones y pendientes | Redactado |
+| `docs/ROADMAP.md` | Ruta de desarrollo del backend por etapas | Redactado |
+| `docs/security.md` | Amenazas, controles y hacking ético | Redactado |
+| `docs/adr/` | Registro de decisiones de arquitectura (15 ADR: 11 previos y 4 propuestos) | En progreso |
+| `docs/integrations/` | Alcance propuesto de n8n, SRE, Lightsail/WordPress y Vercel | Propuesto |
+| `docs/api/` | Convenciones y contratos OpenAPI por servicio | En progreso |
+| `docs/diagrams/` | 8 diagramas Mermaid + SVG (contexto, contenedores, flujos) | ✅ Completo |
+| `docs/use-cases/` | 25 casos de uso redactados con prioridades MoSCoW | ✅ Completo |
 | `docs/scrum.md` | Tablero, sprints y métricas | Pendiente |
-| `docs/security.md` | Amenazas, controles y hacking ético | Pendiente |
 | `docs/beta-criteria.md` | Criterios de aceptación de la beta | Pendiente |
+| `docs/getting-started.md` | Instalación, comandos y entorno local | Pendiente |
+| `docs/testing.md` | Estrategia de pruebas y gates de CI | Pendiente |
+| `docs/deployment.md` | Docker, entornos y despliegue | Pendiente |
+| `docs/data-contracts.md` | Acuerdo backend–BD | Pendiente (bloqueado por ADR-0004) |
 
 ### Reglas de documentación
 
@@ -446,9 +615,13 @@ docs(readme): explicar la estructura del monorepo
 - Las decisiones importantes se registran como ADR.
 - Los contratos OpenAPI son la fuente de verdad de la API.
 
+### Integraciones propuestas (solo documentación)
+
+Las decisiones sobre n8n, SRE, AWS Lightsail con WordPress y Vercel están registradas en [`docs/integrations/README.md`](docs/integrations/README.md) y en los ADR 0012 a 0015, todos en estado **Propuesto**. No cambian el stack vigente, no autorizan programación ni despliegue y no forman parte de la beta; requieren aprobación y autorización explícita antes de ejecutarse.
+
 ---
 
-## 11. Cronograma
+## 14. Cronograma
 
 | Semana | Objetivo | Entregable |
 |---|---|---|
@@ -456,7 +629,24 @@ docs(readme): explicar la estructura del monorepo
 | Semana 2 | Tienda funcional | Catálogo completo, carrito, direcciones, checkout simulado, historial, panel admin y datos de prueba |
 | Semana 3 | Seguridad y cierre | Endurecimiento, pruebas, página de mayoristas, documentación, despliegue final y demo |
 
+### Avance al día
+
+- [x] Repositorio monorepo con estructura por servicio.
+- [x] Casos de uso redactados (25) y priorizados.
+- [x] Diagramas de arquitectura y flujos (8).
+- [x] Esquemas SQL de las tres bases de datos + seed de roles + diagramas ER.
+- [x] Landing page funcional del frontend.
+- [x] Backend con esqueleto funcional en `Alex_Backend_development`.
+- [x] `security_db` con modelo, migración y PostgreSQL en Docker Compose.
+- [ ] Endpoints de seguridad (registro, login, refresh y logout).
+- [x] Entorno Docker Compose del backend.
+- [ ] CI.
+- [ ] Catálogo con datos simulados (seed de productos).
+- [ ] Despliegue.
+
 ### Criterios para considerar la beta lista
+
+El detalle verificable, la evidencia y el guion de demo se llevarán a `docs/beta-criteria.md` (pendiente). Aquí queda el resumen.
 
 - [ ] Desplegada en una URL pública con HTTPS.
 - [ ] Catálogo con datos simulados, búsqueda y filtros.
@@ -476,7 +666,7 @@ docs(readme): explicar la estructura del monorepo
 
 ---
 
-## 12. Glosario para principiantes
+## 15. Glosario para principiantes
 
 | Término | Significado sencillo |
 |---|---|
@@ -504,13 +694,13 @@ docs(readme): explicar la estructura del monorepo
 
 ---
 
-## 13. Instrucciones para asistentes de IA
+## 16. Instrucciones para asistentes de IA
 
 Si eres una IA que colabora en este repositorio:
 
-1. **No generes código de aplicación sin autorización explícita.** La fase actual es de planeación y estructura.
+1. **No generes código de aplicación sin autorización explícita.** La fase actual combina planeación con los primeros entregables (landing page, esquemas SQL, documentación).
 2. **No propongas un monolito.** Los microservicios son un requisito académico.
-3. **Respeta el stack:** Vite + React + TypeScript + Tailwind; Node.js + TypeScript; Python + FastAPI; PostgreSQL; Docker.
+3. **Respeta el stack:** Vite + React + TypeScript + Tailwind; Node.js + Fastify + TypeScript + Prisma; Python + FastAPI; PostgreSQL; Docker.
 4. **No agregues** Kafka, service mesh, Next.js, pasarelas de pago reales, DIAN, app móvil ni Kubernetes real sin autorización.
 5. **No inventes** marcas, precios, credenciales, endpoints ni decisiones de arquitectura. Si falta información, pregunta.
 6. **Prioriza la beta de 3 semanas.** Propón lo mínimo que cumpla los criterios de aceptación.
@@ -521,16 +711,18 @@ Si eres una IA que colabora en este repositorio:
 
 ---
 
-## 14. Enlaces de referencia
+## 17. Enlaces de referencia
 
 | Recurso | Enlace |
 |---|---|
+| Repositorio | <https://github.com/AgudeloAlexander623/PerfumesGOLD> |
 | Tablero Kanban | Pendiente |
-| Repositorio | Pendiente de URL definitiva |
-| Documentación global | Pendiente |
 | Entorno desplegado | Pendiente |
+| Casos de uso | [`docs/use-cases/README.md`](docs/use-cases/README.md) |
+| Diagramas | [`docs/diagrams/README.md`](docs/diagrams/README.md) |
+| Diagramas ER (BD) | [`Databases/docs/`](Databases/docs/) |
 
 ---
 
-**Última actualización:** 2026-11-04  
-**Versión del documento:** 0.2 — estructura base del monorepo
+**Última actualización:** 2026-11-26  
+**Versión del documento:** 0.6 — landing page, bases de datos, casos de uso, esqueleto del backend e integraciones propuestas (solo documentación)
