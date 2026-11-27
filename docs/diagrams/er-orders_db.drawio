@@ -1,6 +1,6 @@
 <mxfile host="65bd71144e">
     <diagram id="I6RkP2SmDVuDrgE0rUFE" name="Página-1">
-        <mxGraphModel dx="3267" dy="1427" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+        <mxGraphModel dx="2594" dy="1385" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
@@ -61,7 +61,7 @@
                         <mxRectangle height="40" width="110" as="alternateBounds"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="pL04beGee4hRPFwSfX6v-39" parent="pL04beGee4hRPFwSfX6v-37" style="shape=partialRectangle;html=1;whiteSpace=wrap;connectable=0;strokeColor=inherit;overflow=hidden;fillColor=none;pointerEvents=1;fontSize=16;" value="nombre_destinario" vertex="1">
+                <mxCell id="pL04beGee4hRPFwSfX6v-39" parent="pL04beGee4hRPFwSfX6v-37" style="shape=partialRectangle;html=1;whiteSpace=wrap;connectable=0;strokeColor=inherit;overflow=hidden;fillColor=none;pointerEvents=1;fontSize=16;" value="nombre_destinatario" vertex="1">
                     <mxGeometry height="40" width="160" x="110" as="geometry">
                         <mxRectangle height="40" width="160" as="alternateBounds"/>
                     </mxGeometry>

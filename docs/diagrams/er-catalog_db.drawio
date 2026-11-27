@@ -1,6 +1,6 @@
 <mxfile host="65bd71144e">
     <diagram id="QSBJltDfXJp2v38836mV" name="Página-1">
-        <mxGraphModel dx="1298" dy="812" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+        <mxGraphModel dx="1838" dy="981" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
@@ -128,7 +128,7 @@
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
                 <mxCell id="mK874uTfmcr8l2ll-Xeo-39" parent="1" style="shape=table;tableRender=collapsed;startSize=30;container=1;collapsible=0;childLayout=tableLayout;strokeColor=default;fontSize=16;" value="productos" vertex="1">
-                    <mxGeometry height="510" width="510" x="158" y="350" as="geometry"/>
+                    <mxGeometry height="510" width="510" x="159" y="350" as="geometry"/>
                 </mxCell>
                 <mxCell id="mK874uTfmcr8l2ll-Xeo-90" parent="mK874uTfmcr8l2ll-Xeo-39" style="shape=tableRow;horizontal=0;startSize=0;swimlaneHead=0;swimlaneBody=0;strokeColor=inherit;collapsible=0;dropTarget=0;fillColor=none;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=16;" vertex="1">
                     <mxGeometry height="40" width="510" y="30" as="geometry"/>
@@ -409,7 +409,7 @@
                 <mxCell id="7V5lGhjY5eUMtg-ytMu--21" edge="1" parent="1" source="mK874uTfmcr8l2ll-Xeo-95" style="edgeStyle=none;html=1;startArrow=ERmandOne;startFill=0;endArrow=ERmandOne;endFill=0;" target="7V5lGhjY5eUMtg-ytMu--1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="mK874uTfmcr8l2ll-Xeo-95" parent="1" style="shape=table;tableRender=collapsed;startSize=30;container=1;collapsible=0;childLayout=tableLayout;strokeColor=default;fontSize=16;" value="productos" vertex="1">
+                <mxCell id="mK874uTfmcr8l2ll-Xeo-95" parent="1" style="shape=table;tableRender=collapsed;startSize=30;container=1;collapsible=0;childLayout=tableLayout;strokeColor=default;fontSize=16;" value="presentaciones" vertex="1">
                     <mxGeometry height="270" width="421" x="203" y="950" as="geometry"/>
                 </mxCell>
                 <mxCell id="mK874uTfmcr8l2ll-Xeo-96" parent="mK874uTfmcr8l2ll-Xeo-95" style="shape=tableRow;horizontal=0;startSize=0;swimlaneHead=0;swimlaneBody=0;strokeColor=inherit;collapsible=0;dropTarget=0;fillColor=none;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=16;" vertex="1">
